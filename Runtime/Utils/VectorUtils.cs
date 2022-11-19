@@ -29,7 +29,7 @@ namespace GameFramework.Utils
             return v;
         }
 
-        public static float SqrDistance(Vector3 a, Vector3 b, bool isIgnoreY)
+        public static float SqrDistance(Vector3 a, Vector3 b, bool isIgnoreY = false)
         {
             if (isIgnoreY)
             {
