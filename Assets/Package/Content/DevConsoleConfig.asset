@@ -12,5 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 185b58429e0c49d988a7fd20e99582b3, type: 3}
   m_Name: DevConsoleConfig
   m_EditorClassIdentifier: 
-  cmdAssemblies: []
+  consoleKey: 9
+  consoleTimeScale: 1
+  cmdAssemblies:
+  - Assembly-CSharp
   maxLogCount: 1000
