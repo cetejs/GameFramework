@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 
 namespace GameFramework.Generic
 {
-    public partial class Global : MonoBehaviour
+    public class Global : MonoBehaviour
     {
         private readonly ServiceCollection serviceCollection = new ServiceCollection(10);
 
@@ -33,6 +33,7 @@ namespace GameFramework.Generic
             }
         }
 
+        [RuntimeReload(false)]
         public static bool IsApplicationQuitting { get; private set; }
 
         public static event Action OnApplicationQuitting;

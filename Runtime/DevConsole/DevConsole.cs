@@ -1,13 +1,28 @@
 using GameFramework.Generic;
 using GameFramework.InputService;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace GameFramework.DevConsoleService
 {
     internal class DevConsole : MonoBehaviour
     {
-#if UNITY_EDITOR || ENABLE_CONSOLE
+        [SerializeField]
+        private GameObject console;
+        [SerializeField]
+        private Button showConsoleBtn;
         private KeyCode keyCode;
+        private float lastTimeScale;
+        private CursorLockMode lastLockMode;
+        private bool lastVisible;
+
+        public float TimeScale
+        {
+            get { return lastTimeScale; }
+            set { lastTimeScale = value; }
+        }
+        
+#if UNITY_EDITOR || ENABLE_CONSOLE
         private static DevConsole instance;
 
         public static DevConsole Instance
@@ -41,6 +56,8 @@ namespace GameFramework.DevConsoleService
         {
             Global.RequireService<InputManager>();
             keyCode = DevConsoleConfig.Get().consoleKey;
+            
+            showConsoleBtn.onClick.AddListener(EnableMainPanel);
         }
 
         private void Update()
@@ -50,15 +67,8 @@ namespace GameFramework.DevConsoleService
                 EnableMainPanel();
             }
         }
-#endif
 
-        [SerializeField]
-        private GameObject console;
-        private float lastTimeScale;
-        private CursorLockMode lastLockMode;
-        private bool lastVisible;
-
-        public void EnableMainPanel()
+        private void EnableMainPanel()
         {
             DevConsoleConfig config = DevConsoleConfig.Get();
             bool isEnable = !console.activeSelf;
@@ -88,5 +98,6 @@ namespace GameFramework.DevConsoleService
             }
 #endif
         }
+#endif
     }
 }

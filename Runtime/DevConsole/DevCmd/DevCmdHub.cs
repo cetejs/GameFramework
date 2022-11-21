@@ -33,6 +33,7 @@ namespace GameFramework.DevConsoleService
             get { return cmdItemPool; }
         }
 
+#if UNITY_EDITOR || ENABLE_CONSOLE
         private void Start()
         {
             root = new DevCmdNode("Command", -1, null, null);
@@ -55,28 +56,24 @@ namespace GameFramework.DevConsoleService
                             continue;
                         }
 
-                        DevCmdAttribute[] attributes = (DevCmdAttribute[]) methodInfo.GetCustomAttributes(typeof(DevCmdAttribute));
-                        if (attributes.Length > 0)
+                        DevCmdAttribute attr = methodInfo.GetCustomAttribute<DevCmdAttribute>(true);
+                        DevCmdNode current = root;
+                        string[] splitNames = attr.Name.Split("/", StringSplitOptions.RemoveEmptyEntries);
+
+                        foreach (string n in splitNames)
                         {
-                            DevCmdAttribute attr = attributes[0];
-                            DevCmdNode current = root;
-                            string[] splitNames = attr.Name.Split("/", StringSplitOptions.RemoveEmptyEntries);
-
-                            foreach (string n in splitNames)
-                            {
-                                current = current.GetOrAddChild(n, attr.Order, methodInfo);
-                            }
-
-                            if (attr.Args != null && attr.Args.Length > 0)
-                            {
-                                foreach (object args in attr.Args)
-                                {
-                                    current.GetOrAddChild(string.Concat(current.Name, ":", args), attr.Order, methodInfo, args);
-                                }
-                            }
-
-                            current.FixName();
+                            current = current.GetOrAddChild(n, attr.Order, methodInfo);
                         }
+
+                        if (attr.Args != null && attr.Args.Length > 0)
+                        {
+                            foreach (object args in attr.Args)
+                            {
+                                current.GetOrAddChild(string.Concat(current.Name, ":", args), attr.Order, methodInfo, args);
+                            }
+                        }
+
+                        current.FixName();
                     }
                 }
             }
@@ -96,5 +93,6 @@ namespace GameFramework.DevConsoleService
         {
             rootItem.HideGroup();
         }
+#endif
     }
 }

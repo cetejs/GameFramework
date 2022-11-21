@@ -14,6 +14,7 @@ namespace GameFramework
             ImportDataTableConfig();
             ImportObjectPoolConfig();
             ImportDevConsoleConfig();
+            ImportDomainReloadConfig();
         }
 
         [InitializeOnLoadMethod]
@@ -23,7 +24,8 @@ namespace GameFramework
                                   IsExistInputConfig() &&
                                   IsExistDataTableConfig() &&
                                   IsExistObjectPoolConfig() &&
-                                  IsExistDevConsoleConfig();
+                                  IsExistDevConsoleConfig() &&
+                                  IsExistDomainReloadConfig();
 
             if (!isExistConfigs)
             {
@@ -104,6 +106,20 @@ namespace GameFramework
         private static bool IsExistDevConsoleConfig()
         {
             return File.Exists(Path.Combine(Application.dataPath, "GameFramework/Resources/DevConsoleConfig.asset"));
+        }
+        
+        private static void ImportDomainReloadConfig()
+        {
+            string fullPath = Path.Combine(Application.dataPath, "GameFramework/Resources/DomainReloadConfig.asset");
+            if (!File.Exists(fullPath))
+            {
+                EditorFileUtils.CopyAsset("DomainReloadConfig.asset", fullPath);
+            }
+        }
+
+        private static bool IsExistDomainReloadConfig()
+        {
+            return File.Exists(Path.Combine(Application.dataPath, "GameFramework/Resources/DomainReloadConfig.asset"));
         }
     }
 }
