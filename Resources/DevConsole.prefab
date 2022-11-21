@@ -1366,10 +1366,10 @@ RectTransform:
   m_Father: {fileID: 2873049472736614358}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0, y: -15}
-  m_SizeDelta: {x: 80, y: 30}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &3285492238359769634
 CanvasRenderer:
@@ -2524,7 +2524,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1600834824730881619}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.9999999
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4123,10 +4123,10 @@ RectTransform:
   m_Father: {fileID: 2873049472736614358}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 80, y: -15}
-  m_SizeDelta: {x: 80, y: 30}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &5152459575272997577
 CanvasRenderer:
@@ -4256,7 +4256,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.000004078204}
+  m_AnchoredPosition: {x: 0, y: 0.0002542376}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &6857480283898077566
@@ -5308,15 +5308,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5498537228095331010, guid: b54e67535a4f4664cbce81ddb4472ba7, type: 3}
       propertyPath: m_ContentType
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5498537228095331010, guid: b54e67535a4f4664cbce81ddb4472ba7, type: 3}
       propertyPath: m_KeyboardType
-      value: 4
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5498537228095331010, guid: b54e67535a4f4664cbce81ddb4472ba7, type: 3}
       propertyPath: m_CharacterValidation
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5498537228095331010, guid: b54e67535a4f4664cbce81ddb4472ba7, type: 3}
       propertyPath: m_OnSubmit.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -5441,7 +5441,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4987705104413565045, guid: b54e67535a4f4664cbce81ddb4472ba7, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5498537228095331010, guid: b54e67535a4f4664cbce81ddb4472ba7, type: 3}
       propertyPath: m_Text

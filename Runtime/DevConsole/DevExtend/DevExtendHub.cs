@@ -12,7 +12,7 @@ namespace GameFramework.DevConsoleService
         private InputField scaleInput;
         private Text rateHolder;
         private Text scaleHolder;
-        
+
 #if UNITY_EDITOR || ENABLE_CONSOLE
         private void Awake()
         {
@@ -46,10 +46,12 @@ namespace GameFramework.DevConsoleService
             if (!int.TryParse(text, out int rate))
             {
                 GameLogger.LogError($"Change frame rate failed, {text} is not int value");
-                return;
+            }
+            else
+            {
+                Application.targetFrameRate = rate;
             }
 
-            Application.targetFrameRate = rate;
             ResetRateDrawer();
         }
 
@@ -58,10 +60,12 @@ namespace GameFramework.DevConsoleService
             if (!float.TryParse(text, out float scale))
             {
                 GameLogger.LogError($"Change time scale failed, {text} is not float value");
-                return;
+            }
+            else
+            {
+                DevConsole.Instance.TimeScale = scale;
             }
 
-            DevConsole.Instance.TimeScale = scale;
             ResetScaleDrawer();
         }
 #endif
