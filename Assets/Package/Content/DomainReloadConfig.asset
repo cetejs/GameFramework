@@ -12,5 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a22fe239314d43ea8f6ba16432c4ec8c, type: 3}
   m_Name: DomainReloadConfig
   m_EditorClassIdentifier: 
-  reloadAssemblies:
-  - Assembly-CSharp
+  reloadAssemblies: []
