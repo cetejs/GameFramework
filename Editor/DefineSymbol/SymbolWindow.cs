@@ -31,6 +31,7 @@ namespace GameFramework
                 if (GUILayout.Button("Options", EditorStyles.toolbarDropDown, GUILayout.ExpandWidth(false)))
                 {
                     GenericMenu options = new GenericMenu();
+                    options.AddItem(new GUIContent("Collect Active Symbols"), false, CollectActiveSymbols);
                     options.AddItem(new GUIContent("Select SymbolConfig"), false, () =>
                     {
                         ProjectWindowUtil.ShowCreatedAsset(SymbolConfig.GetOrCreate());
@@ -78,6 +79,19 @@ namespace GameFramework
                     enabled = activeDefineSymbols.Contains(symbol)
                 });
             }
+        }
+        
+        private void CollectActiveSymbols() {
+            string activeDefineSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(targetGroup);
+            string[] symbols = activeDefineSymbols.Split(';');
+            SymbolConfig config = SymbolConfig.GetOrCreate();
+            foreach (string symbol in symbols) {
+                if (!config.symbols.Contains(symbol)) {
+                    config.symbols.Add(symbol);
+                }
+            }
+
+            CollectDefineSymbols();
         }
 
         private void SaveDefineSymbols()
