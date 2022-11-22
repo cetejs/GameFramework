@@ -115,8 +115,8 @@ namespace GameFramework.Generic
 
         public void Remove(LinkedListNode<T> node)
         {
-            list.Remove(node);
             ReleaseNode(node);
+            list.Remove(node);
         }
 
         public bool Remove(T value)
@@ -127,8 +127,8 @@ namespace GameFramework.Generic
                 return false;
             }
 
-            list.Remove(node);
             ReleaseNode(node);
+            list.Remove(node);
             return true;
         }
 
@@ -139,8 +139,8 @@ namespace GameFramework.Generic
                 return;
             }
 
-            list.RemoveFirst();
             ReleaseNode(list.First);
+            list.RemoveFirst();
         }
 
         public void RemoveLast()
@@ -150,8 +150,8 @@ namespace GameFramework.Generic
                 return;
             }
 
-            list.RemoveLast();
             ReleaseNode(list.Last);
+            list.RemoveLast();
         }
         
         public IEnumerator<T> GetEnumerator()
