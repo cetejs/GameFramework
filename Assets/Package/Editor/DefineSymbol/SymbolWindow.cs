@@ -91,6 +91,8 @@ namespace GameFramework
                 }
             }
 
+            EditorUtility.SetDirty(config);
+            AssetDatabase.SaveAssets();
             CollectDefineSymbols();
         }
 
