@@ -1,0 +1,22 @@
+/* AutoGenerate */
+
+using GameFramework;
+
+namespace #Namespace#
+{
+    public class #Name# : IDataTable
+    {
+        #Field#
+
+        public void Read(string input)
+        {
+            string[] columns = input.Split(",");
+            #FieldSet#
+        }
+
+        public override string ToString()
+        {
+            return $"#ToString#";
+        }
+    }
+}
