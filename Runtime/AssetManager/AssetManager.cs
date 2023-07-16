@@ -47,14 +47,42 @@ namespace GameFramework
             }
         }
 
+        public AssetBundle LoadBundle(string bundleName)
+        {
+            if (AssetSetting.Instance.UseAssetBundle)
+            {
+                return bundleLoader.LoadBundle(bundleName);
+            }
+
+            return null;
+        }
+
+        public AssetAsyncOperation LoadBundleAsync(string bundleName)
+        {
+            if (AssetSetting.Instance.UseAssetBundle)
+            {
+                return bundleLoader.LoadBundleAsync(bundleName);
+            }
+
+            return null;
+        }
+
         public void UnloadBundle(string bundleName, bool unloadAssets)
         {
-            bundleLoader.UnloadBundle(bundleName, unloadAssets);
+            if (AssetSetting.Instance.UseAssetBundle)
+            {
+                bundleLoader.UnloadBundle(bundleName, unloadAssets);
+            }
         }
 
         public AssetAsyncOperation UnloadBundleAsync(string bundleName, bool unloadAssets)
         {
-            return bundleLoader.UnloadBundleAsync(bundleName, unloadAssets);
+            if (AssetSetting.Instance.UseAssetBundle)
+            {
+                return bundleLoader.UnloadBundleAsync(bundleName, unloadAssets);
+            }
+
+            return null;
         }
 
         public void UnloadAsset(string path)
@@ -76,7 +104,5 @@ namespace GameFramework
                     break;
             }
         }
-
-        
     }
 }
