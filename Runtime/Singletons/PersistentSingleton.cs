@@ -2,7 +2,7 @@
 
 namespace GameFramework
 {
-    public abstract class PersistentSingleton<T> : MonoBehaviour where T : PersistentSingleton<T>
+    public abstract class PersistentSingleton<T> : GameBehaviour where T : PersistentSingleton<T>
     {
         private static T instance;
 

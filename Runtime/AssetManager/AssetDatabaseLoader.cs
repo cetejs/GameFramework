@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace GameFramework
 {
-    public class AssetDatabaseLoader
+    internal class AssetDatabaseLoader
     {
         private Dictionary<string, LocalAsset> assets = new Dictionary<string, LocalAsset>();
 

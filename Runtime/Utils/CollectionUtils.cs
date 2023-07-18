@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace GameFramework.Utils
+namespace GameFramework
 {
     public static class CollectionUtils
     {
@@ -15,6 +15,14 @@ namespace GameFramework.Utils
             T item = list[lastIndex];
             list.RemoveAt(lastIndex);
             return item;
+        }
+
+        public static void AddRange<T>(this ICollection<T> collection, ICollection<T> targets)
+        {
+            foreach (var target in targets)
+            {
+                collection.Add(target);
+            }
         }
     }
 }

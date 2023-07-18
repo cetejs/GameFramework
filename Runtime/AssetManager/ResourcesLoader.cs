@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace GameFramework
 {
-    public class ResourcesLoader
+    internal class ResourcesLoader
     {
         private Dictionary<string, ResourcesAsset> assets = new Dictionary<string, ResourcesAsset>();
 

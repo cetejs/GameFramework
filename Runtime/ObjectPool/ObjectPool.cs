@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using GameFramework.Utils;
 using UnityEngine;
 
 namespace GameFramework
@@ -14,7 +13,7 @@ namespace GameFramework
         [SerializeField] [ReadOnly]
         private int capacity;
         [SerializeField] [ReadOnly]
-        private string originName;
+        private string path;
         [SerializeField] [ReadOnly]
         private List<PoolObject> usingObjects = new List<PoolObject>();
         [SerializeField] [ReadOnly]
@@ -22,30 +21,38 @@ namespace GameFramework
         private int preloadCount;
         private AssetAsyncOperation operation;
 
-        public static ObjectPool CreateInstance(string name, Transform parent)
+        public static ObjectPool CreateInstance(Transform parent)
         {
-            GameObject go = new GameObject(name);
+            GameObject go = new GameObject();
             ObjectPool pool = go.AddComponent<ObjectPool>();
             go.transform.SetParent(parent, false);
             return pool;
         }
 
-        public void Init(string name, int capacity)
+        public void Init(PoolObject prefab, int capacity)
         {
-            originName = name;
+            path = name = prefab.name;
+            this.prefab = prefab;
             this.capacity = Mathf.Max(1, capacity);
-            string path = PathUtils.Combine(ObjectPoolSetting.Instance.PoolAssetName, name);
-            GameObject go = AssetManager.Instance.LoadAsset<GameObject>(path);
+            RefreshPoolCount();
+        }
+
+        public void Init(string path, int capacity)
+        {
+            this.path = name;
+            this.capacity = Mathf.Max(1, capacity);
+            string fullPath = PathUtils.Combine(GameSettings.Instance.PoolAssetName, name);
+            GameObject go = AssetManager.Instance.LoadAsset<GameObject>(fullPath);
             LoadPrefabComplete(go);
             RefreshPoolCount();
         }
 
-        public void InitAsync(string name, int capacity, Action<ObjectPool> callback)
+        public void InitAsync(string path, int capacity, Action<ObjectPool> callback)
         {
-            originName = name;
+            this.path = name;
             this.capacity = Mathf.Max(1, capacity);
-            string path = PathUtils.Combine(ObjectPoolSetting.Instance.PoolAssetName, name);
-            operation = AssetManager.Instance.LoadAssetAsync(path);
+            string fullPath = PathUtils.Combine(GameSettings.Instance.PoolAssetName, name);
+            operation = AssetManager.Instance.LoadAssetAsync(fullPath);
             operation.OnCompleted += _ =>
             {
                 GameObject go = operation.GetResult<GameObject>();
@@ -64,19 +71,19 @@ namespace GameFramework
 
             PoolObject obj = unusedObjects.Pop();
             obj.transform.SetParent(parent, false);
-            obj.OnWakeUp();
+            obj.WakeUp();
             usingObjects.Add(obj);
             RefreshPoolCount();
             return obj as T;
         }
 
-        public void GetAsync<T>(Transform parent, Action<T> callback)where T : PoolObject
+        public void GetAsync<T>(Transform parent, Action<T> callback) where T : PoolObject
         {
             if (prefab == null)
             {
                 if (operation == null)
                 {
-                    string path = PathUtils.Combine(ObjectPoolSetting.Instance.PoolAssetName, name);
+                    string path = PathUtils.Combine(GameSettings.Instance.PoolAssetName, name);
                     operation = AssetManager.Instance.LoadAssetAsync(path);
                 }
 
@@ -147,9 +154,9 @@ namespace GameFramework
 
             PoolObject obj = Instantiate(prefab, transform);
 #if UNITY_EDITOR
-            obj.name = string.Concat(originName.Replace("/", "_"), "_", objectId++);
+            obj.name = string.Concat(path.Replace("/", "_"), "_", objectId++);
 #endif
-            obj.OnInit(this);
+            obj.Init(this);
             unusedObjects.Add(obj);
             RefreshPoolCount();
             return true;
@@ -182,9 +189,9 @@ namespace GameFramework
                 return;
             }
 
-            obj.OnSleep();
+            obj.Sleep();
             obj.transform.SetParent(transform, false);
-            obj.transform.localPosition = Vector3.zero;
+            obj.transform.localPosition = Vector3.up * GameSettings.Instance.PoolWorldPosScale;
             unusedObjects.Add(obj);
             RefreshPoolCount();
         }
@@ -192,7 +199,7 @@ namespace GameFramework
         private void RefreshPoolCount()
         {
 #if UNITY_EDITOR
-            name = string.Concat(originName.Replace("/", "_"), " - ", unusedObjects.Count);
+            name = string.Concat(path.Replace("/", "_"), " - ", unusedObjects.Count);
 #endif
         }
 
@@ -218,61 +225,6 @@ namespace GameFramework
                     preloadCount--;
                 }
             }
-        }
-    }
-
-    public class ObjectPool<T> where T : PoolObject
-    {
-        private readonly ObjectPool pool;
-
-        public ObjectPool(string name, Transform parent)
-        {
-            pool = ObjectPool.CreateInstance(name, parent);
-        }
-
-        public ObjectPool(ObjectPool pool)
-        {
-            this.pool = pool;
-        }
-
-        public void Init(string name, int capacity)
-        {
-            pool.Init(name, capacity);
-        }
-
-        public T Get(Transform parent)
-        {
-            return pool.Get<T>(parent);
-        }
-
-        public void Release(T obj)
-        {
-            pool.Release(obj);
-        }
-
-        public void Release()
-        {
-            pool.Release();
-        }
-
-        public void Preload(int count)
-        {
-            pool.Preload(count);
-        }
-
-        public void Add(int count)
-        {
-            pool.Add(count);
-        }
-
-        public void Remove(int count)
-        {
-            pool.Remove(count);
-        }
-
-        public void Clear()
-        {
-            pool.Clear();
         }
     }
 }

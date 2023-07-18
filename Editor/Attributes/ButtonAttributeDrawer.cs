@@ -12,12 +12,6 @@ namespace GameFramework
 
         public override void OnPropertyGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            InspectorGroupAttribute group = fieldInfo.GetCustomAttribute<InspectorGroupAttribute>();
-            if (group != null)
-            {
-                position.x += 10;
-            }
-
             ButtonAttribute button = (ButtonAttribute) attribute;
             object targetObject = property.serializedObject.targetObject;
             string buttonName = button.MethodName;

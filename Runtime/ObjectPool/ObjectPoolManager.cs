@@ -10,8 +10,7 @@ namespace GameFramework
 
         private void Start()
         {
-            transform.position = Vector3.one * ObjectPoolSetting.Instance.PoolWorldPosScale;
-            foreach (PoolPreloadConfig config in ObjectPoolSetting.Instance.PoolPreloadConfigs)
+            foreach (PoolPreloadConfig config in GameSettings.Instance.PoolPreloadConfigs)
             {
                 GetObjectPoolAsync(config.name, config.capacity, pool =>
                 {
@@ -95,19 +94,19 @@ namespace GameFramework
 
         public ObjectPool GetObjectPool(string path)
         {
-            return GetObjectPool(path, ObjectPoolSetting.Instance.DefaultPoolCapacity);
+            return GetObjectPool(path, GameSettings.Instance.DefaultPoolCapacity);
         }
 
         public void GetObjectPoolAsync(string path, Action<ObjectPool> callback)
         {
-            GetObjectPoolAsync(path, ObjectPoolSetting.Instance.DefaultPoolCapacity, callback);
+            GetObjectPoolAsync(path, GameSettings.Instance.DefaultPoolCapacity, callback);
         }
 
         public ObjectPool GetObjectPool(string path, int capacity)
         {
             if (!objectPools.TryGetValue(path, out ObjectPool objectPool))
             {
-                objectPool = ObjectPool.CreateInstance(path, transform);
+                objectPool = ObjectPool.CreateInstance(transform);
                 objectPool.Init(path, capacity);
                 objectPools.Add(path, objectPool);
             }
@@ -119,7 +118,7 @@ namespace GameFramework
         {
             if (!objectPools.TryGetValue(path, out ObjectPool objectPool))
             {
-                objectPool = ObjectPool.CreateInstance(path, transform);
+                objectPool = ObjectPool.CreateInstance(transform);
                 objectPool.InitAsync(path, capacity, callback);
                 objectPools.Add(path, objectPool);
             }

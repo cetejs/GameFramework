@@ -14,7 +14,7 @@ namespace GameFramework
 
         public bool IsDone
         {
-            get { return operation != null && operation.isDone || isDone; }
+            get { return operation != null && operation.isDone || isDone || result != null; }
         }
 
         public virtual float Progress
@@ -60,12 +60,12 @@ namespace GameFramework
             return result as T;
         }
 
-        internal void SetOperation(AsyncOperation op)
+        internal virtual void SetOperation(AsyncOperation op)
         {
             operation = op;
         }
 
-        internal void SetDependency(AssetAsyncOperation dp)
+        internal virtual void SetDependency(AssetAsyncOperation dp)
         {
             dependency = dp;
         }

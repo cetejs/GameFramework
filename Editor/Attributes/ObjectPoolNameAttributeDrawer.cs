@@ -13,11 +13,11 @@ namespace GameFramework
 
         public override void OnPropertyGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            string poolAssetPath = PathUtils.Combine(AssetSetting.Instance.BundleAssetPath, ObjectPoolSetting.Instance.PoolAssetName);
+            string poolAssetPath = PathUtils.Combine(AssetSetting.Instance.BundleAssetPath, GameSettings.Instance.PoolAssetName);
             List<string> assets = new List<string>();
             if (Directory.Exists(poolAssetPath))
             {
-                string prefix = StringUtils.Concat(ObjectPoolSetting.Instance.PoolAssetName, "/");
+                string prefix = StringUtils.Concat(GameSettings.Instance.PoolAssetName, "/");
                 string suffix = ".prefab";
                 assets.AddRange(Directory.GetFiles(poolAssetPath, "*.prefab", SearchOption.AllDirectories));
                 for (int i = 0; i < assets.Count; i++)
@@ -29,8 +29,8 @@ namespace GameFramework
             if (assets.Count == 0)
             {
                 GUIStyle style = new GUIStyle(GUI.skin.label);
-                style.normal.textColor = Color.red;;
-                string poolAssetName = PathUtils.Combine("Assets", AssetSetting.Instance.BundleAssetName, ObjectPoolSetting.Instance.PoolAssetName);
+                style.normal.textColor = Color.red;
+                string poolAssetName = PathUtils.Combine("Assets", AssetSetting.Instance.BundleAssetName, GameSettings.Instance.PoolAssetName);
                 EditorGUI.LabelField(position, label.text, $"There are no prefab in {poolAssetName}", style);
                 return;
             }

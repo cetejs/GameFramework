@@ -48,22 +48,42 @@ namespace GameFramework
                 return;
             }
 
-            pool.Release(this);
+            if (pool != null)
+            {
+                pool.Release(this);
+            }
+
+            lifeTime = -1;
         }
 
-        public virtual void OnInit(ObjectPool pool)
+        internal void Init(ObjectPool pool)
         {
             this.pool = pool;
+            OnInit();
         }
 
-        public virtual void OnWakeUp()
+        internal void WakeUp()
         {
             IsReleased = false;
+            OnWakeUp();
         }
 
-        public virtual void OnSleep()
+        internal void Sleep()
         {
+            OnSleep();
             IsReleased = true;
+        }
+
+        protected virtual void OnInit()
+        {
+        }
+
+        protected virtual void OnWakeUp()
+        {
+        }
+
+        protected virtual void OnSleep()
+        {
         }
     }
 }

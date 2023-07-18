@@ -188,7 +188,7 @@ namespace GameFramework
                 ReferencePool.Instance.Release(node);
             }
 
-            public void Clear()
+            void IReference.Clear()
             {
                 name = null;
                 parent = null;

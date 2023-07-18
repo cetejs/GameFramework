@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace GameFramework.Generic
+namespace GameFramework
 {
     public class GameThread : IDisposable
     {

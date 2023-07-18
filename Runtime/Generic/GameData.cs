@@ -2,14 +2,16 @@
 {
     public abstract class GameData : IReference
     {
-        public abstract void Clear();
+        void IReference.Clear()
+        {
+        }
     }
 
-    public class GameData<T> : GameData
+    public class GameData<T> : GameData, IReference
     {
         public T Item;
 
-        public override void Clear()
+        void IReference.Clear()
         {
             Item = default;
         }
@@ -20,12 +22,12 @@
         }
     }
 
-    public class GameData<T1, T2> : GameData
+    public class GameData<T1, T2> : GameData, IReference
     {
         public T1 Item1;
         public T2 Item2;
 
-        public override void Clear()
+        void IReference.Clear()
         {
             Item1 = default;
             Item2 = default;
@@ -37,13 +39,13 @@
         }
     }
 
-    public class GameData<T1, T2, T3> : GameData
+    public class GameData<T1, T2, T3> : GameData, IReference
     {
         public T1 Item1;
         public T2 Item2;
         public T3 Item3;
 
-        public override void Clear()
+        void IReference.Clear()
         {
             Item1 = default;
             Item2 = default;
@@ -56,14 +58,14 @@
         }
     }
 
-    public class GameData<T1, T2, T3, T4> : GameData
+    public class GameData<T1, T2, T3, T4> : GameData, IReference
     {
         public T1 Item1;
         public T2 Item2;
         public T3 Item3;
         public T4 Item4;
 
-        public override void Clear()
+        void IReference.Clear()
         {
             Item1 = default;
             Item2 = default;
@@ -77,7 +79,7 @@
         }
     }
 
-    public class GameData<T1, T2, T3, T4, T5> : GameData
+    public class GameData<T1, T2, T3, T4, T5> : GameData, IReference
     {
         public T1 Item1;
         public T2 Item2;
@@ -85,7 +87,7 @@
         public T4 Item4;
         public T5 Item5;
 
-        public override void Clear()
+        void IReference.Clear()
         {
             Item1 = default;
             Item2 = default;
@@ -100,7 +102,7 @@
         }
     }
 
-    public class GameData<T1, T2, T3, T4, T5, T6> : GameData
+    public class GameData<T1, T2, T3, T4, T5, T6> : GameData, IReference
     {
         public T1 Item1;
         public T2 Item2;
@@ -109,7 +111,7 @@
         public T5 Item5;
         public T6 Item6;
 
-        public override void Clear()
+        void IReference.Clear()
         {
             Item1 = default;
             Item2 = default;
@@ -125,7 +127,7 @@
         }
     }
 
-    public class GameData<T1, T2, T3, T4, T5, T6, T7> : GameData
+    public class GameData<T1, T2, T3, T4, T5, T6, T7> : GameData, IReference
     {
         public T1 Item1;
         public T2 Item2;
@@ -135,7 +137,7 @@
         public T6 Item6;
         public T7 Item7;
 
-        public override void Clear()
+        void IReference.Clear()
         {
             Item1 = default;
             Item2 = default;
@@ -152,7 +154,7 @@
         }
     }
 
-    public class GameData<T1, T2, T3, T4, T5, T6, T7, T8> : GameData
+    public class GameData<T1, T2, T3, T4, T5, T6, T7, T8> : GameData, IReference
     {
         public T1 Item1;
         public T2 Item2;
@@ -163,7 +165,7 @@
         public T7 Item7;
         public T8 Item8;
 
-        public override void Clear()
+        void IReference.Clear()
         {
             Item1 = default;
             Item2 = default;
@@ -181,7 +183,7 @@
         }
     }
 
-    public class GameData<T1, T2, T3, T4, T5, T6, T7, T8, T9> : GameData
+    public class GameData<T1, T2, T3, T4, T5, T6, T7, T8, T9> : GameData, IReference
     {
         public T1 Item1;
         public T2 Item2;
@@ -193,7 +195,7 @@
         public T8 Item8;
         public T9 Item9;
 
-        public override void Clear()
+        void IReference.Clear()
         {
             Item1 = default;
             Item2 = default;

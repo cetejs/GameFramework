@@ -10,17 +10,16 @@ namespace GameFramework
         private readonly List<DelegateInfo> delegateInfos = new List<DelegateInfo>();
         private bool isFoldout = true;
 
+        public override bool RequiresConstantRepaint()
+        {
+            return true;
+        }
+
         private void OnEnable()
         {
             manager = target as DelayedActionManager;
-            EditorApplication.update += Repaint;
         }
-
-        private void OnDisable()
-        {
-            EditorApplication.update -= Repaint;
-        }
-
+        
         public override void OnInspectorGUI()
         {
             DrawDefaultInspector();

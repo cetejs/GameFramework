@@ -2,7 +2,7 @@
 
 namespace GameFramework
 {
-    public abstract class ScriptableObjectSingleton<T> : ScriptableObject where T : ScriptableObjectSingleton<T>
+    public abstract class ScriptableObjectSingleton<T> : GameScriptableObject where T : ScriptableObjectSingleton<T>
     {
         private static T instance;
 

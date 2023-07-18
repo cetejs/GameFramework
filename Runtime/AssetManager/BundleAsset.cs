@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace GameFramework
 {
-    public class BundleAsset
+    internal class BundleAsset
     {
         private string bundleName;
         private AssetBundleLoader loader;

@@ -56,7 +56,7 @@ namespace GameFramework
 
         public static List<FieldInfo> GetFieldInfos(Type type)
         {
-            if (typeOfFieldInfos.TryGetValue(type, out List<FieldInfo> results))
+            if (!typeOfFieldInfos.TryGetValue(type, out List<FieldInfo> results))
             {
                 List<Type> typeTree = GetBaseTypes(type);
                 results = type.GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public)
@@ -78,6 +78,5 @@ namespace GameFramework
 
             return attributes.OfType<T>().First();
         }
-
     }
 }

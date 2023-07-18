@@ -24,7 +24,6 @@ namespace GameFramework
                     foreach (AssetAsyncOperation dp in dependencies)
                     {
                         total += dp.Progress;
-                        numOfOps++;
                     }
                 }
 
@@ -46,7 +45,7 @@ namespace GameFramework
 
         internal override void Completed(Object asset)
         {
-            if (asset)
+            if (asset != null)
             {
                 result = asset;
             }
@@ -56,11 +55,14 @@ namespace GameFramework
                 return;
             }
 
-            foreach (AssetAsyncOperation dp in dependencies)
+            if (dependencies != null)
             {
-                if (!dp.IsDone)
+                foreach (AssetAsyncOperation dp in dependencies)
                 {
-                    return;
+                    if (!dp.IsDone)
+                    {
+                        return;
+                    }
                 }
             }
 

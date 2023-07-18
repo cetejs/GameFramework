@@ -10,15 +10,14 @@ namespace GameFramework
         private List<string> poolInfos = new List<string>();
         private bool isFoldout = true;
 
+        public override bool RequiresConstantRepaint()
+        {
+            return true;
+        }
+
         private void OnEnable()
         {
             pool = target as ReferencePool;
-            EditorApplication.update += Repaint;
-        }
-
-        private void OnDisable()
-        {
-            EditorApplication.update -= Repaint;
         }
 
         public override void OnInspectorGUI()

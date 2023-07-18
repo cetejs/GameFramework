@@ -11,7 +11,7 @@ namespace GameFramework
         private List<SubWindow> subWindows;
         private int currentWindowIndex;
 
-        private const int maxHorizontalWindowCount = 5;
+        private const int MaxHorizontalWindowCount = 5;
 
         [MenuItem("Window/Game Framework")]
         public static void OpenGameWindow()
@@ -41,10 +41,10 @@ namespace GameFramework
 
         private void DrawWindowTabs()
         {
-            for (int i = 0; i < subWindows.Count; i += maxHorizontalWindowCount)
+            for (int i = 0; i < subWindows.Count; i += MaxHorizontalWindowCount)
             {
                 EditorGUILayout.BeginHorizontal();
-                for (int j = i; j < i + maxHorizontalWindowCount && j < subWindows.Count; j++)
+                for (int j = i; j < i + MaxHorizontalWindowCount && j < subWindows.Count; j++)
                 {
                     GUIStyle buttonStyle = currentWindowIndex == j ? WindowStyle.MenuButtonSelected : WindowStyle.MenuButton;
                     if (GUILayout.Button(subWindows[j].Name, buttonStyle))

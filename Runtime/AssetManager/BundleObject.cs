@@ -2,7 +2,7 @@
 
 namespace GameFramework
 {
-    public class BundleObject
+    internal class BundleObject
     {
         private string name;
         private Object asset;
