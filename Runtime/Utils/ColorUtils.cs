@@ -5,8 +5,6 @@ namespace GameFramework
 {
     public static class ColorUtils
     {
-        public static readonly Color ReunoYellow = new Color32(255, 196, 0, 255);
-        public static readonly Color BestRed = new Color32(255, 24, 0, 255);
         public static readonly Color AliceBlue = new Color32(240, 248, 255, 255);
         public static readonly Color AntiqueWhite = new Color32(250, 235, 215, 255);
         public static readonly Color Aqua = new Color32(0, 255, 255, 255);
@@ -147,6 +145,8 @@ namespace GameFramework
         public static readonly Color WhiteSmoke = new Color32(245, 245, 245, 255);
         public static readonly Color Yellow = new Color32(255, 255, 0, 255);
         public static readonly Color YellowGreen = new Color32(154, 205, 50, 255);
+        public static readonly Color ReunoYellow = new Color32(255, 196, 0, 255);
+        public static readonly Color BestRed = new Color32(255, 24, 0, 255);
 
         private static Dictionary<int, Color> colors;
 

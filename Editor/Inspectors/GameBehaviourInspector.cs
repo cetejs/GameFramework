@@ -32,7 +32,11 @@ namespace GameFramework
 
             foreach (GroupData groupData in groupDataDict.Values)
             {
-                EditorPrefs.SetBool($"{groupData.GroupAttribute.GroupName}{groupData.Properties[0].name}{target.GetInstanceID()}", groupData.GroupIsOpen);
+                if (groupData.Properties.Count > 0)
+                {
+                    EditorPrefs.SetBool($"{groupData.GroupAttribute.GroupName}{groupData.Properties[0].name}{target.GetInstanceID()}", groupData.GroupIsOpen);
+                }
+
                 groupData.Clear();
             }
         }
@@ -55,6 +59,11 @@ namespace GameFramework
 
             foreach (FieldInfo fieldInfo in fieldInfos)
             {
+                if (fieldInfo.IsDefined(typeof(HideInInspector), true))
+                {
+                    continue;
+                }
+
                 InspectorGroupAttribute groupAttribute = fieldInfo.GetCustomAttribute<InspectorGroupAttribute>();
                 GroupData groupData;
                 if (groupAttribute == null)
@@ -103,7 +112,6 @@ namespace GameFramework
             }
 
             SerializedProperty iterator = serializedObject.GetIterator();
-
             if (iterator.NextVisible(true))
             {
                 do
