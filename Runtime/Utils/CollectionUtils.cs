@@ -19,7 +19,7 @@ namespace GameFramework
 
         public static void AddRange<T>(this ICollection<T> collection, ICollection<T> targets)
         {
-            foreach (var target in targets)
+            foreach (T target in targets)
             {
                 collection.Add(target);
             }
