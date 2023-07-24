@@ -17,6 +17,12 @@ namespace GameFramework
         private bool isUseHorizontal;
         private bool isUseVertical;
         private Vector2 previousPos;
+        private InputControl input;
+
+        private void Start()
+        {
+            input = GetComponentInParent<InputControl>();
+        }
 
         private void UpdateAxis(Vector2 value)
         {
@@ -26,12 +32,26 @@ namespace GameFramework
             Vector2 delta = value.normalized;
             if (isUseHorizontal)
             {
-                InputManager.Instance.SetAxis(horizontalAxisName, delta.x * responseSpeed);
+                if (input != null)
+                {
+                    input.SetAxis(horizontalAxisName, delta.x * responseSpeed);
+                }
+                else
+                {
+                    InputManager.Instance.SetAxis(horizontalAxisName, delta.x * responseSpeed, InputIdentity.Player1);
+                }
             }
 
             if (isUseVertical)
             {
-                InputManager.Instance.SetAxis(verticalAxisName, delta.y * responseSpeed);
+                if (input != null)
+                {
+                    input.SetAxis(verticalAxisName, delta.y * responseSpeed);
+                }
+                else
+                {
+                    InputManager.Instance.SetAxis(verticalAxisName, delta.y * responseSpeed, InputIdentity.Player1);
+                }
             }
         }
 

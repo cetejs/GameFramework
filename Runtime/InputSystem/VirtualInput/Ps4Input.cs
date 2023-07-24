@@ -5,11 +5,11 @@ namespace GameFramework
 {
     internal class Ps4Input : JoystickInput
     {
-        private Dictionary<int, JoystickMapping> ps4Mappings = new Dictionary<int, JoystickMapping>(32);
+        private static Dictionary<int, JoystickMapping> ps4Mappings;
 
-        public Ps4Input()
+        public Ps4Input(int joystickNum) : base(joystickNum)
         {
-            CollectPs4Mapping();
+            CollectMappings();
         }
 
         public override float GetAxis(InputMapping input)
@@ -20,7 +20,7 @@ namespace GameFramework
                 return 0.0f;
             }
 
-            return GetAxis(ps4.Name, (int) input.JoystickNum);
+            return GetAxis(ps4.Name);
         }
 
         public override float GetAxisRaw(InputMapping input)
@@ -31,7 +31,7 @@ namespace GameFramework
                 return 0.0f;
             }
 
-            return GetAxisRaw(ps4.Name, (int) input.JoystickNum);
+            return GetAxisRaw(ps4.Name);
         }
 
         public override bool GetButton(InputMapping input)
@@ -42,7 +42,7 @@ namespace GameFramework
                 return false;
             }
 
-            return GetButton(ps4.Name, (int) input.JoystickNum, ps4.Type == JoystickType.Axis);
+            return GetButton(ps4.Name, ps4.Type == JoystickType.Axis);
         }
 
         public override bool GetButtonDown(InputMapping input)
@@ -53,7 +53,7 @@ namespace GameFramework
                 return false;
             }
 
-            return GetButtonDown(ps4.Name, (int) input.JoystickNum, ps4.Type == JoystickType.Axis);
+            return GetButtonDown(ps4.Name, ps4.Type == JoystickType.Axis);
         }
 
         public override bool GetButtonUp(InputMapping input)
@@ -64,7 +64,7 @@ namespace GameFramework
                 return false;
             }
 
-            return GetButtonUp(ps4.Name, (int) input.JoystickNum, ps4.Type == JoystickType.Axis);
+            return GetButtonUp(ps4.Name, ps4.Type == JoystickType.Axis);
         }
 
         public override void SetAxis(string name, float value)
@@ -90,8 +90,14 @@ namespace GameFramework
             return null;
         }
 
-        private void CollectPs4Mapping()
+        private void CollectMappings()
         {
+            if (ps4Mappings != null)
+            {
+                return;
+            }
+
+            ps4Mappings = new Dictionary<int, JoystickMapping>(32);
             foreach (JoystickMapping mapping in InputSetting.Instance.JoystickMappings)
             {
                 if (mapping.Ps4Code != Ps4Code.Node)

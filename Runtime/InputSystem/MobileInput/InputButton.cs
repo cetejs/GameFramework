@@ -7,15 +7,35 @@ namespace GameFramework
     {
         [SerializeField]
         private string buttonName = "Button";
+        private InputControl input;
+
+        private void Start()
+        {
+            input = GetComponentInParent<InputControl>();
+        }
 
         public void OnPointerDown(PointerEventData eventData)
         {
-            InputManager.Instance.SetButtonDown(buttonName);
+            if (input != null)
+            {
+                input.SetButtonDown(buttonName);
+            }
+            else
+            {
+                InputManager.Instance.SetButtonDown(buttonName, InputIdentity.Player1);
+            }
         }
 
         public void OnPointerUp(PointerEventData eventData)
         {
-            InputManager.Instance.SetButtonUp(buttonName);
+            if (input != null)
+            {
+                input.SetButtonUp(buttonName);
+            }
+            else
+            {
+                InputManager.Instance.SetButtonUp(buttonName, InputIdentity.Player1);
+            }
         }
     }
 }

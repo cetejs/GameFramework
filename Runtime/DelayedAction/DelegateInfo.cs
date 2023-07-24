@@ -1,5 +1,4 @@
 ﻿using System;
-using GameFramework;
 using UnityEngine;
 
 namespace GameFramework

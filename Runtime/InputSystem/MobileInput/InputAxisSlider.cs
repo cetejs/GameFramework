@@ -8,20 +8,37 @@ namespace GameFramework
     {
         [SerializeField]
         private string axisName = "Horizontal";
+        private InputControl input;
 
         private Slider slider;
 
-        private void Awake()
+        private void Start()
         {
             slider = GetComponent<Slider>();
             slider.minValue = -slider.maxValue;
-            slider.value = InputManager.Instance.GetAxis(axisName);
             slider.onValueChanged.AddListener(OnValueChanged);
+
+            input = GetComponentInParent<InputControl>();
+            if (input != null)
+            {
+                slider.SetValueWithoutNotify(input.GetAxis(axisName));
+            }
+            else
+            {
+                slider.SetValueWithoutNotify(InputManager.Instance.GetAxis(axisName, InputIdentity.Player1));
+            }
         }
 
         private void OnValueChanged(float value)
         {
-            InputManager.Instance.SetAxis(axisName, value);
+            if (input != null)
+            {
+                input.SetAxis(axisName, value);
+            }
+            else
+            {
+                InputManager.Instance.SetAxis(axisName, value, InputIdentity.Player1);
+            }
         }
     }
 }

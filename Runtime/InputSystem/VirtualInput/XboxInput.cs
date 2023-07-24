@@ -5,11 +5,11 @@ namespace GameFramework
 {
     internal class XboxInput : JoystickInput
     {
-        private Dictionary<int, JoystickMapping> xboxMappings = new Dictionary<int, JoystickMapping>(32);
+        private static Dictionary<int, JoystickMapping> xboxMappings;
 
-        public XboxInput()
+        public XboxInput(int joystickNum) : base(joystickNum)
         {
-            CollectXboxMapping();
+            CollectMappings();
         }
 
         public override float GetAxis(InputMapping input)
@@ -20,7 +20,7 @@ namespace GameFramework
                 return 0.0f;
             }
 
-            return GetAxis(xbox.Name, (int) input.JoystickNum);
+            return GetAxis(xbox.Name);
         }
 
         public override float GetAxisRaw(InputMapping input)
@@ -31,7 +31,7 @@ namespace GameFramework
                 return 0.0f;
             }
 
-            return GetAxisRaw(xbox.Name, (int) input.JoystickNum);
+            return GetAxisRaw(xbox.Name);
         }
 
         public override bool GetButton(InputMapping input)
@@ -42,7 +42,7 @@ namespace GameFramework
                 return false;
             }
 
-            return GetButton(xbox.Name, (int) input.JoystickNum, xbox.Type == JoystickType.Axis);
+            return GetButton(xbox.Name, xbox.Type == JoystickType.Axis);
         }
 
         public override bool GetButtonDown(InputMapping input)
@@ -53,7 +53,7 @@ namespace GameFramework
                 return false;
             }
 
-            return GetButtonDown(xbox.Name, (int) input.JoystickNum, xbox.Type == JoystickType.Axis);
+            return GetButtonDown(xbox.Name, xbox.Type == JoystickType.Axis);
         }
 
         public override bool GetButtonUp(InputMapping input)
@@ -64,7 +64,7 @@ namespace GameFramework
                 return false;
             }
 
-            return GetButtonUp(xbox.Name, (int) input.JoystickNum, xbox.Type == JoystickType.Axis);
+            return GetButtonUp(xbox.Name, xbox.Type == JoystickType.Axis);
         }
 
         public override void SetAxis(string name, float value)
@@ -90,8 +90,14 @@ namespace GameFramework
             return null;
         }
 
-        private void CollectXboxMapping()
+        private void CollectMappings()
         {
+            if (xboxMappings != null)
+            {
+                return;
+            }
+
+            xboxMappings = new Dictionary<int, JoystickMapping>(32);
             foreach (JoystickMapping mapping in InputSetting.Instance.JoystickMappings)
             {
                 if (mapping.XboxCode != XboxCode.Node)

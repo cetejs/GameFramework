@@ -19,6 +19,7 @@ namespace GameFramework
         private bool isUseHorizontal;
         private bool isUseVertical;
         private Vector2 startPos;
+        private InputControl input;
 
         private void Start()
         {
@@ -28,6 +29,7 @@ namespace GameFramework
             }
 
             startPos = thumb.position;
+            input = GetComponentInParent<InputControl>();
         }
 
         private void UpdateAxis(Vector2 value)
@@ -38,12 +40,26 @@ namespace GameFramework
             delta /= movementRange;
             if (isUseHorizontal)
             {
-                InputManager.Instance.SetAxis(horizontalAxisName, delta.x);
+                if (input != null)
+                {
+                    input.SetAxis(horizontalAxisName, delta.x);
+                }
+                else
+                {
+                    InputManager.Instance.SetAxis(horizontalAxisName, delta.x, InputIdentity.Player1);
+                }
             }
 
             if (isUseVertical)
             {
-                InputManager.Instance.SetAxis(verticalAxisName, delta.y);
+                if (input != null)
+                {
+                    input.SetAxis(verticalAxisName, delta.y);
+                }
+                else
+                {
+                    InputManager.Instance.SetAxis(verticalAxisName, delta.y, InputIdentity.Player1);
+                }
             }
         }
 

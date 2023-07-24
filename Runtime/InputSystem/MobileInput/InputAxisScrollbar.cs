@@ -8,19 +8,35 @@ namespace GameFramework
     {
         [SerializeField]
         private string axisName = "Horizontal";
-
         private Scrollbar scrollbar;
+        private InputControl input;
 
-        private void Awake()
+        private void Start()
         {
             scrollbar = GetComponent<Scrollbar>();
-            scrollbar.value = (InputManager.Instance.GetAxis(axisName) + 1.0f) / 2.0f;
             scrollbar.onValueChanged.AddListener(OnValueChanged);
+
+            input = GetComponentInParent<InputControl>();
+            if (input != null)
+            {
+                scrollbar.SetValueWithoutNotify((input.GetAxis(axisName) + 1.0f) / 2.0f);
+            }
+            else
+            {
+                scrollbar.SetValueWithoutNotify((InputManager.Instance.GetAxis(axisName, InputIdentity.Player1) + 1.0f) / 2.0f);
+            }
         }
 
         private void OnValueChanged(float value)
         {
-            InputManager.Instance.SetAxis(axisName, value * 2.0f - 1.0f);
+            if (input != null)
+            {
+                input.SetAxis(axisName, value * 2.0f - 1.0f);
+            }
+            else
+            {
+                InputManager.Instance.SetAxis(axisName, value * 2.0f - 1.0f, InputIdentity.Player1);
+            }
         }
     }
 }

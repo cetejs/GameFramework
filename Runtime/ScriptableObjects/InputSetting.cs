@@ -1,13 +1,10 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace GameFramework
 {
     public class InputSetting : ScriptableObjectSingleton<InputSetting>
     {
-        public List<JoystickMapping> JoystickMappings = new List<JoystickMapping>()
+        internal List<JoystickMapping> JoystickMappings = new List<JoystickMapping>()
         {
             new JoystickMapping()
             {
@@ -179,7 +176,6 @@ namespace GameFramework
             }
         };
 
-        public List<InputMapping> InputMappings = new List<InputMapping>();
-
+        internal List<InputMapping> InputMappings = new List<InputMapping>();
     }
 }

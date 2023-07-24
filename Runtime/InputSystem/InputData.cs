@@ -7,51 +7,10 @@ namespace GameFramework
     {
         private Dictionary<string, InputMapping> inputMappings = new Dictionary<string, InputMapping>();
         private Dictionary<string, InputMapping> boundMappings = new Dictionary<string, InputMapping>();
-        private Dictionary<string, JoystickMapping> joystickMappings = new Dictionary<string, JoystickMapping>();
 
-        public readonly List<KeyCode> JoystickButtons = new List<KeyCode>()
+        public InputData()
         {
-            KeyCode.JoystickButton0,
-            KeyCode.JoystickButton1,
-            KeyCode.JoystickButton2,
-            KeyCode.JoystickButton3,
-            KeyCode.JoystickButton4,
-            KeyCode.JoystickButton5,
-            KeyCode.JoystickButton6,
-            KeyCode.JoystickButton7,
-            KeyCode.JoystickButton8,
-            KeyCode.JoystickButton9,
-            KeyCode.JoystickButton10,
-            KeyCode.JoystickButton11,
-            KeyCode.JoystickButton12,
-            KeyCode.JoystickButton13,
-            KeyCode.JoystickButton14,
-            KeyCode.JoystickButton15,
-            KeyCode.JoystickButton16,
-            KeyCode.JoystickButton17,
-            KeyCode.JoystickButton18,
-            KeyCode.JoystickButton19
-        };
-
-        public readonly List<string> JoystickAxes = new List<string>
-        {
-            "Joystick0 X Axis",
-            "Joystick0 Y Axis",
-            "Joystick0 3rd Axis",
-            "Joystick0 4th Axis",
-            "Joystick0 5th Axis",
-            "Joystick0 6th Axis",
-            "Joystick0 7th Axis",
-            "Joystick0 8th Axis",
-            "Joystick0 9th Axis",
-            "Joystick0 10th Axis"
-        };
-
-        public void Init()
-        {
-            CollectInputMapping();
-            CollectBoundMapping();
-            CollectJoystickMapping();
+            CollectInputMappings();
         }
 
         public int GetInputDeviceMapping(InputMapping input, InputDevice device)
@@ -112,50 +71,48 @@ namespace GameFramework
             return null;
         }
 
-        public InputMapping GetBoundMapping(string name)
+        public InputMapping GetBoundMapping(string name, InputIdentity identity)
         {
-            if (boundMappings.TryGetValue(name, out InputMapping input))
+            string boundName = StringUtils.Concat(name, (int) identity);
+            if (boundMappings.TryGetValue(boundName, out InputMapping bound))
             {
-                return input;
+                return bound;
             }
 
-            if (inputMappings.TryGetValue(name, out input))
+            if (inputMappings.TryGetValue(name, out InputMapping input))
             {
-                return input;
+                bound = new InputMapping()
+                {
+                    Name = input.Name,
+                    KeyCode = (MouseKeyCode) PlayerPrefs.GetInt(StringUtils.Concat(boundName, InputDevice.MouseKeyboard), (int) input.KeyCode),
+                    XboxCode = (XboxCode) PlayerPrefs.GetInt(StringUtils.Concat(boundName, InputDevice.XboxGamepad), (int) input.XboxCode),
+                    Ps4Code = (Ps4Code) PlayerPrefs.GetInt(StringUtils.Concat(boundName, InputDevice.Ps4Gamepad), (int) input.Ps4Code)
+                };
+
+                boundMappings.Add(boundName, bound);
+                return bound;
             }
 
             Debug.LogError($"InputMapping is not exist key {name}");
             return null;
         }
 
-        public JoystickMapping GetJoystickMapping(string name)
+        public void RebindButton(string name, int bindCode, InputIdentity identity, InputDevice device)
         {
-            if (joystickMappings.TryGetValue(name, out JoystickMapping joystick))
-            {
-                return joystick;
-            }
-
-            Debug.LogError($"JoystickMapping is not exist key {name}");
-            return null;
-        }
-
-        public void RebindButton(string name, InputDevice device, int bindCode)
-        {
-            if (boundMappings.TryGetValue(name, out InputMapping input))
+            string boundName = StringUtils.Concat(name, (int) identity);
+            InputMapping input = GetBoundMapping(name, identity);
+            if (input != null)
             {
                 SetInputDeviceMapping(input, device, bindCode);
-                PlayerPrefs.SetInt(string.Concat(name, device), bindCode);
-            }
-            else
-            {
-                Debug.LogError($"InputMapping is not exist key {name}");
+                PlayerPrefs.SetInt(StringUtils.Concat(boundName, device), bindCode);
             }
         }
 
-        public void ResetButton(string name, InputDevice device)
+        public void ResetButton(string name, InputIdentity identity, InputDevice device)
         {
+            string boundName = StringUtils.Concat(name, (int) identity);
             InputMapping inputMapping = GetInputMapping(name);
-            InputMapping boundMapping = GetInputMapping(name);
+            InputMapping boundMapping = GetBoundMapping(name, identity);
             if (inputMapping == null || boundMapping == null)
             {
                 return;
@@ -167,38 +124,14 @@ namespace GameFramework
             }
 
             SetInputDeviceMapping(boundMapping, device, inputMapping);
-            PlayerPrefs.DeleteKey(string.Concat(name, "_", device));
+            PlayerPrefs.DeleteKey(StringUtils.Concat(boundName, device));
         }
 
-        private void CollectInputMapping()
+        private void CollectInputMappings()
         {
             foreach (InputMapping input in InputSetting.Instance.InputMappings)
             {
                 inputMappings.Add(input.Name, input);
-            }
-        }
-
-        private void CollectBoundMapping()
-        {
-            foreach (string name in inputMappings.Keys)
-            {
-                InputMapping rebind = new InputMapping()
-                {
-                    Name = name,
-                    KeyCode = (MouseKeyCode) PlayerPrefs.GetInt(string.Concat(name, InputDevice.MouseKeyboard), (int) inputMappings[name].KeyCode),
-                    XboxCode = (XboxCode) PlayerPrefs.GetInt(string.Concat(name, InputDevice.XboxGamepad), (int) inputMappings[name].XboxCode),
-                    Ps4Code = (Ps4Code) PlayerPrefs.GetInt(string.Concat(name, InputDevice.Ps4Gamepad), (int) inputMappings[name].Ps4Code),
-                };
-
-                boundMappings.Add(name, rebind);
-            }
-        }
-
-        private void CollectJoystickMapping()
-        {
-            foreach (JoystickMapping joystick in InputSetting.Instance.JoystickMappings)
-            {
-                joystickMappings.Add(joystick.Name, joystick);
             }
         }
     }

@@ -14,6 +14,12 @@ namespace GameFramework
 
         private bool isPointerDown;
         private float axisValue;
+        private InputControl input;
+
+        private void Start()
+        {
+            input = GetComponentInParent<InputControl>();
+        }
 
         private void Update()
         {
@@ -35,7 +41,15 @@ namespace GameFramework
             if (!Mathf.Approximately(axisValue, value))
             {
                 axisValue = Mathf.MoveTowards(axisValue, value, responseSpeed * Time.deltaTime);
-                InputManager.Instance.SetAxis(axisName, axisValue);
+
+                if (input != null)
+                {
+                    input.SetAxis(axisName, axisValue);
+                }
+                else
+                {
+                    InputManager.Instance.SetAxis(axisName, axisValue, InputIdentity.Player1);
+                }
             }
         }
 
@@ -48,7 +62,15 @@ namespace GameFramework
         {
             isPointerDown = false;
             axisValue = 0;
-            InputManager.Instance.SetAxisZero(axisName);
+
+            if (input != null)
+            {
+                input.SetAxisZero(axisName);
+            }
+            else
+            {
+                InputManager.Instance.SetAxisZero(axisName, InputIdentity.Player1);
+            }
         }
 
         private enum AxisOption

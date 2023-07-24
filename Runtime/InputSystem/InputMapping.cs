@@ -3,12 +3,11 @@
 namespace GameFramework
 {
     [Serializable]
-    public class InputMapping
+    internal class InputMapping
     {
         public string Name;
         public string Description;
         public MouseKeyCode KeyCode;
-        public JoystickNum JoystickNum;
         public XboxCode XboxCode;
         public Ps4Code Ps4Code;
     }
@@ -164,19 +163,6 @@ namespace GameFramework
         Mouse0 = 323,
         Mouse1 = 324,
         Mouse2 = 325
-    }
-
-    public enum JoystickNum
-    {
-        Joysticks = 0,
-        Joystick1 = 1,
-        Joystick2 = 2,
-        Joystick3 = 3,
-        Joystick4 = 4,
-        Joystick5 = 5,
-        Joystick6 = 6,
-        Joystick7 = 7,
-        Joystick8 = 8
     }
 
     public enum InputDevice
