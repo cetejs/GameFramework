@@ -25,7 +25,7 @@ namespace GameFramework
             }
             else
             {
-                slider.SetValueWithoutNotify(InputManager.Instance.GetAxis(axisName, InputIdentity.Player1));
+                slider.SetValueWithoutNotify(InputManager.Instance.GetAxis(axisName));
             }
         }
 
@@ -37,7 +37,7 @@ namespace GameFramework
             }
             else
             {
-                InputManager.Instance.SetAxis(axisName, value, InputIdentity.Player1);
+                InputManager.Instance.SetAxis(axisName, value);
             }
         }
     }

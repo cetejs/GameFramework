@@ -46,7 +46,7 @@ namespace GameFramework
                 }
                 else
                 {
-                    InputManager.Instance.SetAxis(horizontalAxisName, delta.x, InputIdentity.Player1);
+                    InputManager.Instance.SetAxis(horizontalAxisName, delta.x);
                 }
             }
 
@@ -58,7 +58,7 @@ namespace GameFramework
                 }
                 else
                 {
-                    InputManager.Instance.SetAxis(verticalAxisName, delta.y, InputIdentity.Player1);
+                    InputManager.Instance.SetAxis(verticalAxisName, delta.y);
                 }
             }
         }

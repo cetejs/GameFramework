@@ -10,7 +10,7 @@ using Object = UnityEngine.Object;
 
 namespace GameFramework
 {
-    internal class AssetSettingWindow : SubWindow
+    internal class AssetBundleWindow : SubWindow
     {
         private BuildAssetBundleOptions buildOptions = BuildAssetBundleOptions.None;
         private BuildTarget buildTarget = BuildTarget.StandaloneWindows;
@@ -71,7 +71,7 @@ namespace GameFramework
 
         public override void Init(string name, GameWindow parent)
         {
-            base.Init("AssetSetting", parent);
+            base.Init("AssetBundle", parent);
             settingEditor = Editor.CreateEditor(AssetSetting.Instance);
             buildTarget = EditorUserBuildSettings.selectedStandaloneTarget;
         }

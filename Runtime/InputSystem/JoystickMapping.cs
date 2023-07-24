@@ -50,6 +50,8 @@ public enum Ps4Code
     Options,
     TouchPad,
     PlayStation,
+    LeftStick,
+    RightStick,
     LeftStickX,
     LeftStickY,
     RightStickX,

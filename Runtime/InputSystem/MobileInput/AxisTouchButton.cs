@@ -48,7 +48,7 @@ namespace GameFramework
                 }
                 else
                 {
-                    InputManager.Instance.SetAxis(axisName, axisValue, InputIdentity.Player1);
+                    InputManager.Instance.SetAxis(axisName, axisValue);
                 }
             }
         }

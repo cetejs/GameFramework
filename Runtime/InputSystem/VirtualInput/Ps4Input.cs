@@ -5,6 +5,7 @@ namespace GameFramework
 {
     internal class Ps4Input : JoystickInput
     {
+        [RuntimeReload]
         private static Dictionary<int, JoystickMapping> ps4Mappings;
 
         public Ps4Input(int joystickNum) : base(joystickNum)

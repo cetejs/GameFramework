@@ -23,7 +23,7 @@ namespace GameFramework
             }
             else
             {
-                scrollbar.SetValueWithoutNotify((InputManager.Instance.GetAxis(axisName, InputIdentity.Player1) + 1.0f) / 2.0f);
+                scrollbar.SetValueWithoutNotify((InputManager.Instance.GetAxis(axisName) + 1.0f) / 2.0f);
             }
         }
 
@@ -35,7 +35,7 @@ namespace GameFramework
             }
             else
             {
-                InputManager.Instance.SetAxis(axisName, value * 2.0f - 1.0f, InputIdentity.Player1);
+                InputManager.Instance.SetAxis(axisName, value * 2.0f - 1.0f);
             }
         }
     }

@@ -5,6 +5,7 @@ namespace GameFramework
 {
     internal class XboxInput : JoystickInput
     {
+        [RuntimeReload]
         private static Dictionary<int, JoystickMapping> xboxMappings;
 
         public XboxInput(int joystickNum) : base(joystickNum)

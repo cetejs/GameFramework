@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace GameFramework
 {
@@ -81,14 +82,14 @@ namespace GameFramework
                 Name = "Button10",
                 Type = JoystickType.Button,
                 XboxCode = XboxCode.Node,
-                Ps4Code = Ps4Code.LeftStickX
+                Ps4Code = Ps4Code.LeftStick
             },
             new JoystickMapping()
             {
                 Name = "Button11",
                 Type = JoystickType.Button,
                 XboxCode = XboxCode.Node,
-                Ps4Code = Ps4Code.RightStickX
+                Ps4Code = Ps4Code.RightStick
             },
             new JoystickMapping()
             {
@@ -176,6 +177,7 @@ namespace GameFramework
             }
         };
 
+        [SerializeField]
         internal List<InputMapping> InputMappings = new List<InputMapping>();
     }
 }

@@ -34,17 +34,15 @@ namespace GameFramework
             "10th Axis"
         };
 
-        public InputListener()
+        public void Init()
         {
             CollectJoystickMappings();
         }
 
         public bool IsMouseKeyboardInput()
         {
-#if MOBILE_INPUT
-            return false;
-#endif
-            if (Event.current.isKey || Event.current.isMouse)
+#if !MOBILE_INPUT
+        if (Event.current.isKey || Event.current.isMouse)
             {
                 return true;
             }
@@ -53,7 +51,7 @@ namespace GameFramework
             {
                 return true;
             }
-
+#endif
             return false;
         }
 
@@ -65,7 +63,8 @@ namespace GameFramework
         public bool IsMobileInput()
         {
 #if MOBILE_INPUT
-            if (EventSystem.current && EventSystem.current.IsPointerOverGameObject() && Event.current.isMouse || Input.touchCount > 0)
+            UnityEngine.EventSystems.EventSystem eventSystem = UnityEngine.EventSystems.EventSystem.current;
+            if (eventSystem && eventSystem.IsPointerOverGameObject() && Event.current.isMouse || Input.touchCount > 0)
             {
                 return true;
             }
@@ -121,19 +120,20 @@ namespace GameFramework
 
             for (int i = 0; i < JoystickAxes.Count; i++)
             {
-                string axisName;
+                string axisName = JoystickAxes[i];
+                string joystickName;
                 if (joystickNum == 0)
                 {
-                    axisName = StringUtils.Concat("Joystick ", JoystickAxes[i]);
+                    joystickName = StringUtils.Concat("Joystick ", JoystickAxes[i]);
                 }
                 else
                 {
-                    axisName = StringUtils.Concat("Joystick", joystickNum, " ", JoystickAxes[i]);
+                    joystickName = StringUtils.Concat("Joystick", joystickNum, " ", JoystickAxes[i]);
                 }
 
                 if ((i == 3 || i == 4) && IsPs4Device(joystickNum) && Application.isFocused)
                 {
-                    if (Input.GetAxis(axisName) > -1f)
+                    if (Input.GetAxis(joystickName) > -1f)
                     {
                         if (joystickMappings.TryGetValue(axisName, out JoystickMapping joystick))
                         {
@@ -144,14 +144,14 @@ namespace GameFramework
                         return false;
                     }
                 }
-                else if (Input.GetAxis(axisName) != 0f)
+                else if (Input.GetAxis(joystickName) != 0f)
                 {
                     if (joystickMappings.TryGetValue(axisName, out JoystickMapping joystick))
                     {
                         inputCode = IsPs4Device(joystickNum) ? (int) joystick.Ps4Code : (int) joystick.XboxCode;
                         return true;
                     }
-
+                    
                     return false;
                 }
             }

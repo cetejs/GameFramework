@@ -81,6 +81,18 @@ namespace GameFramework
             }
         }
 
+        public static bool CopyFile(string srcPath, string desPath, bool isOverwrite = false)
+        {
+            if (!File.Exists(srcPath))
+            {
+                return false;
+            }
+
+            CheckDirectory(desPath);
+            File.Copy(srcPath, desPath, isOverwrite);
+            return true;
+        }
+
         public static void WriteAllText(string path, string contents)
         {
             CheckDirectory(path);

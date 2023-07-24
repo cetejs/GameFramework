@@ -22,7 +22,7 @@ namespace GameFramework
             }
             else
             {
-                InputManager.Instance.SetButtonDown(buttonName, InputIdentity.Player1);
+                InputManager.Instance.SetButtonDown(buttonName);
             }
         }
 
@@ -34,7 +34,7 @@ namespace GameFramework
             }
             else
             {
-                InputManager.Instance.SetButtonUp(buttonName, InputIdentity.Player1);
+                InputManager.Instance.SetButtonUp(buttonName);
             }
         }
     }

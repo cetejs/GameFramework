@@ -8,7 +8,7 @@ namespace GameFramework
         private Dictionary<string, InputMapping> inputMappings = new Dictionary<string, InputMapping>();
         private Dictionary<string, InputMapping> boundMappings = new Dictionary<string, InputMapping>();
 
-        public InputData()
+        public void Init()
         {
             CollectInputMappings();
         }
