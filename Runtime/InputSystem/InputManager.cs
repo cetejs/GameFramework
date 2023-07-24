@@ -351,3 +351,4 @@ namespace GameFramework
             Mobile = 10
         }
     }
+}
