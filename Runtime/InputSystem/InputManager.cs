@@ -5,8 +5,8 @@ namespace GameFramework
 {
     public class InputManager : PersistentSingleton<InputManager>
     {
-        private bool listenJoysticks;
-        private InputIdentity? listenDeviceIdentity;
+        private bool alawysListenDevice = true;
+        private InputIdentity? listenDeviceIdentity = InputIdentity.Player1;
         private InputIdentity? listenRebindIdentity;
         private InputData inputData = new InputData();
         private InputListener listener = new InputListener();
@@ -31,7 +31,11 @@ namespace GameFramework
                     if (listener.IsMouseKeyboardInput())
                     {
                         SetInput(listenDeviceIdentity.Value, InputDevice.MouseKeyboard, 0);
-                        CancelDeviceListening();
+                        if (!alawysListenDevice)
+                        {
+                            CancelDeviceListening();
+                        }
+
                         return;
                     }
                 }
@@ -41,12 +45,16 @@ namespace GameFramework
                     if (listener.IsMobileInput())
                     {
                         SetInput(listenDeviceIdentity.Value, InputDevice.Mobile, 0);
-                        CancelDeviceListening();
+                        if (!alawysListenDevice)
+                        {
+                            CancelDeviceListening();
+                        }
+
                         return;
                     }
                 }
 
-                if (listenJoysticks)
+                if (alawysListenDevice)
                 {
                     int joystickNum = (int) InputDeviceNum.Joystick;
                     if (!usedInputDevices.Contains(joystickNum))
@@ -62,7 +70,10 @@ namespace GameFramework
                                 SetInput(listenDeviceIdentity.Value, InputDevice.XboxGamepad, joystickNum);
                             }
 
-                            CancelDeviceListening();
+                            if (!alawysListenDevice)
+                            {
+                                CancelDeviceListening();
+                            }
                         }
                     }
                 }
@@ -84,7 +95,11 @@ namespace GameFramework
                                     SetInput(listenDeviceIdentity.Value, InputDevice.XboxGamepad, joystickNum);
                                 }
 
-                                CancelDeviceListening();
+                                if (!alawysListenDevice)
+                                {
+                                    CancelDeviceListening();
+                                }
+
                                 return;
                             }
                         }
@@ -221,32 +236,20 @@ namespace GameFramework
             inputData.ResetButton(name, identity, GetInputDevice(identity));
         }
 
-        public void ListenDeviceInput(InputIdentity identity, bool listenJoysticks)
+        public void ListenDeviceInput(InputIdentity identity)
         {
-            if (listenDeviceIdentity != null)
-            {
-                GameLogger.LogError($"Input {identity} device listening already exists");
-                return;
-            }
-
             listenDeviceIdentity = identity;
-            this.listenJoysticks = listenJoysticks;
+            alawysListenDevice = false;
         }
 
         public void CancelDeviceListening()
         {
             listenDeviceIdentity = null;
-            listenJoysticks = false;
+            alawysListenDevice = false;
         }
 
         public void ListenRebindInput(InputIdentity identity, Action<InputDevice, int> callback)
         {
-            if (listenRebindIdentity != null)
-            {
-                GameLogger.LogError($"Input {identity} rebind listening already exists");
-                return;
-            }
-
             listenRebindIdentity = identity;
             onRebindInput += callback;
         }
