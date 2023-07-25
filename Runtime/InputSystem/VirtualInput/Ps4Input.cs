@@ -20,7 +20,7 @@ namespace GameFramework
             {
                 return 0f;
             }
-            
+
             if ((ps4.Ps4Code == Ps4Code.L2 || ps4.Ps4Code == Ps4Code.R2) && Application.isFocused)
             {
                 return (GetAxis(ps4.Name) + 1) / 2f;
@@ -77,7 +77,7 @@ namespace GameFramework
             {
                 if ((ps4.Ps4Code == Ps4Code.L2 || ps4.Ps4Code == Ps4Code.R2) && Application.isFocused)
                 {
-                    return Mathf.Abs(GetAxisRaw(ps4.Name)) > -1f;
+                    return GetAxisRaw(ps4.Name) > -1f;
                 }
 
                 return Mathf.Abs(GetAxisRaw(ps4.Name)) > 0f;
@@ -91,7 +91,7 @@ namespace GameFramework
             if (input.Ps4Code == Ps4Code.DPadUp || input.Ps4Code == Ps4Code.DPadDown ||
                 input.Ps4Code == Ps4Code.DPadLeft || input.Ps4Code == Ps4Code.DPadRight)
             {
-                return GetAxisDown(input);
+                return GetAxisDown(input, (int)input.Ps4Code);
             }
 
             JoystickMapping ps4 = GetPs4Mapping(input.Ps4Code);
@@ -102,7 +102,7 @@ namespace GameFramework
 
             if (ps4.Type == JoystickType.Axis)
             {
-                return GetAxisDown(input);
+                return GetAxisDown(input, (int)input.Ps4Code);
             }
 
             return GetButtonDown(ps4.Name);
@@ -113,7 +113,7 @@ namespace GameFramework
             if (input.Ps4Code is Ps4Code.DPadUp or Ps4Code.DPadDown ||
                 input.Ps4Code == Ps4Code.DPadLeft || input.Ps4Code == Ps4Code.DPadRight)
             {
-                return GetAxisUp(input);
+                return GetAxisUp(input, (int)input.Ps4Code);
             }
 
             JoystickMapping ps4 = GetPs4Mapping(input.Ps4Code);
@@ -124,7 +124,7 @@ namespace GameFramework
 
             if (ps4.Type == JoystickType.Axis)
             {
-                return GetAxisUp(input);
+                return GetAxisUp(input, (int)input.Ps4Code);
             }
 
             return GetButtonUp(ps4.Name);
@@ -144,6 +144,11 @@ namespace GameFramework
 
         private JoystickMapping GetPs4Mapping(Ps4Code code)
         {
+            if (code == Ps4Code.None)
+            {
+                return null;
+            }
+
             if (ps4Mappings.TryGetValue((int) code, out JoystickMapping ps4))
             {
                 return ps4;
@@ -163,7 +168,7 @@ namespace GameFramework
             ps4Mappings = new Dictionary<int, JoystickMapping>(32);
             foreach (JoystickMapping mapping in JoystickMapping.Mappings)
             {
-                if (mapping.Ps4Code != Ps4Code.Node)
+                if (mapping.Ps4Code != Ps4Code.None)
                 {
                     ps4Mappings.Add((int) mapping.Ps4Code, mapping);
                 }

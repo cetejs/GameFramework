@@ -13,11 +13,6 @@ namespace GameFramework
             {
                 settingEditor.OnInspectorGUI();
             }
-
-            if (GUILayout.Button("Import AssetManager"))
-            {
-                ImportInputConfig();
-            }
         }
 
         public override void Init(string name, GameWindow parent)

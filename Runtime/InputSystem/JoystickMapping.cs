@@ -56,14 +56,14 @@ internal class JoystickMapping
             Name = "Button6",
             Type = JoystickType.Button,
             XboxCode = XboxCode.Back,
-            Ps4Code = Ps4Code.Node
+            Ps4Code = Ps4Code.None
         },
         new JoystickMapping()
         {
             Name = "Button7",
             Type = JoystickType.Button,
             XboxCode = XboxCode.Start,
-            Ps4Code = Ps4Code.Node
+            Ps4Code = Ps4Code.None
         },
         new JoystickMapping()
         {
@@ -83,28 +83,28 @@ internal class JoystickMapping
         {
             Name = "Button10",
             Type = JoystickType.Button,
-            XboxCode = XboxCode.Node,
+            XboxCode = XboxCode.None,
             Ps4Code = Ps4Code.LeftStick
         },
         new JoystickMapping()
         {
             Name = "Button11",
             Type = JoystickType.Button,
-            XboxCode = XboxCode.Node,
+            XboxCode = XboxCode.None,
             Ps4Code = Ps4Code.RightStick
         },
         new JoystickMapping()
         {
             Name = "Button12",
             Type = JoystickType.Button,
-            XboxCode = XboxCode.Node,
+            XboxCode = XboxCode.None,
             Ps4Code = Ps4Code.PlayStation
         },
         new JoystickMapping()
         {
             Name = "Button13",
             Type = JoystickType.Button,
-            XboxCode = XboxCode.Node,
+            XboxCode = XboxCode.None,
             Ps4Code = Ps4Code.TouchPad
         },
         new JoystickMapping()
@@ -125,7 +125,7 @@ internal class JoystickMapping
         {
             Name = "3rd Axis",
             Type = JoystickType.Axis,
-            XboxCode = XboxCode.Node,
+            XboxCode = XboxCode.None,
             Ps4Code = Ps4Code.RightStickX
         },
         new JoystickMapping()
@@ -160,7 +160,7 @@ internal class JoystickMapping
         {
             Name = "8th Axis",
             Type = JoystickType.Axis,
-            XboxCode = XboxCode.Node,
+            XboxCode = XboxCode.None,
             Ps4Code = Ps4Code.DPadY
         },
         new JoystickMapping()
@@ -168,14 +168,14 @@ internal class JoystickMapping
             Name = "9th Axis",
             Type = JoystickType.Axis,
             XboxCode = XboxCode.LT,
-            Ps4Code = Ps4Code.Node
+            Ps4Code = Ps4Code.None
         },
         new JoystickMapping()
         {
             Name = "10th Axis",
             Type = JoystickType.Axis,
             XboxCode = XboxCode.RT,
-            Ps4Code = Ps4Code.Node
+            Ps4Code = Ps4Code.None
         }
     };
 }
@@ -188,7 +188,7 @@ public enum JoystickType
 
 public enum XboxCode
 {
-    Node,
+    None,
     A,
     B,
     X,
@@ -215,7 +215,7 @@ public enum XboxCode
 
 public enum Ps4Code
 {
-    Node,
+    None,
     Triangle,
     Circle,
     Square,
@@ -230,10 +230,10 @@ public enum Ps4Code
     PlayStation,
     LeftStick,
     RightStick,
-    DPadLeft,
-    DPadRight,
     DPadUp,
     DPadDown,
+    DPadLeft,
+    DPadRight,
     LeftStickX,
     LeftStickY,
     RightStickX,

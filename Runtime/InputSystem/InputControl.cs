@@ -8,7 +8,7 @@ namespace GameFramework
         private InputIdentity identity;
         [SerializeField]
         [InputSettingName]
-        private string inputSettingName = GameSettings.Instance.DefaultInputSettingName;
+        private string inputSettingName = "DefaultInputSetting";
         private InputSetting inputSetting;
 
         public InputIdentity InputIdentity

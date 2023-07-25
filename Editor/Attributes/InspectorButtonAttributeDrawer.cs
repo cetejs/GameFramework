@@ -5,21 +5,21 @@ using UnityEngine;
 
 namespace GameFramework
 {
-    [CustomPropertyDrawer(typeof(ButtonAttribute))]
+    [CustomPropertyDrawer(typeof(InspectorButtonAttribute))]
     internal class InspectorButtonAttributeDrawer : SupportReadOnlyDrawer
     {
         private MethodInfo methodInfo;
 
         public override void OnPropertyGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            ButtonAttribute button = (ButtonAttribute) attribute;
+            InspectorButtonAttribute inspectorButton = (InspectorButtonAttribute) attribute;
             object targetObject = property.serializedObject.targetObject;
-            string buttonName = button.MethodName;
+            string buttonName = inspectorButton.MethodName;
 
             if (methodInfo == null)
             {
                 Type type = targetObject.GetType();
-                methodInfo = type.GetMethod(button.MethodName, BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
+                methodInfo = type.GetMethod(inspectorButton.MethodName, BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
             }
 
             if (methodInfo == null)

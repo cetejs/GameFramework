@@ -94,9 +94,9 @@ namespace GameFramework
             return false;
         }
 
-        protected bool GetAxisDown(InputMapping input)
+        protected bool GetAxisDown(InputMapping input, int joystickCode)
         {
-            UsedButton usedButton = GetUsedButton((int) input.KeyCode);
+            UsedButton usedButton = GetUsedButton(joystickCode);
             if (!usedButton.CanDown && GetButton(input))
             {
                 usedButton.CanDown = true;
@@ -111,18 +111,18 @@ namespace GameFramework
             return false;
         }
 
-        protected bool GetAxisUp(InputMapping input)
+        protected bool GetAxisUp(InputMapping input, int joystickCode)
         {
-            UsedButton usedButton = GetUsedButton((int) input.KeyCode);
+            UsedButton usedButton = GetUsedButton(joystickCode);
             if (usedButton.CanUp && !GetButton(input))
             {
-                usedButton.CanUp = true;
+                usedButton.CanUp = false;
                 return true;
             }
 
             if (!usedButton.CanUp && GetButton(input))
             {
-                usedButton.CanUp = false;
+                usedButton.CanUp = true;
             }
 
             return false;

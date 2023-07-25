@@ -4,11 +4,11 @@ using UnityEngine;
 namespace GameFramework
 {
     [AttributeUsage(AttributeTargets.Field)]
-    public class ButtonAttribute : PropertyAttribute
+    public class InspectorButtonAttribute : PropertyAttribute
     {
         public readonly string MethodName;
 
-        public ButtonAttribute(string methodName)
+        public InspectorButtonAttribute(string methodName)
         {
             MethodName = methodName;
         }

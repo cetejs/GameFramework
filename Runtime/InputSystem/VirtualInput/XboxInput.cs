@@ -86,7 +86,7 @@ namespace GameFramework
             if (input.XboxCode == XboxCode.DPadUp || input.XboxCode == XboxCode.DPadDown ||
                 input.XboxCode == XboxCode.DPadLeft || input.XboxCode == XboxCode.DPadRight)
             {
-                return GetAxisDown(input);
+                return GetAxisDown(input, (int) input.XboxCode);
             }
 
             JoystickMapping xbox = GetXboxMapping(input.XboxCode);
@@ -97,7 +97,7 @@ namespace GameFramework
 
             if (xbox.Type == JoystickType.Axis)
             {
-                return GetAxisDown(input);
+                return GetAxisDown(input, (int) input.XboxCode);
             }
 
             return GetButtonDown(xbox.Name);
@@ -108,7 +108,7 @@ namespace GameFramework
             if (input.XboxCode == XboxCode.DPadUp || input.XboxCode == XboxCode.DPadDown ||
                 input.XboxCode == XboxCode.DPadLeft || input.XboxCode == XboxCode.DPadRight)
             {
-                return GetAxisUp(input);
+                return GetAxisUp(input, (int) input.XboxCode);
             }
 
             JoystickMapping xbox = GetXboxMapping(input.XboxCode);
@@ -119,7 +119,7 @@ namespace GameFramework
 
             if (xbox.Type == JoystickType.Axis)
             {
-                return GetAxisUp(input);
+                return GetAxisUp(input, (int) input.XboxCode);
             }
 
             return GetButtonUp(xbox.Name);
@@ -139,6 +139,11 @@ namespace GameFramework
 
         private JoystickMapping GetXboxMapping(XboxCode code)
         {
+            if (code == XboxCode.None)
+            {
+                return null;
+            }
+
             if (xboxMappings.TryGetValue((int) code, out JoystickMapping xbox))
             {
                 return xbox;
@@ -158,7 +163,7 @@ namespace GameFramework
             xboxMappings = new Dictionary<int, JoystickMapping>(32);
             foreach (JoystickMapping mapping in JoystickMapping.Mappings)
             {
-                if (mapping.XboxCode != XboxCode.Node)
+                if (mapping.XboxCode != XboxCode.None)
                 {
                     xboxMappings.Add((int) mapping.XboxCode, mapping);
                 }

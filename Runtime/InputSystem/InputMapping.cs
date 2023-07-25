@@ -9,6 +9,7 @@ namespace GameFramework
         public string Description;
         public MouseKeyCode KeyCode;
         public XboxCode XboxCode;
+        [ReplaceName("Ps4 Code")]
         public Ps4Code Ps4Code;
     }
 

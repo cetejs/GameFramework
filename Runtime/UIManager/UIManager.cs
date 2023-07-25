@@ -15,7 +15,7 @@ namespace GameFramework
         private readonly Dictionary<int, Transform> allLayers = new Dictionary<int, Transform>();
         private readonly List<UIWindow> fullScreenWindows = new List<UIWindow>();
         private readonly HashSet<string> loadingWindows = new HashSet<string>();
-        private readonly Heap<UIWindow> windows = new Heap<UIWindow>();
+        private readonly Heap<UIWindow> heapWindows = new Heap<UIWindow>();
 
         public Transform WindowRoot
         {
@@ -128,8 +128,8 @@ namespace GameFramework
             {
                 window.gameObject.SetActive(false);
                 window.HideWindow();
-                showWindows.Remove(windowName);
                 PopFullWindow(window, false);
+                showWindows.Remove(windowName);
             }
             else
             {
@@ -141,12 +141,12 @@ namespace GameFramework
         {
             if (showWindows.TryGetValue(windowName, out UIWindow window))
             {
+                window.CloseWindow();
+                ReferencePool.Instance.Release(window.GetData<GameData>());
+                PopFullWindow(window, false);
+                Destroy(window.gameObject);
                 showWindows.Remove(windowName);
                 allWindows.Remove(windowName);
-                window.CloseWindow();
-                PopFullWindow(window, false);
-                ReferencePool.Instance.Release(window.GetData<GameData>());
-                Destroy(window.gameObject);
             }
             else
             {
@@ -295,28 +295,13 @@ namespace GameFramework
             window.ShowWindow();
             PopFullWindow(window, true);
             showWindows.Add(windowName, window);
+            SelectedWindow();
         }
 
         private void PopFullWindow(UIWindow window, bool isShow)
         {
             if (window.Layer > 0)
             {
-                if (isShow)
-                {
-                    InputManager.Instance.SetSelectedGameObject(window.DefaultSelectedGo);
-                }
-                else
-                {
-                    if (allWindows.Count == 0)
-                    {
-                        return;
-                    }
-
-                    windows.Clear();
-                    windows.AddRange(allWindows.Values);
-                    InputManager.Instance.SetSelectedGameObject(windows.Max.DefaultSelectedGo);
-                }
-
                 return;
             }
 
@@ -331,7 +316,6 @@ namespace GameFramework
                 fullScreenWindows.Add(window);
                 fullScreenWindows.Sort((a, b) => -a.Depth.CompareTo(b.Depth));
                 fullScreenWindows[0].gameObject.SetActive(true);
-                InputManager.Instance.SetSelectedGameObject(fullScreenWindows[0].DefaultSelectedGo);
             }
             else
             {
@@ -340,9 +324,20 @@ namespace GameFramework
                 if (index == 0 && fullScreenWindows.Count > 0)
                 {
                     fullScreenWindows[0].gameObject.SetActive(true);
-                    InputManager.Instance.SetSelectedGameObject(fullScreenWindows[0].DefaultSelectedGo);
                 }
             }
+        }
+
+        private void SelectedWindow()
+        {
+            if (showWindows.Count == 0)
+            {
+                return;
+            }
+
+            heapWindows.Clear();
+            heapWindows.AddRange(showWindows.Values);
+            InputManager.Instance.SetSelectedGameObject(heapWindows.Max.DefaultSelectedGo);
         }
     }
 }
