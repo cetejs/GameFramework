@@ -14,6 +14,7 @@ namespace GameFramework
         private readonly Dictionary<string, UIWindow> showWindows = new Dictionary<string, UIWindow>();
         private readonly Dictionary<int, Transform> allLayers = new Dictionary<int, Transform>();
         private readonly List<UIWindow> fullScreenWindows = new List<UIWindow>();
+        private readonly List<string> toRemoveWindows = new List<string>();
         private readonly HashSet<string> loadingWindows = new HashSet<string>();
         private readonly Heap<UIWindow> heapWindows = new Heap<UIWindow>();
 
@@ -130,6 +131,7 @@ namespace GameFramework
                 window.HideWindow();
                 PopFullWindow(window, false);
                 showWindows.Remove(windowName);
+                SelectedWindow();
             }
             else
             {
@@ -147,6 +149,7 @@ namespace GameFramework
                 Destroy(window.gameObject);
                 showWindows.Remove(windowName);
                 allWindows.Remove(windowName);
+                SelectedWindow();
             }
             else
             {
@@ -171,6 +174,13 @@ namespace GameFramework
 
         public void CloseAllWindowExcluding(params string[] excluding)
         {
+            if (excluding.Length == 0)
+            {
+                CloseAllWindow();
+                return;
+            }
+
+            toRemoveWindows.Clear();
             foreach (UIWindow window in allWindows.Values)
             {
                 if (excluding.Contains(window.WindowName))
@@ -178,15 +188,13 @@ namespace GameFramework
                     continue;
                 }
 
-                window.CloseWindow();
-                GameData data = window.GetData<GameData>();
-                ReferencePool.Instance.Release(data);
-                Destroy(window.gameObject);
+                toRemoveWindows.Add(window.WindowName);
             }
 
-            allWindows.Clear();
-            showWindows.Clear();
-            fullScreenWindows.Clear();
+            for (int i = toRemoveWindows.Count - 1; i >= 0; i--)
+            {
+                CloseWindow(toRemoveWindows[i]);
+            }
         }
 
         public bool HasWindow(string windowName)
