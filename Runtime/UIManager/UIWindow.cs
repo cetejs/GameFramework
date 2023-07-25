@@ -9,6 +9,8 @@ namespace GameFramework
         private int layer;
         [SerializeField]
         private int depth;
+        [SerializeField]
+        private GameObject defaultSelectedGo;
 
         private string windowName;
         private GameData data;
@@ -26,6 +28,19 @@ namespace GameFramework
         public string WindowName
         {
             get { return windowName; }
+        }
+
+        public GameObject DefaultSelectedGo
+        {
+            get
+            {
+                if (defaultSelectedGo != null)
+                {
+                    return defaultSelectedGo;
+                }
+
+                return gameObject;
+            }
         }
 
         public T GetData<T>() where T : GameData

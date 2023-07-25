@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace GameFramework
 {
-    internal class DevCmdItem : PoolObject, IPointerEnterHandler, IPointerClickHandler
+    internal class DevCmdItem : PoolObject, IPointerEnterHandler
     {
         [SerializeField]
         private Text cmdText;
@@ -16,8 +16,15 @@ namespace GameFramework
         private DevCmdNode node;
         private DevCmdGroup group;
         private RectTransform rectTrs;
+        private Button button;
 
         private static Action<DevCmdNode> onItemTrigger;
+
+        private void Awake()
+        {
+            button = GetComponent<Button>();
+            button.onClick.AddListener(OnButtonClick);
+        }
 
         public void SetData(DevCmdHub hub, DevCmdNode node)
         {
@@ -62,7 +69,7 @@ namespace GameFramework
 #endif
         }
 
-        public void OnPointerClick(PointerEventData eventData)
+        public void OnButtonClick()
         {
             onItemTrigger?.Invoke(node);
             if (node.IsRoot && !node.HasChild)

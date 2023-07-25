@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace GameFramework
 {
@@ -77,7 +78,7 @@ namespace GameFramework
                 SetInput(InputIdentity.Player1, InputDevice.XboxGamepad, 1);
                 return;
             }
-            
+
             if (listener.IsPs4Device(1))
             {
                 SetInput(InputIdentity.Player1, InputDevice.Ps4Gamepad, 1);
@@ -331,6 +332,34 @@ namespace GameFramework
             onRebindInput = null;
         }
 
+        public void SetSelectedGameObject(GameObject selected)
+        {
+            if (GetInputDevice(InputIdentity.Player1) == InputDevice.Mobile)
+            {
+                return;
+            }
+
+            EventSystem.current.SetSelectedGameObject(selected);
+        }
+
+        public void SetFirstSelectedGameObject(GameObject selected)
+        {
+            if (GetInputDevice(InputIdentity.Player1) == InputDevice.Mobile)
+            {
+                return;
+            }
+
+            Selectable selectable = selected.GetComponentInChildren<Selectable>();
+            if (selectable != null)
+            {
+                EventSystem.current.SetSelectedGameObject(selectable.gameObject);
+            }
+            else
+            {
+                EventSystem.current.SetSelectedGameObject(selected);
+            }
+        }
+
         private InputDevice GetInputDevice(InputIdentity identity)
         {
             return GetInputDevice(GetInput(identity));
@@ -362,11 +391,12 @@ namespace GameFramework
             {
 #if MOBILE_INPUT
                 input = new MobileInput();
+                usedInputDevices.Add((int) InputDeviceNum.Mobile);
 #else
                 input = new StandaloneInput();
+                usedInputDevices.Add((int) InputDeviceNum.MouseKeyboard);
 #endif
                 virtualInputs.Add((int) identity, input);
-                usedInputDevices.Add((int) InputDeviceNum.MouseKeyboard);
             }
 
             return input;

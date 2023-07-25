@@ -300,6 +300,7 @@ namespace GameFramework
         {
             if (window.Layer > 0)
             {
+                InputManager.Instance.SetSelectedGameObject(window.DefaultSelectedGo);
                 return;
             }
 
@@ -314,6 +315,7 @@ namespace GameFramework
                 fullScreenWindows.Add(window);
                 fullScreenWindows.Sort((a, b) => -a.Depth.CompareTo(b.Depth));
                 fullScreenWindows[0].gameObject.SetActive(true);
+                InputManager.Instance.SetSelectedGameObject(fullScreenWindows[0].DefaultSelectedGo);
             }
             else
             {
@@ -322,6 +324,7 @@ namespace GameFramework
                 if (index == 0 && fullScreenWindows.Count > 0)
                 {
                     fullScreenWindows[0].gameObject.SetActive(true);
+                    InputManager.Instance.SetSelectedGameObject(fullScreenWindows[0].DefaultSelectedGo);
                 }
             }
         }

@@ -9,6 +9,8 @@ namespace GameFramework
         private GameObject console;
         [SerializeField]
         private Button showConsoleBtn;
+        [SerializeField]
+        private GameObject defaultSelectedGo;
         private float lastTimeScale;
         private CursorLockMode lastLockMode;
         private bool lastVisible;
@@ -70,10 +72,12 @@ namespace GameFramework
             {
                 lastTimeScale = Time.timeScale;
                 Time.timeScale = GameSettings.Instance.ConsoleTimeScale;
+                InputManager.Instance.SetSelectedGameObject(defaultSelectedGo);
             }
             else
             {
                 Time.timeScale = lastTimeScale;
+                InputManager.Instance.SetSelectedGameObject(showConsoleBtn.gameObject);
             }
 
 #if UNITY_EDITOR || UNITY_STANDALONE
