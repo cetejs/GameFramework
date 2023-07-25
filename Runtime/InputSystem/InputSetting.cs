@@ -1,19 +1,89 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace GameFramework
 {
-    internal class InputData
+    [CreateAssetMenu(menuName = "Configs/InputSetting")]
+    public class InputSetting : ScriptableObject
     {
+        [SerializeField]
+        private List<InputMapping> InputMappings = new List<InputMapping>()
+        {
+            new InputMapping()
+            {
+                Name = "Horizontal",
+                Description = "Move",
+                KeyCode = MouseKeyCode.Horizontal,
+                XboxCode = XboxCode.LeftStickX,
+                Ps4Code = Ps4Code.LeftStickX
+            },
+            new InputMapping()
+            {
+                Name = "Vertical",
+                Description = "Move",
+                KeyCode = MouseKeyCode.Horizontal,
+                XboxCode = XboxCode.LeftStickY,
+                Ps4Code = Ps4Code.LeftStickY
+            },
+            new InputMapping()
+            {
+                Name = "Mouse X",
+                Description = "RotateView",
+                KeyCode = MouseKeyCode.MouseX,
+                XboxCode = XboxCode.RightStickX,
+                Ps4Code = Ps4Code.RightStickX
+            },
+            new InputMapping()
+            {
+                Name = "Mouse Y",
+                Description = "RotateView",
+                KeyCode = MouseKeyCode.MouseY,
+                XboxCode = XboxCode.RightStickY,
+                Ps4Code = Ps4Code.RightStickY
+            },
+            new InputMapping()
+            {
+                Name = "Horizontal Nav",
+                Description = "Navigation",
+                KeyCode = MouseKeyCode.HorizontalArrow,
+                XboxCode = XboxCode.DPadX,
+                Ps4Code = Ps4Code.DPadX
+            },
+            new InputMapping()
+            {
+                Name = "Vertical Nav",
+                Description = "Navigation",
+                KeyCode = MouseKeyCode.VerticalArrow,
+                XboxCode = XboxCode.DPadY,
+                Ps4Code = Ps4Code.DPadY
+            },
+            new InputMapping()
+            {
+                Name = "Submit",
+                Description = "Submit",
+                KeyCode = MouseKeyCode.Return,
+                XboxCode = XboxCode.A,
+                Ps4Code = Ps4Code.Circle
+            },
+            new InputMapping()
+            {
+                Name = "Cancel",
+                Description = "Cancel",
+                KeyCode = MouseKeyCode.Return,
+                XboxCode = XboxCode.B,
+                Ps4Code = Ps4Code.Cross
+            }
+        };
+
         private Dictionary<string, InputMapping> inputMappings = new Dictionary<string, InputMapping>();
         private Dictionary<string, InputMapping> boundMappings = new Dictionary<string, InputMapping>();
 
-        public void Init()
+        private void OnEnable()
         {
             CollectInputMappings();
         }
 
-        public int GetInputDeviceMapping(InputMapping input, InputDevice device)
+        internal int GetInputDeviceMapping(InputMapping input, InputDevice device)
         {
             switch (device)
             {
@@ -28,7 +98,7 @@ namespace GameFramework
             return 0;
         }
 
-        public void SetInputDeviceMapping(InputMapping input, InputDevice device, InputMapping value)
+        internal void SetInputDeviceMapping(InputMapping input, InputDevice device, InputMapping value)
         {
             switch (device)
             {
@@ -44,7 +114,7 @@ namespace GameFramework
             }
         }
 
-        public void SetInputDeviceMapping(InputMapping input, InputDevice device, int value)
+        internal void SetInputDeviceMapping(InputMapping input, InputDevice device, int value)
         {
             switch (device)
             {
@@ -60,7 +130,7 @@ namespace GameFramework
             }
         }
 
-        public InputMapping GetInputMapping(string name)
+        internal InputMapping GetInputMapping(string name)
         {
             if (inputMappings.TryGetValue(name, out InputMapping input))
             {
@@ -71,7 +141,7 @@ namespace GameFramework
             return null;
         }
 
-        public InputMapping GetBoundMapping(string name, InputIdentity identity)
+        internal InputMapping GetBoundMapping(string name, InputIdentity identity)
         {
             string boundName = StringUtils.Concat(name, (int) identity);
             if (boundMappings.TryGetValue(boundName, out InputMapping bound))
@@ -97,7 +167,7 @@ namespace GameFramework
             return null;
         }
 
-        public void RebindButton(string name, int bindCode, InputIdentity identity, InputDevice device)
+        internal void RebindButton(string name, int bindCode, InputIdentity identity, InputDevice device)
         {
             string boundName = StringUtils.Concat(name, (int) identity);
             InputMapping input = GetBoundMapping(name, identity);
@@ -108,7 +178,7 @@ namespace GameFramework
             }
         }
 
-        public void ResetButton(string name, InputIdentity identity, InputDevice device)
+        internal void ResetButton(string name, InputIdentity identity, InputDevice device)
         {
             string boundName = StringUtils.Concat(name, (int) identity);
             InputMapping inputMapping = GetInputMapping(name);
@@ -129,7 +199,8 @@ namespace GameFramework
 
         private void CollectInputMappings()
         {
-            foreach (InputMapping input in InputSetting.Instance.InputMappings)
+            inputMappings.Clear();
+            foreach (InputMapping input in InputMappings)
             {
                 inputMappings.Add(input.Name, input);
             }

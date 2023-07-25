@@ -161,7 +161,7 @@ namespace GameFramework
             }
 
             ps4Mappings = new Dictionary<int, JoystickMapping>(32);
-            foreach (JoystickMapping mapping in InputSetting.Instance.JoystickMappings)
+            foreach (JoystickMapping mapping in JoystickMapping.Mappings)
             {
                 if (mapping.Ps4Code != Ps4Code.Node)
                 {

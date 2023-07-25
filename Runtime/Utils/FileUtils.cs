@@ -13,6 +13,11 @@ namespace GameFramework
                 Directory.CreateDirectory(fileInfo.DirectoryName);
             }
         }
+        
+        public static bool Exists(string path)
+        {
+            return new FileInfo(path).Exists;
+        }
 
         public static void GetFiles(string path, List<FileInfo> fileInfos, params string[] ignoreFilters)
         {

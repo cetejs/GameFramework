@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace GameFramework
 {
@@ -8,7 +10,7 @@ namespace GameFramework
         private bool alwaysListenDevice = true;
         private InputIdentity? listenDeviceIdentity = InputIdentity.Player1;
         private InputIdentity? listenRebindIdentity;
-        private InputData inputData = new InputData();
+        private InputSetting defaultInputSetting;
         private InputListener listener = new InputListener();
         private HashSet<int> usedInputDevices = new HashSet<int>();
         private Dictionary<int, VirtualInput> virtualInputs = new Dictionary<int, VirtualInput>();
@@ -19,14 +21,67 @@ namespace GameFramework
         protected override void Awake()
         {
             base.Awake();
-            inputData.Init();
             listener.Init();
+            InitEventSystem();
+            InitInputSetting();
+            SwitchDefaultDevice();
         }
 
         private void OnGUI()
         {
             OnListenDeviceInput();
             OnListenRebindInput();
+        }
+
+        private void InitEventSystem()
+        {
+            if (EventSystem.current == null)
+            {
+                EventSystem.current = new GameObject("EventSystem").AddComponent<EventSystem>();
+                EventSystem.current.gameObject.AddComponent<StandaloneInputModule>();
+            }
+
+            StandaloneInputModule inputModule = EventSystem.current.GetComponent<StandaloneInputModule>();
+            CustomInput customInput = inputModule.gameObject.AddComponent<CustomInput>();
+            customInput.OnGetButtonDown = name => GetButtonDown(name);
+            customInput.OnGetAxisRaw = name => GetAxisRaw(name);
+            inputModule.inputOverride = customInput;
+            inputModule.horizontalAxis = "Horizontal Nav";
+            inputModule.verticalAxis = "Vertical Nav";
+            inputModule.submitButton = "Submit";
+            inputModule.cancelButton = "Cancel";
+            inputModule.transform.SetParent(transform);
+        }
+
+        private void InitInputSetting()
+        {
+            GameSettings gameSettings = GameSettings.Instance;
+            string bundlePath = PathUtils.Combine(gameSettings.InputSettingAssetName, gameSettings.DefaultInputSettingName);
+#if UNITY_EDITOR
+            string assetPath = StringUtils.Concat("Assets/", AssetSetting.Instance.BundleAssetName, "/", bundlePath, ".asset");
+            if (!FileUtils.Exists(assetPath))
+            {
+                InputSetting instance = ScriptableObject.CreateInstance<InputSetting>();
+                FileUtils.CheckDirectory(assetPath);
+                UnityEditor.AssetDatabase.CreateAsset(instance, assetPath);
+                UnityEditor.AssetDatabase.SaveAssets();
+            }
+#endif
+            defaultInputSetting = AssetManager.Instance.LoadAsset<InputSetting>(bundlePath);
+        }
+
+        private void SwitchDefaultDevice()
+        {
+            if (listener.IsXboxDevice(1))
+            {
+                SetInput(InputIdentity.Player1, InputDevice.XboxGamepad, 1);
+                return;
+            }
+            
+            if (listener.IsPs4Device(1))
+            {
+                SetInput(InputIdentity.Player1, InputDevice.Ps4Gamepad, 1);
+            }
         }
 
         private void OnListenDeviceInput()
@@ -122,9 +177,14 @@ namespace GameFramework
             }
         }
 
-        public float GetAxis(string name, InputIdentity identity = InputIdentity.Player1)
+        public float GetAxis(string name, InputIdentity identity = InputIdentity.Player1, InputSetting setting = null)
         {
-            InputMapping input = inputData.GetBoundMapping(name, identity);
+            if (setting == null)
+            {
+                setting = defaultInputSetting;
+            }
+
+            InputMapping input = setting.GetBoundMapping(name, identity);
             if (input == null)
             {
                 return 0f;
@@ -133,9 +193,14 @@ namespace GameFramework
             return GetInput(identity).GetAxis(input);
         }
 
-        public float GetAxisRaw(string name, InputIdentity identity = InputIdentity.Player1)
+        public float GetAxisRaw(string name, InputIdentity identity = InputIdentity.Player1, InputSetting setting = null)
         {
-            InputMapping input = inputData.GetBoundMapping(name, identity);
+            if (setting == null)
+            {
+                setting = defaultInputSetting;
+            }
+
+            InputMapping input = setting.GetBoundMapping(name, identity);
             if (input == null)
             {
                 return 0f;
@@ -144,9 +209,14 @@ namespace GameFramework
             return GetInput(identity).GetAxisRaw(input);
         }
 
-        public bool GetButton(string name, InputIdentity identity = InputIdentity.Player1)
+        public bool GetButton(string name, InputIdentity identity = InputIdentity.Player1, InputSetting setting = null)
         {
-            InputMapping input = inputData.GetBoundMapping(name, identity);
+            if (setting == null)
+            {
+                setting = defaultInputSetting;
+            }
+
+            InputMapping input = setting.GetBoundMapping(name, identity);
             if (input == null)
             {
                 return false;
@@ -155,9 +225,14 @@ namespace GameFramework
             return GetInput(identity).GetButton(input);
         }
 
-        public bool GetButtonDown(string name, InputIdentity identity = InputIdentity.Player1)
+        public bool GetButtonDown(string name, InputIdentity identity = InputIdentity.Player1, InputSetting setting = null)
         {
-            InputMapping input = inputData.GetBoundMapping(name, identity);
+            if (setting == null)
+            {
+                setting = defaultInputSetting;
+            }
+
+            InputMapping input = setting.GetBoundMapping(name, identity);
             if (input == null)
             {
                 return false;
@@ -166,9 +241,14 @@ namespace GameFramework
             return GetInput(identity).GetButtonDown(input);
         }
 
-        public bool GetButtonUp(string name, InputIdentity identity = InputIdentity.Player1)
+        public bool GetButtonUp(string name, InputIdentity identity = InputIdentity.Player1, InputSetting setting = null)
         {
-            InputMapping input = inputData.GetBoundMapping(name, identity);
+            if (setting == null)
+            {
+                setting = defaultInputSetting;
+            }
+
+            InputMapping input = setting.GetBoundMapping(name, identity);
             if (input == null)
             {
                 return false;
@@ -207,14 +287,24 @@ namespace GameFramework
             GetInput(identity).SetButtonUp(name);
         }
 
-        public void RebindButton(string name, int bindCode, InputIdentity identity = InputIdentity.Player1)
+        public void RebindButton(string name, int bindCode, InputIdentity identity = InputIdentity.Player1, InputSetting setting = null)
         {
-            inputData.RebindButton(name, bindCode, identity, GetInputDevice(identity));
+            if (setting == null)
+            {
+                setting = defaultInputSetting;
+            }
+
+            setting.RebindButton(name, bindCode, identity, GetInputDevice(identity));
         }
 
-        public void ResetButton(string name, InputIdentity identity = InputIdentity.Player1)
+        public void ResetButton(string name, InputIdentity identity = InputIdentity.Player1, InputSetting setting = null)
         {
-            inputData.ResetButton(name, identity, GetInputDevice(identity));
+            if (setting == null)
+            {
+                setting = defaultInputSetting;
+            }
+
+            setting.ResetButton(name, identity, GetInputDevice(identity));
         }
 
         public void ListenDeviceInput(InputIdentity identity)
@@ -270,7 +360,11 @@ namespace GameFramework
         {
             if (!virtualInputs.TryGetValue((int) identity, out VirtualInput input))
             {
+#if MOBILE_INPUT
+                input = new MobileInput();
+#else
                 input = new StandaloneInput();
+#endif
                 virtualInputs.Add((int) identity, input);
                 usedInputDevices.Add((int) InputDeviceNum.MouseKeyboard);
             }

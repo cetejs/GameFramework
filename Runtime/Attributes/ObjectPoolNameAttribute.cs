@@ -1,10 +1,12 @@
 ﻿using System;
-using UnityEngine;
 
 namespace GameFramework
 {
     [AttributeUsage(AttributeTargets.Field)]
-    public class ObjectPoolNameAttribute : PropertyAttribute
+    public class ObjectPoolNameAttribute : BundleAssetNameAttribute
     {
+        public ObjectPoolNameAttribute() : base(GameSettings.Instance.PoolAssetName, "prefab")
+        {
+        }
     }
 }

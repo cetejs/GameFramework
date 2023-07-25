@@ -20,6 +20,8 @@ namespace GameFramework
         MouseX = 3,
         MouseY = 4,
         MouseScrollWheel = 5,
+        HorizontalArrow = 6,
+        VerticalArrow = 7,
         Backspace = 8,
         Tab = 9,
         Clear = 12,
@@ -171,5 +173,17 @@ namespace GameFramework
         XboxGamepad = 1,
         Ps4Gamepad = 2,
         Mobile = 3
+    }
+
+    public enum InputIdentity
+    {
+        Player1,
+        Player2,
+        Player3,
+        Player4,
+        Player5,
+        Player6,
+        Player7,
+        Player8
     }
 }

@@ -76,6 +76,10 @@ namespace GameFramework
                     return "Mouse Y";
                 case MouseKeyCode.MouseScrollWheel:
                     return "Mouse ScrollWheel";
+                case MouseKeyCode.HorizontalArrow:
+                    return "Horizontal Arrow";
+                case MouseKeyCode.VerticalArrow:
+                    return "Vertical Arrow";
             }
 
             return input.KeyCode.ToString();

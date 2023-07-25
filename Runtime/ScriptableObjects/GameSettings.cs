@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace GameFramework
 {
@@ -19,8 +20,8 @@ namespace GameFramework
         };
 
         [InspectorGroup("UIManager", 6)]
+        public string WindowAssetName = "Prefabs/Windows";
         public string WindowRootName;
-        public string WindowBundlePath = "Prefabs/Windows";
         public string[] WindowLayers = new string[]
         {
             "FullScreen",
@@ -42,6 +43,10 @@ namespace GameFramework
         public List<string> DevConsoleAssemblyNames = new List<string>()
         {
         };
+
+        [InspectorGroup("InputSetting", 11)]
+        public string InputSettingAssetName = "Configs/InputSettings";
+        public string DefaultInputSettingName = "DefaultInputSetting";
     }
 
     [Serializable]

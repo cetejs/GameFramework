@@ -156,7 +156,7 @@ namespace GameFramework
             }
 
             xboxMappings = new Dictionary<int, JoystickMapping>(32);
-            foreach (JoystickMapping mapping in InputSetting.Instance.JoystickMappings)
+            foreach (JoystickMapping mapping in JoystickMapping.Mappings)
             {
                 if (mapping.XboxCode != XboxCode.Node)
                 {

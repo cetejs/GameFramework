@@ -39,7 +39,7 @@ namespace GameFramework
             {
                 if (!prefabs.TryGetValue(windowName, out UIWindow prefab))
                 {
-                    string windowPath = PathUtils.Combine(GameSettings.Instance.WindowBundlePath, windowName);
+                    string windowPath = PathUtils.Combine(GameSettings.Instance.WindowAssetName, windowName);
                     GameObject go = AssetManager.Instance.LoadAsset<GameObject>(windowPath);
                     if (go == null)
                     {
@@ -84,7 +84,7 @@ namespace GameFramework
             {
                 if (!prefabs.TryGetValue(windowName, out UIWindow prefab))
                 {
-                    string windowPath = PathUtils.Combine(GameSettings.Instance.WindowBundlePath, windowName);
+                    string windowPath = PathUtils.Combine(GameSettings.Instance.WindowAssetName, windowName);
                     AssetAsyncOperation operation = AssetManager.Instance.LoadAssetAsync(windowPath);
                     loadingWindows.Add(windowName);
                     operation.OnCompleted += _ =>
@@ -193,10 +193,10 @@ namespace GameFramework
             return showWindows.ContainsKey(windowName);
         }
 
-        public UIWindow GetWindow(string windowName)
+        public T GetWindow<T>(string windowName) where T : UIWindow
         {
             allWindows.TryGetValue(windowName, out UIWindow window);
-            return window;
+            return window as T;
         }
 
         protected override void Awake()
@@ -210,7 +210,7 @@ namespace GameFramework
             GameSettings setting = GameSettings.Instance;
             if (!string.IsNullOrEmpty(setting.WindowRootName))
             {
-                string rooPath = PathUtils.Combine(GameSettings.Instance.WindowBundlePath, setting.WindowRootName);
+                string rooPath = PathUtils.Combine(GameSettings.Instance.WindowAssetName, setting.WindowRootName);
                 GameObject go = AssetManager.Instance.LoadAsset<GameObject>(rooPath);
                 GameObject result = Instantiate(go, transform);
                 windowRoot = result.transform;

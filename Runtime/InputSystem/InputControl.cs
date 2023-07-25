@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace GameFramework
 {
@@ -7,6 +6,10 @@ namespace GameFramework
     {
         [SerializeField]
         private InputIdentity identity;
+        [SerializeField]
+        [InputSettingName]
+        private string inputSettingName = GameSettings.Instance.DefaultInputSettingName;
+        private InputSetting inputSetting;
 
         public InputIdentity InputIdentity
         {
@@ -14,29 +17,41 @@ namespace GameFramework
             set { identity = value; }
         }
 
+        public string InputSettingName
+        {
+            get { return inputSettingName; }
+            set { inputSettingName = value; }
+        }
+
+        private void Awake()
+        {
+            string assetPath = PathUtils.Combine(GameSettings.Instance.InputSettingAssetName, inputSettingName);
+            inputSetting = AssetManager.Instance.LoadAsset<InputSetting>(assetPath);
+        }
+
         public float GetAxis(string name)
         {
-            return InputManager.Instance.GetAxis(name, identity);
+            return InputManager.Instance.GetAxis(name, identity, inputSetting);
         }
 
         public float GetAxisRaw(string name)
         {
-            return InputManager.Instance.GetAxisRaw(name, identity);
+            return InputManager.Instance.GetAxisRaw(name, identity, inputSetting);
         }
 
         public bool GetButton(string name)
         {
-            return InputManager.Instance.GetButton(name, identity);
+            return InputManager.Instance.GetButton(name, identity, inputSetting);
         }
 
         public bool GetButtonDown(string name)
         {
-            return InputManager.Instance.GetButtonDown(name, identity);
+            return InputManager.Instance.GetButtonDown(name, identity, inputSetting);
         }
 
         public bool GetButtonUp(string name)
         {
-            return InputManager.Instance.GetButtonUp(name, identity);
+            return InputManager.Instance.GetButtonUp(name, identity, inputSetting);
         }
 
         public void SetAxisPositive(string name)
@@ -71,29 +86,12 @@ namespace GameFramework
 
         public void RebindButton(string name, int bindCode)
         {
-            InputManager.Instance.RebindButton(name, bindCode, identity);
+            InputManager.Instance.RebindButton(name, bindCode, identity, inputSetting);
         }
 
         public void ResetButton(string name)
         {
-            InputManager.Instance.ResetButton(name, identity);
+            InputManager.Instance.ResetButton(name, identity, inputSetting);
         }
-
-        private void OnGUI()
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public enum InputIdentity
-    {
-        Player1,
-        Player2,
-        Player3,
-        Player4,
-        Player5,
-        Player6,
-        Player7,
-        Player8
     }
 }

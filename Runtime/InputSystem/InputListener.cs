@@ -69,7 +69,6 @@ namespace GameFramework
                 return true;
             }
 #endif
-
             return false;
         }
 
@@ -192,7 +191,7 @@ namespace GameFramework
 
         private void CollectJoystickMappings()
         {
-            foreach (JoystickMapping joystick in InputSetting.Instance.JoystickMappings)
+            foreach (JoystickMapping joystick in JoystickMapping.Mappings)
             {
                 joystickMappings.Add(joystick.Name, joystick);
             }

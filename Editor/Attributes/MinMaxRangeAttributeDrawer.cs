@@ -6,7 +6,7 @@ namespace GameFramework
     [CustomPropertyDrawer(typeof(MinMaxRangeAttribute))]
     internal class MinMaxRangeAttributeDrawer : SupportReadOnlyDrawer
     {
-        private const float rangeBoundsLabelWidth = 40f;
+        private const float RangeBoundsLabelWidth = 40f;
 
         public override void OnPropertyGUI(Rect position, SerializedProperty property, GUIContent label)
         {
@@ -20,14 +20,14 @@ namespace GameFramework
                 position = EditorGUI.PrefixLabel(position, label);
 
                 Rect rangeBoundsLabel1Rect = new Rect(position);
-                rangeBoundsLabel1Rect.width = rangeBoundsLabelWidth;
+                rangeBoundsLabel1Rect.width = RangeBoundsLabelWidth;
                 GUI.Label(rangeBoundsLabel1Rect, new GUIContent(minValue.ToString("F2")));
-                position.xMin += rangeBoundsLabelWidth;
+                position.xMin += RangeBoundsLabelWidth;
 
                 Rect rangeBoundsLabel2Rect = new Rect(position);
-                rangeBoundsLabel2Rect.xMin = rangeBoundsLabel2Rect.xMax - rangeBoundsLabelWidth;
+                rangeBoundsLabel2Rect.xMin = rangeBoundsLabel2Rect.xMax - RangeBoundsLabelWidth;
                 GUI.Label(rangeBoundsLabel2Rect, new GUIContent(maxValue.ToString("F2")));
-                position.xMax -= rangeBoundsLabelWidth;
+                position.xMax -= RangeBoundsLabelWidth;
 
                 EditorGUI.BeginChangeCheck();
                 EditorGUI.MinMaxSlider(position, ref minValue, ref maxValue, range.Min, range.Max);
