@@ -39,9 +39,9 @@ namespace GameFramework
             get { return list[index]; }
         }
 
-        public Heap(IEnumerable<T> list)
+        public Heap(IEnumerable<T> collection)
         {
-            this.list = new List<T>(list);
+            list = new List<T>(collection);
             BuildMaxHeap();
         }
 
@@ -113,6 +113,12 @@ namespace GameFramework
             }
         }
 
+        public void AddRange(IEnumerable<T> collection)
+        {
+            list.AddRange(collection);
+            BuildMaxHeap();
+        }
+
         public void Sort()
         {
             if (isSorted)
@@ -127,6 +133,12 @@ namespace GameFramework
                 Exchange(i, 0);
                 MaxHeapify(0, --size);
             }
+        }
+
+        public void Clear()
+        {
+            list.Clear();
+            isSorted = false;
         }
 
         private void CheckSorted()

@@ -15,6 +15,7 @@ namespace GameFramework
         private readonly Dictionary<int, Transform> allLayers = new Dictionary<int, Transform>();
         private readonly List<UIWindow> fullScreenWindows = new List<UIWindow>();
         private readonly HashSet<string> loadingWindows = new HashSet<string>();
+        private readonly Heap<UIWindow> windows = new Heap<UIWindow>();
 
         public Transform WindowRoot
         {
@@ -300,7 +301,22 @@ namespace GameFramework
         {
             if (window.Layer > 0)
             {
-                InputManager.Instance.SetSelectedGameObject(window.DefaultSelectedGo);
+                if (isShow)
+                {
+                    InputManager.Instance.SetSelectedGameObject(window.DefaultSelectedGo);
+                }
+                else
+                {
+                    if (allWindows.Count == 0)
+                    {
+                        return;
+                    }
+
+                    windows.Clear();
+                    windows.AddRange(allWindows.Values);
+                    InputManager.Instance.SetSelectedGameObject(windows.Max.DefaultSelectedGo);
+                }
+
                 return;
             }
 

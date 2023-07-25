@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace GameFramework
 {
-    public abstract class UIWindow : MonoBehaviour
+    public abstract class UIWindow : MonoBehaviour, IComparable<UIWindow>
     {
         [UIWindowLayer]
         [SerializeField]
@@ -112,6 +113,16 @@ namespace GameFramework
 
         protected virtual void OnUpdateWindow()
         {
+        }
+
+        public int CompareTo(UIWindow other)
+        {
+            if (layer != other.layer)
+            {
+                return -other.layer - layer;
+            }
+
+            return -other.depth - depth;
         }
     }
 }
