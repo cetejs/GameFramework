@@ -108,7 +108,7 @@ namespace GameFramework
                         break;
                     case InputDevice.XboxGamepad:
                     case InputDevice.Ps4Gamepad:
-                        if (listener.ListenJoystickInput(((JoystickInput) input).joystickNum, out inputCode))
+                        if (listener.ListenJoystickInput(((JoystickInput) input).JoystickNum, out inputCode))
                         {
                             onRebindInput?.Invoke(inputDevice, inputCode);
                             CancelRebindListening();
@@ -319,7 +319,7 @@ namespace GameFramework
                 return InputDeviceNum.Mobile;
             }
 
-            return (InputDeviceNum) ((JoystickInput) input).joystickNum;
+            return (InputDeviceNum) ((JoystickInput) input).JoystickNum;
         }
 
         private InputDeviceNum GetInputDeviceNum(InputDevice device, int joystickNum)

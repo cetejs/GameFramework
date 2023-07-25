@@ -5,12 +5,13 @@ namespace GameFramework
 {
     internal abstract class JoystickInput : VirtualInput
     {
-        public int joystickNum;
-        private Dictionary<string, UsedButton> usedButtons = new Dictionary<string, UsedButton>(8);
+        private Dictionary<int, UsedButton> usedButtons = new Dictionary<int, UsedButton>(8);
+
+        public int JoystickNum { get; private set; }
 
         public JoystickInput(int joystickNum)
         {
-            this.joystickNum = joystickNum;
+            JoystickNum = joystickNum;
         }
 
         public override float GetAxis(InputMapping input)
@@ -52,23 +53,16 @@ namespace GameFramework
 
         protected float GetAxis(string name)
         {
-            string axisName = GetAxisName(name);
-            return Input.GetAxis(axisName);
+            return Input.GetAxis(GetAxisName(name));
         }
 
         protected float GetAxisRaw(string name)
         {
-            string axisName = GetAxisName(name);
-            return Input.GetAxisRaw(axisName);
+            return Input.GetAxisRaw(GetAxisName(name));
         }
 
-        protected bool GetButton(string name, bool axis)
+        protected bool GetButton(string name)
         {
-            if (axis)
-            {
-                return Mathf.Abs(GetAxisRaw(name)) > 0.0f;
-            }
-
             KeyCode keyCode = GetKeyCode(name);
             if (keyCode != KeyCode.None)
             {
@@ -78,24 +72,8 @@ namespace GameFramework
             return false;
         }
 
-        protected bool GetButtonDown(string name, bool axis)
+        protected bool GetButtonDown(string name)
         {
-            if (axis)
-            {
-                if (!GetUsedButton(name).CanDown && Mathf.Abs(GetAxisRaw(name)) > 0.0f)
-                {
-                    GetUsedButton(name).CanDown = true;
-                    return true;
-                }
-
-                if (GetUsedButton(name).CanDown && Mathf.Abs(GetAxisRaw(name)) <= 0.0f)
-                {
-                    GetUsedButton(name).CanDown = false;
-                }
-
-                return false;
-            }
-
             KeyCode keyCode = GetKeyCode(name);
             if (keyCode != KeyCode.None)
             {
@@ -105,24 +83,8 @@ namespace GameFramework
             return false;
         }
 
-        protected bool GetButtonUp(string name, bool axis)
+        protected bool GetButtonUp(string name)
         {
-            if (axis)
-            {
-                if (GetUsedButton(name).CanUp && Mathf.Abs(GetAxisRaw(name)) <= 0.0f)
-                {
-                    GetUsedButton(name).CanUp = false;
-                    return true;
-                }
-
-                if (!GetUsedButton(name).CanUp && Mathf.Abs(GetAxisRaw(name)) > 0.0f)
-                {
-                    GetUsedButton(name).CanUp = true;
-                }
-
-                return false;
-            }
-
             KeyCode keyCode = GetKeyCode(name);
             if (keyCode != KeyCode.None)
             {
@@ -132,44 +94,78 @@ namespace GameFramework
             return false;
         }
 
-        private KeyCode GetKeyCode(string name)
+        protected bool GetAxisDown(InputMapping input)
         {
-            if (joystickNum == 0)
+            UsedButton usedButton = GetUsedButton((int) input.KeyCode);
+            if (!usedButton.CanDown && GetButton(input))
+            {
+                usedButton.CanDown = true;
+                return true;
+            }
+
+            if (usedButton.CanDown && !GetButton(input))
+            {
+                usedButton.CanDown = false;
+            }
+
+            return false;
+        }
+
+        protected bool GetAxisUp(InputMapping input)
+        {
+            UsedButton usedButton = GetUsedButton((int) input.KeyCode);
+            if (usedButton.CanUp && !GetButton(input))
+            {
+                usedButton.CanUp = true;
+                return true;
+            }
+
+            if (!usedButton.CanUp && GetButton(input))
+            {
+                usedButton.CanUp = false;
+            }
+
+            return false;
+        }
+
+        protected KeyCode GetKeyCode(string name)
+        {
+            if (JoystickNum == 0)
             {
                 return ConvertToKeyCode(StringUtils.Concat("Joystick", name));
             }
 
-            return ConvertToKeyCode(StringUtils.Concat("Joystick", joystickNum, name));
+            return ConvertToKeyCode(StringUtils.Concat("Joystick", JoystickNum, name));
         }
 
-        private string GetAxisName(string name)
+        protected string GetAxisName(string name)
         {
-            if (joystickNum == 0)
+            if (JoystickNum == 0)
             {
                 return StringUtils.Concat("Joystick", " ", name);
             }
 
-            return StringUtils.Concat("Joystick", joystickNum, " ", name);
+            return StringUtils.Concat("Joystick", JoystickNum, " ", name);
         }
 
-        private UsedButton GetUsedButton(string name)
+        protected UsedButton GetUsedButton(int buttonCode)
         {
-            if (!usedButtons.TryGetValue(name, out UsedButton button))
+            if (!usedButtons.TryGetValue(buttonCode, out UsedButton button))
             {
                 button = new UsedButton()
                 {
-                    Name = name
+                    ButtonCode = buttonCode
                 };
 
-                usedButtons.Add(name, button);
+                usedButtons.Add(buttonCode, button);
             }
 
             return button;
         }
 
-        private class UsedButton
+        protected class UsedButton
         {
-            public string Name;
+            public int ButtonCode;
             public bool CanDown;
             public bool CanUp;
         }

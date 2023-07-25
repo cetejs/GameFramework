@@ -18,7 +18,12 @@ namespace GameFramework
             JoystickMapping xbox = GetXboxMapping(input.XboxCode);
             if (xbox == null)
             {
-                return 0.0f;
+                return 0f;
+            }
+
+            if (xbox.Type == JoystickType.Button)
+            {
+                return 0f;
             }
 
             return GetAxis(xbox.Name);
@@ -29,7 +34,12 @@ namespace GameFramework
             JoystickMapping xbox = GetXboxMapping(input.XboxCode);
             if (xbox == null)
             {
-                return 0.0f;
+                return 0f;
+            }
+
+            if (xbox.Type == JoystickType.Button)
+            {
+                return 0f;
             }
 
             return GetAxisRaw(xbox.Name);
@@ -37,35 +47,82 @@ namespace GameFramework
 
         public override bool GetButton(InputMapping input)
         {
+            if (input.XboxCode == XboxCode.DPadUp)
+            {
+                return GetAxisRaw(GetXboxMapping(XboxCode.DPadY).Name) > 0f;
+            }
+
+            if (input.XboxCode == XboxCode.DPadDown)
+            {
+                return GetAxisRaw(GetXboxMapping(XboxCode.DPadY).Name) < 0f;
+            }
+
+            if (input.XboxCode == XboxCode.DPadLeft)
+            {
+                return GetAxisRaw(GetXboxMapping(XboxCode.DPadX).Name) < 0f;
+            }
+
+            if (input.XboxCode == XboxCode.DPadRight)
+            {
+                return GetAxisRaw(GetXboxMapping(XboxCode.DPadX).Name) > 0f;
+            }
+
             JoystickMapping xbox = GetXboxMapping(input.XboxCode);
             if (xbox == null)
             {
                 return false;
             }
 
-            return GetButton(xbox.Name, xbox.Type == JoystickType.Axis);
+            if (xbox.Type == JoystickType.Axis)
+            {
+                return Mathf.Abs(GetAxisRaw(xbox.Name)) > 0f;
+            }
+
+            return GetButton(xbox.Name);
         }
 
         public override bool GetButtonDown(InputMapping input)
         {
+            if (input.XboxCode == XboxCode.DPadUp || input.XboxCode == XboxCode.DPadDown ||
+                input.XboxCode == XboxCode.DPadLeft || input.XboxCode == XboxCode.DPadRight)
+            {
+                return GetAxisDown(input);
+            }
+
             JoystickMapping xbox = GetXboxMapping(input.XboxCode);
             if (xbox == null)
             {
                 return false;
             }
 
-            return GetButtonDown(xbox.Name, xbox.Type == JoystickType.Axis);
+            if (xbox.Type == JoystickType.Axis)
+            {
+                return GetAxisDown(input);
+            }
+
+            return GetButtonDown(xbox.Name);
         }
 
         public override bool GetButtonUp(InputMapping input)
         {
+            if (input.XboxCode == XboxCode.DPadUp || input.XboxCode == XboxCode.DPadDown ||
+                input.XboxCode == XboxCode.DPadLeft || input.XboxCode == XboxCode.DPadRight)
+            {
+                return GetAxisUp(input);
+            }
+
             JoystickMapping xbox = GetXboxMapping(input.XboxCode);
             if (xbox == null)
             {
                 return false;
             }
 
-            return GetButtonUp(xbox.Name, xbox.Type == JoystickType.Axis);
+            if (xbox.Type == JoystickType.Axis)
+            {
+                return GetAxisUp(input);
+            }
+
+            return GetButtonUp(xbox.Name);
         }
 
         public override void SetAxis(string name, float value)
