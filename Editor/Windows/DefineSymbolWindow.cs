@@ -11,6 +11,14 @@ namespace GameFramework
         private BuildTargetGroup targetGroup = BuildTargetGroup.Standalone;
         private Editor settingEditor;
 
+        public override void Init(string name, GameWindow parent)
+        {
+            base.Init("DefineSymbols", parent);
+            settingEditor = Editor.CreateEditor(DefineSymbolsSetting.Instance);
+            targetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
+            CollectActiveDefineSymbols();
+        }
+
         public override void OnGUI()
         {
             if (settingEditor.target != null)
@@ -48,14 +56,6 @@ namespace GameFramework
             }
 
             EditorGUILayout.EndHorizontal();
-        }
-
-        public override void Init(string name, GameWindow parent)
-        {
-            base.Init("DefineSymbols", parent);
-            settingEditor = Editor.CreateEditor(DefineSymbolsSetting.Instance);
-            targetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
-            CollectActiveDefineSymbols();
         }
 
         public override void OnDestroy()

@@ -18,6 +18,15 @@ namespace GameFramework
 
         private const string ShowSettingsKey = "DataTableWindow.ShowSettings";
 
+        public override void Init(string name, GameWindow parent)
+        {
+            base.Init("DataTable", parent);
+            settingEditor = Editor.CreateEditor(DataTableSetting.Instance);
+            showSettings = EditorPrefs.GetBool(ShowSettingsKey, showSettings);
+            CollectAllExcels();
+            SelectAllExcels(true);
+        }
+
         public override void OnGUI()
         {
             if (settingEditor.target != null)
@@ -51,15 +60,6 @@ namespace GameFramework
             }
 
             EditorGUILayout.EndHorizontal();
-        }
-
-        public override void Init(string name, GameWindow parent)
-        {
-            base.Init("DataTable", parent);
-            settingEditor = Editor.CreateEditor(DataTableSetting.Instance);
-            showSettings = EditorPrefs.GetBool(ShowSettingsKey, showSettings);
-            CollectAllExcels();
-            SelectAllExcels(true);
         }
 
         public override void OnDestroy()

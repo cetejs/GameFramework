@@ -13,7 +13,7 @@ namespace GameFramework
                 Directory.CreateDirectory(fileInfo.DirectoryName);
             }
         }
-        
+
         public static bool Exists(string path)
         {
             return new FileInfo(path).Exists;
@@ -96,6 +96,16 @@ namespace GameFramework
             CheckDirectory(desPath);
             File.Copy(srcPath, desPath, isOverwrite);
             return true;
+        }
+
+        public static string ReadAllText(string path)
+        {
+            if (!File.Exists(path))
+            {
+                return null;
+            }
+
+            return File.ReadAllText(path);
         }
 
         public static void WriteAllText(string path, string contents)

@@ -52,6 +52,13 @@ namespace GameFramework
             get { return StringUtils.Concat(AssetSetting.Instance.ShaderVariantsAssetPath, ShaderVariantExtension); }
         }
 
+        public override void Init(string name, GameWindow parent)
+        {
+            base.Init("AssetBundle", parent);
+            settingEditor = Editor.CreateEditor(AssetSetting.Instance);
+            buildTarget = EditorUserBuildSettings.selectedStandaloneTarget;
+        }
+
         public override void OnGUI()
         {
             if (settingEditor.target != null)
@@ -75,13 +82,6 @@ namespace GameFramework
             }
 
             EditorGUILayout.EndHorizontal();
-        }
-
-        public override void Init(string name, GameWindow parent)
-        {
-            base.Init("AssetBundle", parent);
-            settingEditor = Editor.CreateEditor(AssetSetting.Instance);
-            buildTarget = EditorUserBuildSettings.selectedStandaloneTarget;
         }
 
         public override void OnDestroy()
