@@ -2,14 +2,21 @@
 {
     public class AssetSetting : ScriptableObjectSingleton<AssetSetting>
     {
+        [InspectorGroup("BundleSetting")]
         public string BundleAssetName = "ToBundle";
         public string BundleExtension = "ab";
         public string BundleBuildPath = PathUtils.StreamingAssetsPath;
         public string BuiltinResourcesBundleName = "builtin_extra";
+        public AssetLoadOption AssetLoadOption;
+        [InspectorGroup("ShaderSetting")]
         public string ShaderBundleName = "shaders";
         public string ShaderVariantsAssetPath = "Assets/Shaders/ShaderVariants";
         public bool DeleteShaderVariantsWhenBuild = false;
-        public AssetLoadOption AssetLoadOption;
+        [InspectorGroup("SpriteAtlasSetting")]
+        [EnumPopUp(new []{"2", "4", "8"})]
+        public int SpriteAtlasPackingPadding = 0;
+        public string SpriteAtlasAssetPath = "Assets/SpriteAtlas";
+        public bool DeleteSpriteAtlasWhenBuild = false;
 
         public string BundleAssetPath
         {

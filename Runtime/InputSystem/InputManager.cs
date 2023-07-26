@@ -360,6 +360,18 @@ namespace GameFramework
             }
         }
 
+        public bool TryGetInputDevice(InputIdentity identity, out InputDevice device)
+        {
+            device = InputDevice.MouseKeyboard;
+            if (!virtualInputs.TryGetValue((int) identity, out VirtualInput input))
+            {
+                return false;
+            }
+
+            device = GetInputDevice(input);
+            return true;
+        }
+
         private InputDevice GetInputDevice(InputIdentity identity)
         {
             return GetInputDevice(GetInput(identity));

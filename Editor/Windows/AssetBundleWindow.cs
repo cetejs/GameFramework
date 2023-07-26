@@ -5,7 +5,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
+using UnityEditor.U2D;
 using UnityEngine.Rendering;
+using UnityEngine.U2D;
 using Object = UnityEngine.Object;
 
 namespace GameFramework
@@ -24,8 +26,16 @@ namespace GameFramework
         private HashSet<string> materials = new HashSet<string>();
         private HashSet<string> shaders = new HashSet<string>();
         private HashSet<string> builtinResources = new HashSet<string>();
+        private Dictionary<string, HashSet<string>> spriteAtlases = new Dictionary<string, HashSet<string>>();
         private Dictionary<string, ShaderVariantData> shaderVariants = new Dictionary<string, ShaderVariantData>();
         private Dictionary<string, List<ShaderVariantCollection.ShaderVariant>> collectedShaderVariants = new Dictionary<string, List<ShaderVariantCollection.ShaderVariant>>();
+
+        private readonly string[] BundleFilter = {".meta", ".cs", ".shader"};
+        private readonly string[] TextureExtensions = new[] {".png"};
+        private readonly string SceneExtension = ".unity";
+        private readonly string MaterialExtension = ".mat";
+        private readonly string ShaderVariantExtension = ".shadervariants";
+        private readonly string SpriteAtlaslExtension = ".spriteatlas";
 
         private string BundleRoot
         {
@@ -39,10 +49,8 @@ namespace GameFramework
 
         private string ShaderVariantsPath
         {
-            get { return StringUtils.Concat(AssetSetting.Instance.ShaderVariantsAssetPath, ".shadervariants"); }
+            get { return StringUtils.Concat(AssetSetting.Instance.ShaderVariantsAssetPath, ShaderVariantExtension); }
         }
-
-        private readonly string[] BundleFilter = {".meta", ".cs", ".shader"};
 
         public override void OnGUI()
         {
@@ -100,9 +108,15 @@ namespace GameFramework
                     string relativePath = fullName.Substring(bundlePath.Length + 1);
                     string bundleName = StringUtils.Concat(relativePath.RemoveLastOf("/"));
                     string assetName = fullName.Substring(PathUtils.ProjectPath.Length + 1);
-                    if (assetName.EndsWith(".unity"))
+                    if (assetName.EndsWith(SceneExtension))
                     {
                         scenes.Add(assetName);
+                        continue;
+                    }
+
+                    if (assetName.EndsWith(TextureExtensions))
+                    {
+                        AddTexture(assetName);
                         continue;
                     }
 
@@ -113,6 +127,7 @@ namespace GameFramework
                 AddScenes();
                 AddShaders();
                 AddBuiltinResources();
+                AddSpriteAtlas();
 
                 List<AssetBundleBuild> bundleBuilds = new List<AssetBundleBuild>();
                 foreach (KeyValuePair<string, List<string>> build in builds)
@@ -133,6 +148,12 @@ namespace GameFramework
                 if (AssetSetting.Instance.DeleteShaderVariantsWhenBuild)
                 {
                     AssetDatabase.DeleteAsset(ShaderVariantsPath);
+                }
+
+                if (AssetSetting.Instance.DeleteSpriteAtlasWhenBuild)
+                {
+                    DirectoryUtils.DeleteDirectory(AssetSetting.Instance.SpriteAtlasAssetPath);
+                    FileUtils.DeleteFile(StringUtils.Concat(AssetSetting.Instance.SpriteAtlasAssetPath, ".meta"));
                 }
             }
             catch (Exception ex)
@@ -160,7 +181,7 @@ namespace GameFramework
             string[] dps = AssetDatabase.GetDependencies(assetName, true);
             foreach (string dp in dps)
             {
-                if (dp.EndsWith(".mat"))
+                if (dp.EndsWith(MaterialExtension))
                 {
                     materials.Add(dp);
                 }
@@ -177,6 +198,12 @@ namespace GameFramework
 
                 if (dp.EndsWith(BundleFilter))
                 {
+                    continue;
+                }
+
+                if (dp.EndsWith(TextureExtensions))
+                {
+                    AddTexture(dp);
                     continue;
                 }
 
@@ -285,6 +312,62 @@ namespace GameFramework
             {
                 AddBundleBuild(AssetSetting.Instance.BuiltinResourcesBundleName, assetName);
             }
+        }
+
+        private void AddSpriteAtlas()
+        {
+            if (EditorSettings.spritePackerMode == SpritePackerMode.Disabled)
+            {
+                EditorSettings.spritePackerMode = SpritePackerMode.BuildTimeOnlyAtlas;
+            }
+
+            foreach (KeyValuePair<string, HashSet<string>> kvPair in spriteAtlases)
+            {
+                string bundleName = kvPair.Key;
+                HashSet<string> assetNames = kvPair.Value;
+                List<Object> sprites = new List<Object>();
+                foreach (string assetName in assetNames)
+                {
+                    Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>(assetName);
+                    if (sprite != null)
+                    {
+                        sprites.Add(sprite);
+                    }
+
+                    AddBundleBuild(bundleName, assetName);
+                }
+
+                if (sprites.Count > 0)
+                {
+                    DirectoryUtils.CreateDirectory(AssetSetting.Instance.SpriteAtlasAssetPath);
+                    SpriteAtlas atlas = new SpriteAtlas();
+                    string path = StringUtils.Concat(AssetSetting.Instance.SpriteAtlasAssetPath, "/", bundleName, SpriteAtlaslExtension);
+                    atlas.SetPackingSettings(new SpriteAtlasPackingSettings()
+                    {
+                        padding = 2 << AssetSetting.Instance.SpriteAtlasPackingPadding,
+                        enableRotation = false,
+                        enableTightPacking = false,
+                        enableAlphaDilation = false
+                    });
+
+                    atlas.Add(sprites.ToArray());
+                    AssetDatabase.DeleteAsset(path);
+                    AssetDatabase.CreateAsset(atlas, path);
+                    AddBundleBuild(bundleName, path);
+                }
+            }
+        }
+
+        private void AddTexture(string assetName)
+        {
+            string bundleName = assetName.RemoveLastOf("/").GetLastOf("/");
+            if (!spriteAtlases.TryGetValue(bundleName, out HashSet<string> hashSet))
+            {
+                hashSet = new HashSet<string>();
+                spriteAtlases.Add(bundleName, hashSet);
+            }
+
+            hashSet.Add(assetName);
         }
 
         private void AddShaderVariants(Material mat, string[] filterKeywords)
