@@ -8,7 +8,7 @@ namespace GameFramework
     {
         public readonly string[] DisplayedOptions;
 
-        public EnumPopUpAttribute(string[] displayedOptions)
+        public EnumPopUpAttribute(params string[] displayedOptions)
         {
             DisplayedOptions = displayedOptions;
         }

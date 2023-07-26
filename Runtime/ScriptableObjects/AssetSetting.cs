@@ -13,7 +13,7 @@
         public string ShaderVariantsAssetPath = "Assets/Shaders/ShaderVariants";
         public bool DeleteShaderVariantsWhenBuild = false;
         [InspectorGroup("SpriteAtlasSetting")]
-        [EnumPopUp(new []{"2", "4", "8"})]
+        [EnumPopUp("2", "4", "8")]
         public int SpriteAtlasPackingPadding = 0;
         public string SpriteAtlasAssetPath = "Assets/SpriteAtlas";
         public bool DeleteSpriteAtlasWhenBuild = false;
