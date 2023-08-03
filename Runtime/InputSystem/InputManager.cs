@@ -39,11 +39,10 @@ namespace GameFramework
             if (EventSystem.current == null)
             {
                 EventSystem.current = new GameObject("EventSystem").AddComponent<EventSystem>();
-                EventSystem.current.gameObject.AddComponent<StandaloneInputModule>();
             }
 
-            StandaloneInputModule inputModule = EventSystem.current.GetComponent<StandaloneInputModule>();
-            CustomInput customInput = inputModule.gameObject.AddComponent<CustomInput>();
+            StandaloneInputModule inputModule = EventSystem.current.gameObject.GetOrAddComponent<StandaloneInputModule>();
+            CustomInput customInput = inputModule.gameObject.GetOrAddComponent<CustomInput>();
             customInput.OnGetButtonDown = name => GetButtonDown(name);
             customInput.OnGetAxisRaw = name => GetAxisRaw(name);
             inputModule.inputOverride = customInput;
