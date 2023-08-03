@@ -346,7 +346,7 @@ namespace GameFramework
 
             heapWindows.Clear();
             heapWindows.AddRange(showWindows.Values);
-            EventSystem.current.SetSelectedGameObject(heapWindows.Max.DefaultSelectedGo);
+            InputManager.Instance.SetSelectedGameObject(heapWindows.Max.DefaultSelectedGo);
         }
     }
 }

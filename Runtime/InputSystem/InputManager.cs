@@ -347,6 +347,11 @@ namespace GameFramework
             return GetInputDevice(GetInput(identity));
         }
 
+        public void SetSelectedGameObject(GameObject selected)
+        {
+            EventSystem.current.SetSelectedGameObject(selected);
+        }
+
         private InputDevice GetInputDevice(VirtualInput input)
         {
             if (input is StandaloneInput)

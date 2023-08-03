@@ -73,12 +73,12 @@ namespace GameFramework
             {
                 lastTimeScale = Time.timeScale;
                 Time.timeScale = GameSettings.Instance.ConsoleTimeScale;
-                EventSystem.current.SetSelectedGameObject(defaultSelectedGo);
+                InputManager.Instance.SetSelectedGameObject(defaultSelectedGo);
             }
             else
             {
                 Time.timeScale = lastTimeScale;
-                EventSystem.current.SetSelectedGameObject(showConsoleBtn.gameObject);
+                InputManager.Instance.SetSelectedGameObject(showConsoleBtn.gameObject);
             }
 
 #if UNITY_EDITOR || UNITY_STANDALONE
