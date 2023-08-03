@@ -170,5 +170,10 @@ namespace GameFramework
         {
             handler.Save();
         }
+
+        public void SaveAsync(Action callback)
+        {
+            handler.SaveAsync(callback);
+        }
     }
 }

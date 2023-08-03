@@ -1,20 +1,29 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace GameFramework
 {
     internal class DefaultHandler : IPersistentHandler
     {
-        private int storageId;
-        private int suffixIndex;
         private string savePath;
         private Dictionary<string, string> data;
 
         public DefaultHandler(int storageId = 0)
         {
-            this.storageId = storageId;
-            suffixIndex = storageId.ToString().Length + 1;
-            savePath = PersistentSetting.Instance.GetSavePath(this.storageId);
-            string json = FileUtils.ReadAllText(savePath);
+            savePath = PersistentSetting.Instance.GetSavePath(storageId);
+
+            string json;
+            if (PersistentSetting.Instance.EncryptionType == EncryptionType.AES)
+            {
+                byte[] bytes = FileUtils.ReadAllBytes(savePath);
+                json = EncryptionUtils.AES.DecryptFromBytes(bytes, PersistentSetting.Instance.Password);
+            }
+            else
+            {
+                json = FileUtils.ReadAllText(savePath);
+            }
+
             if (!string.IsNullOrEmpty(json))
             {
                 data = JsonUtils.ToObject<Dictionary<string, string>>(json);
@@ -27,7 +36,7 @@ namespace GameFramework
 
         public string GetString(string key, string defaultValue)
         {
-            if (data.TryGetValue(GetKey(key), out string value))
+            if (data.TryGetValue(key, out string value))
             {
                 return value;
             }
@@ -37,7 +46,7 @@ namespace GameFramework
 
         public void SetString(string key, string value)
         {
-            data[GetKey(key)] = value;
+            data[key] = value;
         }
 
         public string[] GetAllKeys()
@@ -46,7 +55,7 @@ namespace GameFramework
             string[] results = new string[data.Count];
             foreach (string key in data.Keys)
             {
-                results[i++] = key.Remove(key.Length - suffixIndex);
+                results[i++] = key;
             }
 
             return results;
@@ -60,36 +69,57 @@ namespace GameFramework
                 results.Capacity = data.Count;
             }
 
-            foreach (string key in data.Keys)
-            {
-                results.Add(key.Remove(key.Length - suffixIndex));
-            }
+            results.AddRange(data.Keys);
         }
 
         public bool HasKey(string key)
         {
-            return data.ContainsKey(GetKey(key));
+            return data.ContainsKey(key);
         }
 
         public void DeleteKey(string key)
         {
-            data.Remove(GetKey(key));
+            data.Remove(key);
         }
 
         public void DeleteAll()
         {
             data.Clear();
             FileUtils.DeleteFile(savePath);
+#if UNITY_EDITOR
+            FileUtils.DeleteFile(StringUtils.Concat(savePath, ".meta"));
+            UnityEditor.AssetDatabase.Refresh();
+#endif
         }
 
         public void Save()
         {
-            FileUtils.WriteAllText(savePath, JsonUtils.ToJson(data));
+            string json = JsonUtils.ToJson(data);
+            byte[] bytes;
+            if (PersistentSetting.Instance.EncryptionType == EncryptionType.AES)
+            {
+                bytes = EncryptionUtils.AES.EncryptToBytes(json, PersistentSetting.Instance.Password);
+            }
+            else
+            {
+                bytes = Encoding.UTF8.GetBytes(json);
+            }
+
+            FileUtils.WriteAllTBytes(savePath, bytes);
         }
 
-        private string GetKey(string key)
+        public void SaveAsync(Action callback)
         {
-            return StringUtils.Concat(key, "_", storageId);
+            string json = JsonUtils.ToJson(data);
+            if (PersistentSetting.Instance.EncryptionType == EncryptionType.AES)
+            {
+                byte[] bytes = EncryptionUtils.AES.EncryptToBytes(json, PersistentSetting.Instance.Password);
+                FileUtils.WriteAllTBytesAsync(savePath, bytes, callback);
+            }
+            else
+            {
+                FileUtils.WriteAllTextAsync(savePath, json, callback);
+            }
         }
     }
 }

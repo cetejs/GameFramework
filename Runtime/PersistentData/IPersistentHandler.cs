@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace GameFramework
@@ -19,6 +20,8 @@ namespace GameFramework
         void DeleteAll();
 
         void Save();
+
+        void SaveAsync(Action callback);
     }
 }
 

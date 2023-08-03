@@ -8,8 +8,6 @@ namespace GameFramework
         [SerializeField]
         private InputIdentity identity;
         [SerializeField]
-        [InputSettingName]
-        private string inputSettingName = "DefaultInputSetting";
         private InputSetting inputSetting;
 
         public InputIdentity InputIdentity
@@ -18,10 +16,17 @@ namespace GameFramework
             set { identity = value; }
         }
 
-        public string InputSettingName
+        public InputSetting InputSetting
         {
-            get { return inputSettingName; }
-            set { inputSettingName = value; }
+            get { return inputSetting; }
+            set
+            {
+                inputSetting = value;
+                if (inputSetting != null)
+                {
+                    inputSetting.CollectInputMappings();
+                }
+            }
         }
 
         public InputDevice InputDevice
@@ -31,9 +36,10 @@ namespace GameFramework
 
         private void Awake()
         {
-            string assetPath = PathUtils.Combine(GameSettings.Instance.InputSettingAssetName, inputSettingName);
-            inputSetting = AssetManager.Instance.LoadAsset<InputSetting>(assetPath);
-            inputSetting.CollectInputMappings();
+            if (inputSetting != null)
+            {
+                inputSetting.CollectInputMappings();
+            }
         }
 
         public float GetAxis(string name)
@@ -110,7 +116,7 @@ namespace GameFramework
         {
             InputManager.Instance.CancelRebindListening();
         }
-        
+
         public void ListenDeviceInput()
         {
             InputManager.Instance.ListenDeviceInput(identity);

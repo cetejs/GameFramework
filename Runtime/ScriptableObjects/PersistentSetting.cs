@@ -4,6 +4,8 @@
     {
         public string SaveDataName = "SaveData/SaveData";
         public string SaveDataExtension = "pd";
+        public EncryptionType EncryptionType;
+        public string Password = "password";
 
         public string SaveDataPath
         {

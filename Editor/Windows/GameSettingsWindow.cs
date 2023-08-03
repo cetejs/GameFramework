@@ -41,17 +41,12 @@ namespace GameFramework
 
         private static bool InputSettingIsExist()
         {
-            GameSettings gameSettings = GameSettings.Instance;
-            string bundlePath = PathUtils.Combine(gameSettings.InputSettingAssetName, gameSettings.DefaultInputSettingName);
-            string assetPath = StringUtils.Concat("Assets/", AssetSetting.Instance.BundleAssetName, "/", bundlePath, ".asset");
-            return FileUtils.Exists(assetPath);
+            return FileUtils.Exists("Assets/Resources/DefaultInputSetting.asset");
         }
 
         private static void CreateInputSetting()
         {
-            GameSettings gameSettings = GameSettings.Instance;
-            string bundlePath = PathUtils.Combine(gameSettings.InputSettingAssetName, gameSettings.DefaultInputSettingName);
-            string assetPath = StringUtils.Concat("Assets/", AssetSetting.Instance.BundleAssetName, "/", bundlePath, ".asset");
+            string assetPath = "Assets/Resources/DefaultInputSetting.asset";
             InputSetting instance = ScriptableObject.CreateInstance<InputSetting>();
             FileUtils.CheckDirectory(assetPath);
             AssetDatabase.CreateAsset(instance, assetPath);

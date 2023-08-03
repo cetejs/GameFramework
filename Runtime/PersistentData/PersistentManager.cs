@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -114,6 +115,11 @@ namespace GameFramework
         public void Save()
         {
             storage.Save();
+        }
+
+        public void SaveAsync(Action callback)
+        {
+            storage.SaveAsync(callback);
         }
     }
 

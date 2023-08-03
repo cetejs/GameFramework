@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,49 +7,53 @@ namespace GameFramework
     internal class PlayerPrefsHandler : IPersistentHandler
     {
         private int storageId;
-        private int suffixIndex;
         private string globalKey;
-        private List<string> localKeys;
+        private List<string> keys;
+        private Dictionary<string, string> data;
 
         public PlayerPrefsHandler(int storageId)
         {
             this.storageId = storageId;
-            suffixIndex = storageId.ToString().Length + 1;
-            globalKey = StringUtils.Concat(nameof(PlayerPrefsHandler), storageId);
+            int suffixIndex = storageId.ToString().Length + 1;
+            globalKey = TryEncrypt(StringUtils.Concat(nameof(PlayerPrefsHandler), storageId));
             string json = PlayerPrefs.GetString(globalKey, null);
             if (!string.IsNullOrEmpty(json))
             {
-                localKeys = JsonUtils.ToObject<List<string>>(json);
+                keys = JsonUtils.ToObject<List<string>>(TryDecrypt(json));
+                foreach (string key in keys)
+                {
+                    data.Add(key.Remove(key.Length - suffixIndex), TryDecrypt(PlayerPrefs.GetString(key)));
+                }
             }
             else
             {
-                localKeys = new List<string>();
+                keys = new List<string>();
+                data = new Dictionary<string, string>();
             }
         }
 
         public string GetString(string key, string defaultValue)
         {
-            return PlayerPrefs.GetString(GetKey(key), defaultValue);
+            if (data.TryGetValue(key, out string value))
+            {
+                return value;
+            }
+
+            return defaultValue;
         }
 
         public void SetString(string key, string value)
         {
-            key = GetKey(key);
-            if (!localKeys.Contains(key))
-            {
-                localKeys.Add(key);
-                PlayerPrefs.SetString(globalKey, JsonUtils.ToJson(localKeys));
-            }
-
-            PlayerPrefs.SetString(key, value);
+            data[key] = value;
         }
 
         public string[] GetAllKeys()
         {
-            string[] results = new string[localKeys.Count];
-            for (int i = 0; i < localKeys.Count; i++)
+            int i = 0;
+            string[] results = new string[data.Count];
+            foreach (string key in data.Keys)
             {
-                results[i] = localKeys[i].Remove(localKeys[i].Length - suffixIndex);
+                results[i++] = key;
             }
 
             return results;
@@ -57,48 +62,77 @@ namespace GameFramework
         public void GetAllKeys(List<string> results)
         {
             results.Clear();
-            if (results.Capacity < localKeys.Count)
+            if (results.Capacity < data.Count)
             {
-                results.Capacity = localKeys.Count;
+                results.Capacity = data.Count;
             }
 
-            for (int i = 0; i < localKeys.Count; i++)
-            {
-                results.Add(localKeys[i].Remove(localKeys[i].Length - suffixIndex));
-            }
+            results.AddRange(data.Keys);
         }
 
         public bool HasKey(string key)
         {
-            return PlayerPrefs.HasKey(GetKey(key));
+            return data.ContainsKey(key);
         }
 
         public void DeleteKey(string key)
         {
-            key = GetKey(key);
-            if (localKeys.Contains(key))
-            {
-                localKeys.Remove(key);
-                PlayerPrefs.SetString(globalKey, JsonUtils.ToJson(localKeys));
-            }
-
-            PlayerPrefs.DeleteKey(key);
+            data.Remove(key);
         }
 
         public void DeleteAll()
         {
-            localKeys.Clear();
+            data.Clear();
             PlayerPrefs.DeleteAll();
         }
 
         public void Save()
         {
+            foreach (KeyValuePair<string, string> kvPair in data)
+            {
+                string key = StringUtils.Concat(kvPair.Key, "_", storageId);
+                PlayerPrefs.SetString(TryEncrypt(key), TryEncrypt(kvPair.Value));
+            }
+
+            foreach (string key in keys)
+            {
+                if (!data.ContainsKey(key))
+                {
+                    PlayerPrefs.DeleteKey(StringUtils.Concat(key, "_", storageId));
+                }
+            }
+
+            keys.Clear();
+            keys.AddRange(data.Keys);
+            PlayerPrefs.SetString(globalKey, TryEncrypt(JsonUtils.ToJson(keys)));
+
             PlayerPrefs.Save();
         }
 
-        private string GetKey(string key)
+        public void SaveAsync(Action callback)
         {
-            return StringUtils.Concat(key, "_", storageId);
+            Save();
+            callback?.Invoke();
+        }
+
+        private string TryEncrypt(string text)
+        {
+            if (PersistentSetting.Instance.EncryptionType == EncryptionType.AES)
+            {
+                text = EncryptionUtils.AES.EncryptToString(text, PersistentSetting.Instance.Password);
+            }
+
+            return text;
+        }
+
+        private string TryDecrypt(string text)
+        {
+            if (PersistentSetting.Instance.EncryptionType == EncryptionType.AES)
+            {
+                text = EncryptionUtils.AES.DecryptFromString(text, PersistentSetting.Instance.Password);
+            }
+
+            return text;
         }
     }
 }

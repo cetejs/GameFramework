@@ -55,10 +55,8 @@ namespace GameFramework
 
         private void InitInputSetting()
         {
-            GameSettings gameSettings = GameSettings.Instance;
-            string bundlePath = PathUtils.Combine(gameSettings.InputSettingAssetName, gameSettings.DefaultInputSettingName);
 #if UNITY_EDITOR
-            string assetPath = StringUtils.Concat("Assets/", AssetSetting.Instance.BundleAssetName, "/", bundlePath, ".asset");
+            string assetPath = "Assets/Resources/DefaultInputSetting.asset";
             if (!FileUtils.Exists(assetPath))
             {
                 InputSetting instance = ScriptableObject.CreateInstance<InputSetting>();
@@ -67,7 +65,7 @@ namespace GameFramework
                 UnityEditor.AssetDatabase.SaveAssets();
             }
 #endif
-            defaultInputSetting = AssetManager.Instance.LoadAsset<InputSetting>(bundlePath);
+            defaultInputSetting = Resources.Load<InputSetting>("DefaultInputSetting");
             defaultInputSetting.CollectInputMappings();
         }
 

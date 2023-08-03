@@ -42,6 +42,7 @@ namespace GameFramework
         {
             base.Init("PersistentData", parent);
             settingEditor = Editor.CreateEditor(PersistentSetting.Instance);
+            RefreshData();
         }
 
         public override void OnGUI()
@@ -114,11 +115,6 @@ namespace GameFramework
             {
                 Object.DestroyImmediate(manager);
             }
-        }
-
-        private void OnEnable()
-        {
-            RefreshData();
         }
 
         private void RefreshData()

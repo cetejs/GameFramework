@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace GameFramework
@@ -108,10 +109,40 @@ namespace GameFramework
             return File.ReadAllText(path);
         }
 
+        public static byte[] ReadAllBytes(string path)
+        {
+            if (!File.Exists(path))
+            {
+                return null;
+            }
+
+            return File.ReadAllBytes(path);
+        }
+
         public static void WriteAllText(string path, string contents)
         {
             CheckDirectory(path);
             File.WriteAllText(path, contents);
+        }
+
+        public static async void WriteAllTextAsync(string path, string contents, Action callback)
+        {
+            CheckDirectory(path);
+            await File.WriteAllTextAsync(path, contents);
+            callback?.Invoke();
+        }
+        
+        public static void WriteAllTBytes(string path, byte[] contents)
+        {
+            CheckDirectory(path);
+            File.WriteAllBytes(path, contents);
+        }
+
+        public static async void WriteAllTBytesAsync(string path,  byte[] contents, Action callback)
+        {
+            CheckDirectory(path);
+            await File.WriteAllBytesAsync(path, contents);
+            callback?.Invoke();
         }
     }
 }
