@@ -26,6 +26,11 @@ namespace GameFramework
                 return (GetAxis(ps4.Name) + 1) / 2f;
             }
 
+            if (ps4.Ps4Code == Ps4Code.LeftStickY || ps4.Ps4Code == Ps4Code.RightStickY)
+            {
+                return -GetAxis(ps4.Name);
+            }
+
             return GetAxis(ps4.Name);
         }
 
@@ -40,6 +45,11 @@ namespace GameFramework
             if ((ps4.Ps4Code == Ps4Code.L2 || ps4.Ps4Code == Ps4Code.R2) && Application.isFocused)
             {
                 return (GetAxisRaw(ps4.Name) + 1) / 2f;
+            }
+
+            if (ps4.Ps4Code == Ps4Code.LeftStickY || ps4.Ps4Code == Ps4Code.RightStickY)
+            {
+                return -GetAxisRaw(ps4.Name);
             }
 
             return GetAxisRaw(ps4.Name);

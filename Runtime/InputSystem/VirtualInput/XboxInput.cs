@@ -26,6 +26,11 @@ namespace GameFramework
                 return 0f;
             }
 
+            if (xbox.XboxCode == XboxCode.LeftStickY || xbox.XboxCode == XboxCode.RightStickY)
+            {
+                return -GetAxis(xbox.Name);
+            }
+
             return GetAxis(xbox.Name);
         }
 
@@ -40,6 +45,11 @@ namespace GameFramework
             if (xbox.Type == JoystickType.Button)
             {
                 return 0f;
+            }
+
+            if (xbox.XboxCode == XboxCode.LeftStickY || xbox.XboxCode == XboxCode.RightStickY)
+            {
+                return -GetAxisRaw(xbox.Name);
             }
 
             return GetAxisRaw(xbox.Name);

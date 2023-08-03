@@ -21,7 +21,7 @@ namespace GameFramework
             {
                 Name = "Vertical",
                 Description = "Move",
-                KeyCode = MouseKeyCode.Horizontal,
+                KeyCode = MouseKeyCode.Vertical,
                 XboxCode = XboxCode.LeftStickY,
                 Ps4Code = Ps4Code.LeftStickY
             },
@@ -78,9 +78,13 @@ namespace GameFramework
         private Dictionary<string, InputMapping> inputMappings = new Dictionary<string, InputMapping>();
         private Dictionary<string, InputMapping> boundMappings = new Dictionary<string, InputMapping>();
 
-        private void OnEnable()
+        internal void CollectInputMappings()
         {
-            CollectInputMappings();
+            inputMappings.Clear();
+            foreach (InputMapping input in InputMappings)
+            {
+                inputMappings.Add(input.Name, input);
+            }
         }
 
         internal int GetInputDeviceMapping(InputMapping input, InputDevice device)
@@ -195,15 +199,6 @@ namespace GameFramework
 
             SetInputDeviceMapping(boundMapping, device, inputMapping);
             PlayerPrefs.DeleteKey(StringUtils.Concat(boundName, device));
-        }
-
-        private void CollectInputMappings()
-        {
-            inputMappings.Clear();
-            foreach (InputMapping input in InputMappings)
-            {
-                inputMappings.Add(input.Name, input);
-            }
         }
     }
 }

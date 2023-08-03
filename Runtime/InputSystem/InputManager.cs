@@ -68,6 +68,7 @@ namespace GameFramework
             }
 #endif
             defaultInputSetting = AssetManager.Instance.LoadAsset<InputSetting>(bundlePath);
+            defaultInputSetting.CollectInputMappings();
         }
 
         private void SwitchDefaultDevice()

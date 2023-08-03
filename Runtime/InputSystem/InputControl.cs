@@ -33,6 +33,7 @@ namespace GameFramework
         {
             string assetPath = PathUtils.Combine(GameSettings.Instance.InputSettingAssetName, inputSettingName);
             inputSetting = AssetManager.Instance.LoadAsset<InputSetting>(assetPath);
+            inputSetting.CollectInputMappings();
         }
 
         public float GetAxis(string name)
