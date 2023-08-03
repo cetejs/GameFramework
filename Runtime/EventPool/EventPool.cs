@@ -10,16 +10,12 @@ namespace GameFramework
         private MultiDictionary<int, EventHandler> eventHandlers;
         private Queue<EventArgs> events;
 
-        public bool IsEnableStrictCheck { get; set; }
+        public bool EnableStrictCheck { get; set; }
 
         public EventPool(int capacity = 4)
         {
             eventHandlers = new MultiDictionary<int, EventHandler>(capacity);
             events = new Queue<EventArgs>(capacity);
-
-#if UNITY_EDITOR
-            IsEnableStrictCheck = true;
-#endif
         }
 
         public int EventCount
@@ -39,7 +35,7 @@ namespace GameFramework
 
         public bool Contains(int id, EventHandler handler)
         {
-            if (IsEnableStrictCheck && handler == null)
+            if (EnableStrictCheck && handler == null)
             {
                 GameLogger.LogError($"Event {id} handler is invalid");
             }
@@ -49,7 +45,7 @@ namespace GameFramework
 
         public void Register(int id, EventHandler handler)
         {
-            if (IsEnableStrictCheck && Contains(id, handler))
+            if (EnableStrictCheck && Contains(id, handler))
             {
                 GameLogger.LogError($"Event {id} is already subscribed");
                 return;
@@ -60,13 +56,13 @@ namespace GameFramework
 
         public void Unregister(int id, EventHandler handler)
         {
-            if (IsEnableStrictCheck && handler == null)
+            if (EnableStrictCheck && handler == null)
             {
                 GameLogger.LogError($"Event {id} handler is invalid");
                 return;
             }
 
-            if (!eventHandlers.Remove(id, handler) && IsEnableStrictCheck)
+            if (!eventHandlers.Remove(id, handler) && EnableStrictCheck)
             {
                 GameLogger.LogError($"Event {id} not exist specified handler");
             }

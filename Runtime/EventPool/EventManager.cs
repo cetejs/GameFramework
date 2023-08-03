@@ -4,6 +4,12 @@ namespace GameFramework
     {
         private EventPool eventPool = new EventPool();
 
+        public bool EnableStrictCheck
+        {
+            get { return eventPool.EnableStrictCheck; }
+            set { eventPool.EnableStrictCheck = value; }
+        }
+
         public int EventCount
         {
             get { return eventPool.EventCount; }
