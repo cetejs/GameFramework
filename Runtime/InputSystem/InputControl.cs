@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace GameFramework
 {
@@ -21,6 +22,11 @@ namespace GameFramework
         {
             get { return inputSettingName; }
             set { inputSettingName = value; }
+        }
+
+        public InputDevice InputDevice
+        {
+            get { return InputManager.Instance.GetInputDevice(identity); }
         }
 
         private void Awake()
@@ -92,6 +98,26 @@ namespace GameFramework
         public void ResetButton(string name)
         {
             InputManager.Instance.ResetButton(name, identity, inputSetting);
+        }
+
+        public void ListenRebindInput(Action<InputDevice, int> callback)
+        {
+            InputManager.Instance.ListenRebindInput(callback, identity);
+        }
+
+        public void CancelRebindListening()
+        {
+            InputManager.Instance.CancelRebindListening();
+        }
+        
+        public void ListenDeviceInput()
+        {
+            InputManager.Instance.ListenDeviceInput(identity);
+        }
+
+        public void CancelDeviceListening()
+        {
+            InputManager.Instance.CancelDeviceListening();
         }
     }
 }

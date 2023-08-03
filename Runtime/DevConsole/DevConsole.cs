@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace GameFramework
@@ -72,12 +73,12 @@ namespace GameFramework
             {
                 lastTimeScale = Time.timeScale;
                 Time.timeScale = GameSettings.Instance.ConsoleTimeScale;
-                InputManager.Instance.SetSelectedGameObject(defaultSelectedGo);
+                EventSystem.current.SetSelectedGameObject(defaultSelectedGo);
             }
             else
             {
                 Time.timeScale = lastTimeScale;
-                InputManager.Instance.SetSelectedGameObject(showConsoleBtn.gameObject);
+                EventSystem.current.SetSelectedGameObject(showConsoleBtn.gameObject);
             }
 
 #if UNITY_EDITOR || UNITY_STANDALONE

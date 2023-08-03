@@ -308,18 +308,6 @@ namespace GameFramework
             setting.ResetButton(name, identity, GetInputDevice(identity));
         }
 
-        public void ListenDeviceInput(InputIdentity identity)
-        {
-            listenDeviceIdentity = identity;
-            alwaysListenDevice = false;
-        }
-
-        public void CancelDeviceListening()
-        {
-            listenDeviceIdentity = null;
-            alwaysListenDevice = false;
-        }
-
         public void ListenRebindInput(Action<InputDevice, int> callback, InputIdentity identity = InputIdentity.Player1)
         {
             listenRebindIdentity = identity;
@@ -332,32 +320,16 @@ namespace GameFramework
             onRebindInput = null;
         }
 
-        public void SetSelectedGameObject(GameObject selected)
+        public void ListenDeviceInput(InputIdentity identity)
         {
-            if (GetInputDevice(InputIdentity.Player1) == InputDevice.Mobile)
-            {
-                return;
-            }
-
-            EventSystem.current.SetSelectedGameObject(selected);
+            listenDeviceIdentity = identity;
+            alwaysListenDevice = false;
         }
 
-        public void SetFirstSelectedGameObject(GameObject selected)
+        public void CancelDeviceListening()
         {
-            if (GetInputDevice(InputIdentity.Player1) == InputDevice.Mobile)
-            {
-                return;
-            }
-
-            Selectable selectable = selected.GetComponentInChildren<Selectable>();
-            if (selectable != null)
-            {
-                EventSystem.current.SetSelectedGameObject(selectable.gameObject);
-            }
-            else
-            {
-                EventSystem.current.SetSelectedGameObject(selected);
-            }
+            listenDeviceIdentity = null;
+            alwaysListenDevice = false;
         }
 
         public bool TryGetInputDevice(InputIdentity identity, out InputDevice device)
@@ -372,7 +344,7 @@ namespace GameFramework
             return true;
         }
 
-        private InputDevice GetInputDevice(InputIdentity identity)
+        public InputDevice GetInputDevice(InputIdentity identity)
         {
             return GetInputDevice(GetInput(identity));
         }

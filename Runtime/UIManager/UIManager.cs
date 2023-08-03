@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace GameFramework
@@ -345,7 +346,7 @@ namespace GameFramework
 
             heapWindows.Clear();
             heapWindows.AddRange(showWindows.Values);
-            InputManager.Instance.SetSelectedGameObject(heapWindows.Max.DefaultSelectedGo);
+            EventSystem.current.SetSelectedGameObject(heapWindows.Max.DefaultSelectedGo);
         }
     }
 }
