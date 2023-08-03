@@ -104,18 +104,18 @@ namespace GameFramework
             }
         }
 
-        private void SelectAllExcels(bool isSelect)
+        private void SelectAllExcels(bool selected)
         {
-            allSelected = isSelect;
+            allSelected = selected;
             for (int i = 0; i < excelDataList.Count; i++)
             {
                 ExcelData excelData = excelDataList[i];
-                excelData.Selected = isSelect;
+                excelData.Selected = selected;
                 excelDataList[i] = excelData;
             }
         }
 
-        private void ExcelToTable(bool isCheck)
+        private void ExcelToTable(bool check)
         {
             try
             {
@@ -142,7 +142,7 @@ namespace GameFramework
 
                     if (dataTables.Count == 1)
                     {
-                        if (isCheck && !ExcelCheckEditor.Default.CheckExcel(dataTables[0], fileInfo.Name))
+                        if (check && !ExcelCheckEditor.Default.CheckExcel(dataTables[0], fileInfo.Name))
                         {
                             return;
                         }
@@ -153,7 +153,7 @@ namespace GameFramework
                     {
                         for (int j = 0; j < dataTables.Count; ++j)
                         {
-                            if (isCheck && !ExcelCheckEditor.Default.CheckExcel(dataTables[j], fileInfo.Name))
+                            if (check && !ExcelCheckEditor.Default.CheckExcel(dataTables[j], fileInfo.Name))
                             {
                                 return;
                             }

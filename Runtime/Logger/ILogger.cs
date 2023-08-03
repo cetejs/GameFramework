@@ -4,7 +4,7 @@ namespace GameFramework
 {
     internal interface ILogger : ILogHandler
     {
-        bool IsEnableLog { get; set; }
+        bool EnableLog { get; set; }
 
         LogLevel FilterLogLevel { get; set; }
 

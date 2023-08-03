@@ -11,7 +11,7 @@ namespace GameFramework
         private Editor settingEditor;
         private PersistentManager manager;
         private PersistentData newData = new PersistentData();
-        private bool isShowNewDataBox;
+        private bool showNewDataBox;
         private StorageType storageType;
         private int storageId;
 
@@ -65,7 +65,7 @@ namespace GameFramework
                 DrawData(dataList[i]);
             }
 
-            if (isShowNewDataBox)
+            if (showNewDataBox)
             {
                 DrawNewData();
             }
@@ -154,7 +154,7 @@ namespace GameFramework
         {
             newData.Key = default;
             newData.Value = default;
-            isShowNewDataBox = true;
+            showNewDataBox = true;
         }
 
         private void DrawNewData()
@@ -164,37 +164,37 @@ namespace GameFramework
             newData.Value = EditorGUILayout.TextField(newData.Value);
             if (GUILayout.Button("Add"))
             {
-                bool isError = false;
+                bool error = false;
                 if (string.IsNullOrEmpty(newData.Key))
                 {
                     Debug.LogError("Key is invalid");
-                    isError = true;
+                    error = true;
                 }
 
-                if (!isError && string.IsNullOrEmpty(newData.Value))
+                if (!error && string.IsNullOrEmpty(newData.Value))
                 {
                     Debug.LogError("Value is invalid");
-                    isError = true;
+                    error = true;
                 }
 
-                if (!isError && Manager.HasKey(newData.Key))
+                if (!error && Manager.HasKey(newData.Key))
                 {
                     Debug.LogError($"Key {newData.Key} is already exist");
-                    isError = true;
+                    error = true;
                 }
 
-                if (!isError)
+                if (!error)
                 {
                     Manager.SetData(newData.Key, newData.Value);
                     dataList.Add(newData);
                     newData = new PersistentData();
-                    isShowNewDataBox = false;
+                    showNewDataBox = false;
                 }
             }
 
             if (GUILayout.Button("Delete"))
             {
-                isShowNewDataBox = false;
+                showNewDataBox = false;
             }
 
             EditorGUILayout.EndHorizontal();
@@ -228,7 +228,7 @@ namespace GameFramework
         {
             Manager.DeleteAll();
             dataList.Clear();
-            isShowNewDataBox = false;
+            showNewDataBox = false;
         }
 
         private class PersistentData

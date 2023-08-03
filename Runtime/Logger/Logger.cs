@@ -11,17 +11,17 @@ namespace GameFramework
         public Logger(ILogHandler logHandler)
         {
             handler = logHandler;
-            IsEnableLog = true;
+            EnableLog = true;
             FilterLogLevel = LogLevel.Log;
         }
 
-        public bool IsEnableLog { get; set; }
+        public bool EnableLog { get; set; }
 
         public LogLevel FilterLogLevel { get; set; }
 
         public bool IsLogTypeAllowed(LogLevel logLevel)
         {
-            if (!IsEnableLog)
+            if (!EnableLog)
             {
                 return false;
             }

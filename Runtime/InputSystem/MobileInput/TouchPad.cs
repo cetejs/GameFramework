@@ -3,7 +3,7 @@ using UnityEngine.EventSystems;
 
 namespace GameFramework
 {
-    internal class TouchPad : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler
+    internal class TouchPad : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
         [SerializeField]
         private AxisOption axisType = AxisOption.Both;
@@ -14,8 +14,10 @@ namespace GameFramework
         [SerializeField]
         private float responseSpeed = 1f;
 
-        private bool isUseHorizontal;
-        private bool isUseVertical;
+        private bool useHorizontal;
+        private bool useVertical;
+        private bool dragging;
+        private Vector2 currentPos;
         private Vector2 previousPos;
         private InputControl input;
 
@@ -24,13 +26,23 @@ namespace GameFramework
             input = GetComponentInParent<InputControl>();
         }
 
+        private void Update()
+        {
+            if (dragging)
+            {
+                Vector2 delta = currentPos - previousPos;
+                UpdateAxis(delta);
+                previousPos = currentPos;
+            }
+        }
+
         private void UpdateAxis(Vector2 value)
         {
-            isUseHorizontal = axisType == AxisOption.Both || axisType == AxisOption.OnlyHorizontal;
-            isUseVertical = axisType == AxisOption.Both || axisType == AxisOption.OnlyVertical;
+            useHorizontal = axisType == AxisOption.Both || axisType == AxisOption.OnlyHorizontal;
+            useVertical = axisType == AxisOption.Both || axisType == AxisOption.OnlyVertical;
 
             Vector2 delta = value.normalized;
-            if (isUseHorizontal)
+            if (useHorizontal)
             {
                 if (input != null)
                 {
@@ -42,7 +54,7 @@ namespace GameFramework
                 }
             }
 
-            if (isUseVertical)
+            if (useVertical)
             {
                 if (input != null)
                 {
@@ -55,20 +67,20 @@ namespace GameFramework
             }
         }
 
+        public void OnBeginDrag(PointerEventData eventData)
+        {
+            dragging = true;
+            previousPos = eventData.position;
+        }
+
         public void OnDrag(PointerEventData eventData)
         {
-            Vector2 delta = eventData.position - previousPos;
-            previousPos = eventData.position;
-            UpdateAxis(delta);
+            currentPos = eventData.position;
         }
 
-        public void OnPointerDown(PointerEventData eventData)
+        public void OnEndDrag(PointerEventData eventData)
         {
-            previousPos = eventData.position;
-        }
-
-        public void OnPointerUp(PointerEventData eventData)
-        {
+            dragging = false;
             UpdateAxis(Vector2.zero);
         }
 

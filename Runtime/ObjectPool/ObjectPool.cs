@@ -39,9 +39,9 @@ namespace GameFramework
 
         public void Init(string path, int capacity)
         {
-            this.path = name;
+            this.path = path;
             this.capacity = Mathf.Max(1, capacity);
-            string fullPath = PathUtils.Combine(GameSettings.Instance.PoolAssetName, name);
+            string fullPath = PathUtils.Combine(GameSettings.Instance.PoolAssetName, path);
             GameObject go = AssetManager.Instance.LoadAsset<GameObject>(fullPath);
             LoadPrefabComplete(go);
             RefreshPoolCount();
@@ -49,9 +49,9 @@ namespace GameFramework
 
         public void InitAsync(string path, int capacity, Action<ObjectPool> callback)
         {
-            this.path = name;
+            this.path = path;
             this.capacity = Mathf.Max(1, capacity);
-            string fullPath = PathUtils.Combine(GameSettings.Instance.PoolAssetName, name);
+            string fullPath = PathUtils.Combine(GameSettings.Instance.PoolAssetName, path);
             operation = AssetManager.Instance.LoadAssetAsync(fullPath);
             operation.OnCompleted += _ =>
             {

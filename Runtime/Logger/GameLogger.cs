@@ -14,16 +14,16 @@ namespace GameFramework
         static GameLogger()
         {
 #if UNITY_EDITOR || ENABLE_LOG
-            IsEnableLog = true;
+            EnableLog = true;
 #else
-            IsEnableLog = false;
+            EnableLog = false;
 #endif
         }
 
-        public static bool IsEnableLog
+        public static bool EnableLog
         {
-            get { return logger.IsEnableLog; }
-            set { logger.IsEnableLog = value; }
+            get { return logger.EnableLog; }
+            set { logger.EnableLog = value; }
         }
 
         public static LogLevel FilterLogLevel
