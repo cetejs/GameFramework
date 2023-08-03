@@ -152,6 +152,12 @@ namespace GameFramework
                     return null;
                 }
 
+                DataTableSetting setting = DataTableSetting.Instance;
+                if (setting.EncryptionType == EncryptionType.AES)
+                {
+                    return EncryptionUtils.AES.DecryptFromBytes(asset.bytes, setting.Password);
+                }
+
                 return asset.text;
             }
 
@@ -167,7 +173,15 @@ namespace GameFramework
                         return;
                     }
 
-                    callback?.Invoke(asset.text);
+                    DataTableSetting setting = DataTableSetting.Instance;
+                    if (setting.EncryptionType == EncryptionType.AES)
+                    {
+                        callback?.Invoke(EncryptionUtils.AES.DecryptFromBytes(asset.bytes, setting.Password));
+                    }
+                    else
+                    {
+                        callback?.Invoke(asset.text);
+                    }
                 };
             }
 

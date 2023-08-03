@@ -116,7 +116,7 @@ namespace GameFramework
 
                     if (assetName.EndsWith(TextureExtensions))
                     {
-                        AddTexture(assetName);
+                        AddTexture(bundleName, assetName);
                         continue;
                     }
 
@@ -203,7 +203,7 @@ namespace GameFramework
 
                 if (dp.EndsWith(TextureExtensions))
                 {
-                    AddTexture(dp);
+                    AddTexture(null, dp);
                     continue;
                 }
 
@@ -358,9 +358,13 @@ namespace GameFramework
             }
         }
 
-        private void AddTexture(string assetName)
+        private void AddTexture(string bundleName, string assetName)
         {
-            string bundleName = assetName.RemoveLastOf("/").GetLastOf("/");
+            if (string.IsNullOrEmpty(bundleName))
+            {
+                bundleName = assetName.RemoveLastOf("/").GetLastOf("/");
+            }
+
             if (!spriteAtlases.TryGetValue(bundleName, out HashSet<string> hashSet))
             {
                 hashSet = new HashSet<string>();

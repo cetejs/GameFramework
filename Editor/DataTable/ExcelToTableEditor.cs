@@ -28,9 +28,16 @@ namespace GameFramework
             }
 
             sb.RemoveLastCount();
-            DataTableSetting config = DataTableSetting.Instance;
-            string fullPath = Path.Combine(config.OutputTablePath, fileName);
-            FileUtils.WriteAllText(fullPath, sb.ToString());
+            DataTableSetting setting = DataTableSetting.Instance;
+            string fullPath = Path.Combine(setting.OutputTablePath, fileName);
+            if (setting.EncryptionType == EncryptionType.AES)
+            {
+                FileUtils.WriteAllTBytes(fullPath, EncryptionUtils.AES.EncryptToBytes(sb.ToString(), setting.Password));
+            }
+            else
+            {
+                FileUtils.WriteAllText(fullPath, sb.ToString());
+            }
         }
     }
 }

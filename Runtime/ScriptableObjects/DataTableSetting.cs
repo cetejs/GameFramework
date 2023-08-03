@@ -8,6 +8,8 @@
         public string TableBuildPath = "Configs/Tables";
         public string ScriptBuildPath = "Scripts/Tables";
         public string ScriptNamespace = "GameFramework";
+        public EncryptionType EncryptionType;
+        public string Password = "password";
 
         private void OnEnable()
         {
