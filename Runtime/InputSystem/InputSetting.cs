@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace GameFramework
 {
-    [CreateAssetMenu(menuName = "Configs/InputSetting")]
+    [CreateAssetMenu(menuName = "Config/InputSetting")]
     public class InputSetting : ScriptableObject
     {
         [SerializeField]
