@@ -33,7 +33,7 @@
             get
             {
 #if UNITY_EDITOR
-                return PathUtils.Combine(PathUtils.AssetPath, BundleBuildPath);
+                return BundleSavePath;
 #else
                 return PathUtils.Combine(PathUtils.PersistentDataPath, BundleAssetPath);
 #endif
