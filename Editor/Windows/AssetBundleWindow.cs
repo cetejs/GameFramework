@@ -39,7 +39,7 @@ namespace GameFramework
 
         private string BundleRoot
         {
-            get { return PathUtils.Combine("Assets", AssetSetting.Instance.BundleAssetName); }
+            get { return PathUtils.Combine("Assets/", AssetSetting.Instance.BundleAssetName); }
         }
 
         private string BuiltinResourcesRoot
@@ -49,7 +49,12 @@ namespace GameFramework
 
         private string ShaderVariantsPath
         {
-            get { return StringUtils.Concat(AssetSetting.Instance.ShaderVariantsAssetPath, ShaderVariantExtension); }
+            get { return StringUtils.Concat("Assets/", AssetSetting.Instance.ShaderVariantsAssetPath, ShaderVariantExtension); }
+        }
+
+        private string SpriteAtlasAssetPath
+        {
+            get { return StringUtils.Concat("Assets/", AssetSetting.Instance.SpriteAtlasAssetPath); }
         }
 
         public override void Init(string name, GameWindow parent)
@@ -152,8 +157,8 @@ namespace GameFramework
 
                 if (AssetSetting.Instance.DeleteSpriteAtlasWhenBuild)
                 {
-                    DirectoryUtils.DeleteDirectory(AssetSetting.Instance.SpriteAtlasAssetPath);
-                    FileUtils.DeleteFile(StringUtils.Concat(AssetSetting.Instance.SpriteAtlasAssetPath, ".meta"));
+                    DirectoryUtils.DeleteDirectory(SpriteAtlasAssetPath);
+                    FileUtils.DeleteFile(StringUtils.Concat(SpriteAtlasAssetPath, ".meta"));
                 }
             }
             catch (Exception ex)
@@ -339,9 +344,9 @@ namespace GameFramework
 
                 if (sprites.Count > 0)
                 {
-                    DirectoryUtils.CreateDirectory(AssetSetting.Instance.SpriteAtlasAssetPath);
+                    DirectoryUtils.CreateDirectory(SpriteAtlasAssetPath);
                     SpriteAtlas atlas = new SpriteAtlas();
-                    string path = StringUtils.Concat(AssetSetting.Instance.SpriteAtlasAssetPath, "/", bundleName, SpriteAtlaslExtension);
+                    string path = StringUtils.Concat(SpriteAtlasAssetPath, "/", bundleName, SpriteAtlaslExtension);
                     atlas.SetPackingSettings(new SpriteAtlasPackingSettings()
                     {
                         padding = 2 << AssetSetting.Instance.SpriteAtlasPackingPadding,

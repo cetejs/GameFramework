@@ -2,20 +2,20 @@
 {
     public class AssetSetting : ScriptableObjectSingleton<AssetSetting>
     {
-        [InspectorGroup("BundleSetting")]
+        [InspectorGroup("BundleSetting", 1)]
         public string BundleAssetName = "ToBundle";
         public string BundleExtension = "ab";
-        public string BundleBuildPath = PathUtils.StreamingAssetsPath;
+        public string BundleBuildPath = "StreamingAssets";
         public string BuiltinResourcesBundleName = "builtin_extra";
         public AssetLoadOption AssetLoadOption;
-        [InspectorGroup("ShaderSetting")]
+        [InspectorGroup("ShaderSetting", 3)]
         public string ShaderBundleName = "shaders";
-        public string ShaderVariantsAssetPath = "Assets/Shaders/ShaderVariants";
+        public string ShaderVariantsAssetPath = "Shaders/ShaderVariants";
         public bool DeleteShaderVariantsWhenBuild = false;
-        [InspectorGroup("SpriteAtlasSetting")]
+        [InspectorGroup("SpriteAtlasSetting", 6)]
         [EnumPopUp("2", "4", "8")]
         public int SpriteAtlasPackingPadding = 0;
-        public string SpriteAtlasAssetPath = "Assets/SpriteAtlas";
+        public string SpriteAtlasAssetPath = "SpriteAtlas";
         public bool DeleteSpriteAtlasWhenBuild = false;
 
         public string BundleAssetPath
@@ -25,7 +25,7 @@
 
         public string BundleSavePath
         {
-            get { return PathUtils.Combine(BundleBuildPath, BundleAssetName); }
+            get { return PathUtils.Combine(PathUtils.AssetPath, BundleBuildPath, BundleAssetName); }
         }
 
         public string BundleLoadPath
@@ -33,7 +33,7 @@
             get
             {
 #if UNITY_EDITOR
-                return BundleSavePath;
+                return PathUtils.Combine(PathUtils.AssetPath, BundleBuildPath);
 #else
                 return PathUtils.Combine(PathUtils.PersistentDataPath, BundleAssetPath);
 #endif
