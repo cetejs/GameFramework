@@ -9,5 +9,12 @@
 		"name": "Cetejs",
 		"email": "cetejs@gmail.com",
 		"url": "https://github.com/cetejs"
-	}
+	},
+	"samples": [
+		{
+			"displayName": "SimpleController",
+			"description": "SimpleController Sample",
+			"path": "Samples~/SimpleController"
+		}
+	]
 }

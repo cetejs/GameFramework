@@ -19,10 +19,7 @@ namespace GameFramework
         public InputSetting InputSetting
         {
             get { return inputSetting; }
-            set
-            {
-                inputSetting = value;
-            }
+            set { inputSetting = value; }
         }
 
         public InputDevice InputDevice

@@ -20,6 +20,11 @@ namespace GameFramework
 
         protected virtual void OnEnable()
         {
+            if (target == null)
+            {
+                return;
+            }
+
             CollectGroupAttributes();
         }
 
