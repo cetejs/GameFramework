@@ -22,24 +22,12 @@ namespace GameFramework
             set
             {
                 inputSetting = value;
-                if (inputSetting != null)
-                {
-                    inputSetting.CollectInputMappings();
-                }
             }
         }
 
         public InputDevice InputDevice
         {
             get { return InputManager.Instance.GetInputDevice(identity); }
-        }
-
-        private void Awake()
-        {
-            if (inputSetting != null)
-            {
-                inputSetting.CollectInputMappings();
-            }
         }
 
         public float GetAxis(string name)

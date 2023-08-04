@@ -75,11 +75,23 @@ namespace GameFramework
             }
         };
 
+        private bool inputMappingsCollected;
         private Dictionary<string, InputMapping> inputMappings = new Dictionary<string, InputMapping>();
         private Dictionary<string, InputMapping> boundMappings = new Dictionary<string, InputMapping>();
 
+        internal void TryCollectInputMappings()
+        {
+            if (inputMappingsCollected)
+            {
+                return;
+            }
+
+            CollectInputMappings();
+        }
+
         internal void CollectInputMappings()
         {
+            inputMappingsCollected = true;
             inputMappings.Clear();
             foreach (InputMapping input in InputMappings)
             {
@@ -136,6 +148,7 @@ namespace GameFramework
 
         internal InputMapping GetInputMapping(string name)
         {
+            TryCollectInputMappings();
             if (inputMappings.TryGetValue(name, out InputMapping input))
             {
                 return input;
@@ -147,6 +160,7 @@ namespace GameFramework
 
         internal InputMapping GetBoundMapping(string name, InputIdentity identity)
         {
+            TryCollectInputMappings();
             string boundName = StringUtils.Concat(name, (int) identity);
             if (boundMappings.TryGetValue(boundName, out InputMapping bound))
             {

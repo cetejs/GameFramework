@@ -66,7 +66,6 @@ namespace GameFramework
             }
 #endif
             defaultInputSetting = Resources.Load<InputSetting>("DefaultInputSetting");
-            defaultInputSetting.CollectInputMappings();
         }
 
         private void SwitchDefaultDevice()
