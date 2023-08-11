@@ -9,6 +9,7 @@ namespace GameFramework
         private AssetDatabaseLoader databaseLoader = new AssetDatabaseLoader();
         private ResourcesLoader resourcesLoader = new ResourcesLoader();
         private SceneLoader sceneLoader = new SceneLoader();
+        private AssetBundleDownloader downloader = new AssetBundleDownloader();
 
         public T LoadAsset<T>(string path) where T : Object
         {
@@ -158,6 +159,11 @@ namespace GameFramework
         public SceneAsyncOperation UnloadSceneAsync(string sceneName, bool unloadBundle = false)
         {
             return sceneLoader.UnloadSceneAsync(sceneName, unloadBundle);
+        }
+
+        public CatalogsAsyncOperation UpdateCatalogs()
+        {
+            return downloader.UpdateCatalogs();
         }
     }
 }

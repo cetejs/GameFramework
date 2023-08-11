@@ -138,7 +138,7 @@ namespace GameFramework
             File.WriteAllBytes(path, contents);
         }
 
-        public static async void WriteAllTBytesAsync(string path,  byte[] contents, Action callback)
+        public static async void WriteAllBytesAsync(string path,  byte[] contents, Action callback)
         {
             CheckDirectory(path);
             await File.WriteAllBytesAsync(path, contents);

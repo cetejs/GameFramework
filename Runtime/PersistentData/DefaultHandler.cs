@@ -114,7 +114,7 @@ namespace GameFramework
             if (PersistentSetting.Instance.EncryptionType == EncryptionType.AES)
             {
                 byte[] bytes = EncryptionUtils.AES.EncryptToBytes(json, PersistentSetting.Instance.Password);
-                FileUtils.WriteAllTBytesAsync(savePath, bytes, callback);
+                FileUtils.WriteAllBytesAsync(savePath, bytes, callback);
             }
             else
             {

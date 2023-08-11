@@ -37,7 +37,7 @@ namespace GameFramework
                 loader.LoadBundle(dependency);
             }
 
-            string fullPath = PathUtils.Combine(AssetSetting.Instance.BundleLoadPath, bundleName);
+            string fullPath = AssetSetting.Instance.GetBundlePath(bundleName);
             bundle = AssetBundle.LoadFromFile(fullPath);
             unloadOperation = null;
 
@@ -70,7 +70,7 @@ namespace GameFramework
                 dps.Add(loader.LoadBundleAsync(dependency));
             }
 
-            string fullPath = PathUtils.Combine(AssetSetting.Instance.BundleLoadPath, bundleName);
+            string fullPath = AssetSetting.Instance.GetBundlePath(bundleName);
             AssetBundleCreateRequest request = AssetBundle.LoadFromFileAsync(fullPath);
             loadOperation = new BundleAsyncOperation();
             loadOperation.SetOperation(request);

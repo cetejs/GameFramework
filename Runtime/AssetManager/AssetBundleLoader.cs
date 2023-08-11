@@ -128,9 +128,8 @@ namespace GameFramework
         {
             if (!manifest)
             {
-                string path = AssetSetting.Instance.BundleLoadPath;
-                path = PathUtils.Combine(path, path.GetLastOf("/"));
-                AssetBundle bundle = AssetBundle.LoadFromFile(path);
+                string bundlePath = AssetSetting.Instance.GetBundlePath(AssetSetting.Instance.ManifestBundleName);
+                AssetBundle bundle = AssetBundle.LoadFromFile(bundlePath);
                 manifest = bundle.LoadAsset<AssetBundleManifest>("AssetBundleManifest");
             }
 

@@ -1,4 +1,8 @@
-﻿namespace GameFramework
+﻿using System.IO;
+using UnityEngine;
+using UnityEngine.Serialization;
+
+namespace GameFramework
 {
     public class AssetSetting : ScriptableObjectSingleton<AssetSetting>
     {
@@ -7,6 +11,7 @@
         public string BundleExtension = "ab";
         public string BundleBuildPath = "StreamingAssets";
         public string BuiltinResourcesBundleName = "builtin_extra";
+        [FormerlySerializedAs("DownloadURL")] public string DownloadUri;
         public AssetLoadOption AssetLoadOption;
         [InspectorGroup("ShaderSetting", 3)]
         public string ShaderBundleName = "shaders";
@@ -28,15 +33,34 @@
             get { return PathUtils.Combine(PathUtils.AssetPath, BundleBuildPath, BundleAssetName); }
         }
 
-        public string BundleLoadPath
+        public string LocalBundlePath
         {
             get
             {
 #if UNITY_EDITOR
                 return BundleSavePath;
 #else
-                return PathUtils.Combine(PathUtils.PersistentDataPath, BundleAssetPath);
+                return PathUtils.Combine(PathUtils.PersistentDataPath, BundleAssetName);
 #endif
+            }
+        }
+
+        public string RemoteBundleUri
+        {
+            get { return PathUtils.Combine(Instance.DownloadUri, Instance.Platform, Instance.BundleAssetName); }
+        }
+
+        public string ManifestBundleName
+        {
+            get
+            {
+                string bundlePath = BundleAssetName.GetLastOf("/");
+                if (!string.IsNullOrEmpty(bundlePath))
+                {
+                    return bundlePath;
+                }
+
+                return BundleAssetName;
             }
         }
 
@@ -60,6 +84,39 @@
 
                 return false;
             }
+        }
+
+        public string Platform
+        {
+            get
+            {
+                switch (Application.platform)
+                {
+                    case RuntimePlatform.WindowsEditor:
+                    case RuntimePlatform.WindowsPlayer:
+                        return "Windows";
+                    case RuntimePlatform.OSXEditor:
+                    case RuntimePlatform.OSXPlayer:
+                        return "OSX";
+                    case RuntimePlatform.Android:
+                        return "Android";
+                    case RuntimePlatform.IPhonePlayer:
+                        return "iOS";
+                    default:
+                        return Application.platform.ToString();
+                }
+            }
+        }
+
+        public string GetBundlePath(string bundleName)
+        {
+            string persistentBundlePath = PathUtils.Combine(PathUtils.PersistentDataPath, BundleAssetName, bundleName);
+            if (File.Exists(persistentBundlePath))
+            {
+                return persistentBundlePath;
+            }
+            
+            return PathUtils.Combine(PathUtils.StreamingAssetsPath, BundleAssetName, bundleName);
         }
     }
 }
