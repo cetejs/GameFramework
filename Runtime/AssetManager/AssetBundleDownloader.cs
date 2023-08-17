@@ -208,12 +208,6 @@ namespace GameFramework
             string manifestUri = PathUtils.Combine(AssetSetting.Instance.RemoteBundleUri, AssetSetting.Instance.ManifestBundleName);
             string manifestPath = PathUtils.Combine(AssetSetting.Instance.LocalBundlePath, AssetSetting.Instance.ManifestBundleName);
             yield return DownloadBundle(manifestUri, manifestPath);
-            if (operation.Status == UpdateCatalogsStatus.NetworkError)
-            {
-                yield break;
-            }
-
-            PlayerPrefs.DeleteKey(CatalogsKey);
         }
 
         private IEnumerator DownloadBundle(string uri, string path)
@@ -251,8 +245,12 @@ namespace GameFramework
 
                 string bundlePath = PathUtils.Combine(AssetSetting.Instance.LocalBundlePath, catalog.Bundle);
                 FileUtils.DeleteFile(bundlePath);
+                catalog.Competed = true;
+                PlayerPrefs.SetString(CatalogsKey, JsonUtility.ToJson(operation.Catalogs));
                 yield return null;
             }
+
+            PlayerPrefs.DeleteKey(CatalogsKey);
         }
     }
 }

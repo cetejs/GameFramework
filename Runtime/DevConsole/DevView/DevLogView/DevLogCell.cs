@@ -14,7 +14,6 @@ namespace GameFramework
 
         private void Awake()
         {
-            toggle.group = GetComponentInParent<ToggleGroup>();
             toggle.onValueChanged.AddListener(isOn =>
             {
                 if (logView && isOn)
@@ -22,6 +21,14 @@ namespace GameFramework
                     logView.OnLogCellClicked(Index);
                 }
             });
+        }
+
+        protected override void OnWakeUp()
+        {
+            if (toggle.group == null)
+            {
+                toggle.group = GetComponentInParent<ToggleGroup>();
+            }
         }
 
         public void SetData(DevLogView logView, string text, bool isOn)
