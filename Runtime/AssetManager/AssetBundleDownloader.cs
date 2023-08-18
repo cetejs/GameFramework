@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -48,7 +49,7 @@ namespace GameFramework
             string json = PlayerPrefs.GetString(CatalogsKey, null);
             if (!string.IsNullOrEmpty(json))
             {
-                operation.Catalogs = JsonUtility.FromJson<List<BundleCatalog>>(json);
+                operation.Catalogs = JsonUtils.ToObject<List<BundleCatalog>>(json);
                 yield break;
             }
 
@@ -118,7 +119,17 @@ namespace GameFramework
                 }
             }
 
-            PlayerPrefs.SetString(CatalogsKey, JsonUtility.ToJson(operation.Catalogs));
+            if (operation.Catalogs.Count > 0)
+            {
+                operation.Catalogs.Add(new BundleCatalog()
+                {
+                    Bundle = AssetSetting.Instance.ManifestBundleName,
+                    Updated = true,
+                    Competed = false
+                });
+            }
+
+            PlayerPrefs.SetString(CatalogsKey, JsonUtils.ToJson(operation.Catalogs));
         }
 
         private Dictionary<string, Hash128> CollectBundleHash(AssetBundle manifestBundle)
@@ -141,7 +152,6 @@ namespace GameFramework
 
         private IEnumerator DownloadBundles()
         {
-            operation.BundleLengths = new List<long>(operation.Catalogs.Count);
             foreach (BundleCatalog catalog in operation.Catalogs)
             {
                 if (!catalog.Updated)
@@ -161,7 +171,7 @@ namespace GameFramework
                         yield break;
                     }
 
-                    operation.BundleLengths.Add(fileInfo.Length);
+                    operation.AddLength(fileInfo.Length);
                 }
                 else
                 {
@@ -174,7 +184,7 @@ namespace GameFramework
                     }
 
                     long length = long.Parse(request.GetResponseHeader("Content-Length"));
-                    operation.BundleLengths.Add(length);
+                    operation.AddLength(length);
                 }
             }
 
@@ -188,7 +198,7 @@ namespace GameFramework
 
                 if (catalog.Competed)
                 {
-                    operation.DownloadCount++;
+                    operation.AddDownload();
                     continue;
                 }
 
@@ -200,20 +210,22 @@ namespace GameFramework
                     yield break;
                 }
 
-                operation.DownloadCount++;
+                operation.AddDownload();
                 catalog.Competed = true;
-                PlayerPrefs.SetString(CatalogsKey, JsonUtility.ToJson(operation.Catalogs));
+                PlayerPrefs.SetString(CatalogsKey, JsonUtils.ToJson(operation.Catalogs));
             }
-
-            string manifestUri = PathUtils.Combine(AssetSetting.Instance.RemoteBundleUri, AssetSetting.Instance.ManifestBundleName);
-            string manifestPath = PathUtils.Combine(AssetSetting.Instance.LocalBundlePath, AssetSetting.Instance.ManifestBundleName);
-            yield return DownloadBundle(manifestUri, manifestPath);
         }
 
         private IEnumerator DownloadBundle(string uri, string path)
         {
             UnityWebRequest request = UnityWebRequest.Get(uri);
-            yield return request.SendWebRequest();
+            request.SendWebRequest();
+            while (!request.isDone)
+            {
+                operation.CurrentDownloadLength = (long) request.downloadedBytes;
+                yield return null;
+            }
+
             if (request.result != UnityWebRequest.Result.Success)
             {
                 operation.Status = UpdateCatalogsStatus.NetworkError;
@@ -246,7 +258,7 @@ namespace GameFramework
                 string bundlePath = PathUtils.Combine(AssetSetting.Instance.LocalBundlePath, catalog.Bundle);
                 FileUtils.DeleteFile(bundlePath);
                 catalog.Competed = true;
-                PlayerPrefs.SetString(CatalogsKey, JsonUtility.ToJson(operation.Catalogs));
+                PlayerPrefs.SetString(CatalogsKey, JsonUtils.ToJson(operation.Catalogs));
                 yield return null;
             }
 

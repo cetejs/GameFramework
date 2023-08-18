@@ -1,8 +1,5 @@
-﻿using System;
-
-namespace GameFramework
+﻿namespace GameFramework
 {
-    [Serializable]
     internal class BundleCatalog
     {
         public string Bundle;

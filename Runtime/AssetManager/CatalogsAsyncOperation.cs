@@ -6,10 +6,12 @@ namespace GameFramework
     public class CatalogsAsyncOperation
     {
         internal List<BundleCatalog> Catalogs;
-        internal List<long> BundleLengths;
-        internal int DownloadCount;
+        internal long CurrentDownloadLength;
         private bool isDone;
+        private long length;
         private long totalLength;
+        private int downloadCount;
+        private List<long> bundleLengths;
         private Action<CatalogsAsyncOperation> onCompleted;
 
         public UpdateCatalogsStatus Status { get; internal set; }
@@ -31,49 +33,36 @@ namespace GameFramework
                     return 1f;
                 }
 
-                if (BundleLengths != null && BundleLengths.Count > 0)
+                if (TotalLength > 0)
                 {
-                   return DownloadCount / (float)BundleLengths.Count;
+                    return Length / (float)TotalLength;
                 }
 
                 return 0f;
             }
         }
 
-        public float Length
+        public long Length
         {
             get
             {
-                long result = 0L;
-                if (BundleLengths != null)
+                if (bundleLengths == null)
                 {
-                    for (int i = 0; i < DownloadCount; i++)
-                    {
-                        result += BundleLengths[i];
-                    }
+                    return 0L;
                 }
 
-                return result;
+                if (downloadCount >= bundleLengths.Count)
+                {
+                    return length;
+                }
+
+                return length + CurrentDownloadLength;
             }
         }
 
-        public float TotalLength
+        public long TotalLength
         {
-            get
-            {
-                if (totalLength == 0u)
-                {
-                    if (BundleLengths != null)
-                    {
-                        for (int i = 0; i < BundleLengths.Count; i++)
-                        {
-                            totalLength += BundleLengths[i];
-                        }
-                    }
-                }
-
-                return totalLength;
-            }
+            get { return totalLength; }
         }
         
         public event Action<CatalogsAsyncOperation> OnCompleted
@@ -89,6 +78,23 @@ namespace GameFramework
                 onCompleted += value;
             }
             remove { onCompleted -= value; }
+        }
+
+        internal void AddLength(long length)
+        {
+            if (bundleLengths == null)
+            {
+                bundleLengths = new List<long>();
+            }
+            
+            bundleLengths.Add(length);
+            totalLength += length;
+        }
+
+        internal void AddDownload()
+        {
+            length += bundleLengths[downloadCount++];
+            CurrentDownloadLength = 0;
         }
 
         internal void Complete()

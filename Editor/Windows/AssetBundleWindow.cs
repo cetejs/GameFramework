@@ -39,7 +39,7 @@ namespace GameFramework
 
         private string BundleRoot
         {
-            get { return PathUtils.Combine("Assets/", AssetSetting.Instance.BundleAssetName); }
+            get { return PathUtils.Combine("Assets", AssetSetting.Instance.BundleAssetName); }
         }
 
         private string BuiltinResourcesRoot
@@ -54,7 +54,7 @@ namespace GameFramework
 
         private string SpriteAtlasAssetPath
         {
-            get { return StringUtils.Concat("Assets/", AssetSetting.Instance.SpriteAtlasAssetPath); }
+            get { return PathUtils.Combine("Assets", AssetSetting.Instance.SpriteAtlasAssetPath); }
         }
 
         public override void Init(string name, GameWindow parent)
