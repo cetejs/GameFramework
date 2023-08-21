@@ -39,6 +39,7 @@ namespace GameFramework
             }
 
             yield return DeleteRedundancy();
+            operation.Status = UpdateCatalogsStatus.Success;
             operation.Complete();
         }
 

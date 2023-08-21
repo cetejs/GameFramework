@@ -10,6 +10,7 @@ namespace GameFramework
         public string BundleAssetName = "ToBundle";
         public string BundleExtension = "ab";
         public string BundleBuildPath = "StreamingAssets";
+        public string BundleHashName = "BundleHash";
         public string BuiltinResourcesBundleName = "builtin_extra";
         [FormerlySerializedAs("DownloadURL")] public string DownloadUri;
         public AssetLoadOption AssetLoadOption;

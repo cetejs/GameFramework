@@ -10,6 +10,7 @@ namespace GameFramework
         private ResourcesLoader resourcesLoader = new ResourcesLoader();
         private SceneLoader sceneLoader = new SceneLoader();
         private AssetBundleDownloader downloader = new AssetBundleDownloader();
+        private AssetBundleIntegrityChecker integrityChecker = new AssetBundleIntegrityChecker();
 
         public T LoadAsset<T>(string path) where T : Object
         {
@@ -164,6 +165,11 @@ namespace GameFramework
         public CatalogsAsyncOperation UpdateCatalogs()
         {
             return downloader.UpdateCatalogs();
+        }
+
+        public IntegrityAsyncOperation CheckIntegrity()
+        {
+            return integrityChecker.CheckIntegrity();
         }
     }
 }

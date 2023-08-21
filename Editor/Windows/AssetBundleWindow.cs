@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using UnityEditor;
 using UnityEditor.U2D;
 using UnityEngine.Rendering;
@@ -147,7 +148,8 @@ namespace GameFramework
                 if (bundleBuilds.Count > 0)
                 {
                     DirectoryUtils.CreateDirectory(outputPath);
-                    BuildPipeline.BuildAssetBundles(outputPath, bundleBuilds.ToArray(), buildOptions, buildTarget);
+                    AssetBundleManifest manifest = BuildPipeline.BuildAssetBundles(outputPath, bundleBuilds.ToArray(), buildOptions, buildTarget);
+                    CollectBundleHash(manifest);
                 }
 
                 if (AssetSetting.Instance.DeleteShaderVariantsWhenBuild)
@@ -446,6 +448,36 @@ namespace GameFramework
                 keywords = ((string[]) args[5]).ToList(),
                 remainingKeywords = ((string[]) args[6]).ToList(),
             };
+        }
+
+        private void CollectBundleHash(AssetBundleManifest manifest)
+        {
+            string outputPath = AssetSetting.Instance.BundleSavePath;
+            string[] bundleNames = manifest.GetAllAssetBundles();
+            StringBuilder sb = new StringBuilder();
+            bool first = true;
+            foreach (string bundleName in bundleNames)
+            {
+                if (first)
+                {
+                    first = false;
+                }
+                else
+                {
+                    sb.Append("\n");
+                }
+
+                string path = PathUtils.Combine(outputPath, "/", bundleName);
+                byte[] data = File.ReadAllBytes(path);
+                Hash128 hash = Hash128.Compute(data);
+                sb.AppendJoin(",", bundleName, hash.ToString());
+            }
+
+            if (sb.Length > 0)
+            {
+                string fullPath = StringUtils.Concat(outputPath, "/", AssetSetting.Instance.BundleHashName, ".txt");
+                File.WriteAllText(fullPath, sb.ToString());   
+            }
         }
 
         private void ClearAssetBundle()

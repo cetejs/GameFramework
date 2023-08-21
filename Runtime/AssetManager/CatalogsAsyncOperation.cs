@@ -110,6 +110,7 @@ namespace GameFramework
         CollectCatalogs,
         DownloadBundles,
         DeleteRedundancy,
+        Success,
         NetworkError
     }
 }
