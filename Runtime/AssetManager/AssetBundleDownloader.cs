@@ -49,7 +49,10 @@ namespace GameFramework
             if (!string.IsNullOrEmpty(json))
             {
                 operation.Catalogs = JsonUtils.ToObject<List<BundleCatalog>>(json);
-                yield break;
+            }
+            else
+            {
+                operation.Catalogs = new List<BundleCatalog>();
             }
 
             if (string.IsNullOrEmpty(AssetSetting.Instance.DownloadUri))
@@ -69,18 +72,42 @@ namespace GameFramework
                 yield break;
             }
 
-            operation.Catalogs = new List<BundleCatalog>();
-            AssetBundle remoteManifestBundle = DownloadHandlerAssetBundle.GetContent(remoteManifestRequest);
-            Dictionary<string, Hash128> remoteBundleHash = CollectBundleHash(remoteManifestBundle);
+            Dictionary<string, Hash128> remoteBundleHash = CollectBundleHash(remoteManifestRequest);
             yield return null;
 
             string localManifestPath = AssetSetting.Instance.GetBundlePath(AssetSetting.Instance.ManifestBundleName);
-            AssetBundle localManifestBundle = AssetBundle.LoadFromFile(localManifestPath);
-            Dictionary<string, Hash128> localBundleHash = CollectBundleHash(localManifestBundle);
+            UnityWebRequest localManifestRequest = UnityWebRequestAssetBundle.GetAssetBundle(localManifestPath);
+            yield return localManifestRequest.SendWebRequest();
+            Dictionary<string, Hash128> localBundleHash = CollectBundleHash(localManifestRequest);
             yield return null;
 
+            Dictionary<string, BundleCatalog> updateCatalogs = new Dictionary<string, BundleCatalog>();
+            foreach (BundleCatalog catalog in operation.Catalogs)
+            {
+                if (catalog.Bundle == AssetSetting.Instance.ManifestBundleName)
+                {
+                    continue;
+                }
+
+                updateCatalogs.Add(catalog.Bundle, catalog);
+            }
+
+            operation.Catalogs.Clear();
             foreach (string remoteBundle in remoteBundleHash.Keys)
             {
+                string hash128 = remoteBundleHash[remoteBundle].ToString();
+                if (updateCatalogs.TryGetValue(remoteBundle, out BundleCatalog catalog))
+                {
+                    catalog.Updated = true;
+                    if (catalog.Hash128 != hash128)
+                    {
+                        catalog.Hash128 = hash128;
+                        catalog.Competed = false;
+                    }
+
+                    continue;
+                }
+
                 bool updateBundle = false;
                 if (localBundleHash.TryGetValue(remoteBundle, out Hash128 localHash))
                 {
@@ -99,6 +126,7 @@ namespace GameFramework
                     operation.Catalogs.Add(new BundleCatalog()
                     {
                         Bundle = remoteBundle,
+                        Hash128 = hash128,
                         Updated = true,
                         Competed = false
                     });
@@ -107,15 +135,34 @@ namespace GameFramework
 
             foreach (string localBundle in localBundleHash.Keys)
             {
+                if (updateCatalogs.ContainsKey(localBundle))
+                {
+                    continue;
+                }
+
                 if (!remoteBundleHash.ContainsKey(localBundle))
                 {
                     operation.Catalogs.Add(new BundleCatalog()
                     {
                         Bundle = localBundle,
+                        Hash128 = null,
                         Updated = false,
                         Competed = false
                     });
                 }
+            }
+
+            foreach (string bundle in updateCatalogs.Keys)
+            {
+                BundleCatalog catalog = updateCatalogs[bundle];
+                if (!remoteBundleHash.ContainsKey(bundle))
+                {
+                    catalog.Hash128 = null;
+                    catalog.Updated = false;
+                    catalog.Competed = false;
+                }
+
+                operation.Catalogs.Add(catalog);
             }
 
             if (operation.Catalogs.Count > 0)
@@ -131,11 +178,12 @@ namespace GameFramework
             PlayerPrefs.SetString(CatalogsKey, JsonUtils.ToJson(operation.Catalogs));
         }
 
-        private Dictionary<string, Hash128> CollectBundleHash(AssetBundle manifestBundle)
+        private Dictionary<string, Hash128> CollectBundleHash(UnityWebRequest request)
         {
             Dictionary<string, Hash128> result = new Dictionary<string, Hash128>();
-            if (manifestBundle != null)
+            if (request.result == UnityWebRequest.Result.Success)
             {
+                AssetBundle manifestBundle = DownloadHandlerAssetBundle.GetContent(request);
                 AssetBundleManifest localManifest = manifestBundle.LoadAsset<AssetBundleManifest>("AssetBundleManifest");
                 string[] localBundles = localManifest.GetAllAssetBundles();
                 foreach (string localBundle in localBundles)
