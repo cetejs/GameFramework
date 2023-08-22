@@ -10,6 +10,11 @@ namespace GameFramework
 
         private void Start()
         {
+            if (!GameSettings.Instance.PreloadOnStart)
+            {
+                return;
+            }
+
             foreach (PoolPreloadConfig config in GameSettings.Instance.PoolPreloadConfigs)
             {
                 GetObjectPoolAsync(config.name, config.capacity, pool =>

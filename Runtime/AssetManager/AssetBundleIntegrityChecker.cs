@@ -46,6 +46,7 @@ namespace GameFramework
             if (string.IsNullOrEmpty(AssetSetting.Instance.DownloadUri))
             {
                 operation.Status = IntegrityStatus.NetworkError;
+                operation.StatusInfo = "DownloadUri is invalid";
                 GameLogger.LogError("DownloadUri is invalid");
                 yield break;
             }
@@ -56,6 +57,7 @@ namespace GameFramework
             if (hashRequest.result != UnityWebRequest.Result.Success)
             {
                 operation.Status = IntegrityStatus.NetworkError;
+                operation.StatusInfo = hashRequest.error;
                 GameLogger.LogError(hashRequest.error);
                 yield break;
             }
@@ -70,6 +72,7 @@ namespace GameFramework
                 string hash = hashRow[1];
                 string bundlePath = AssetSetting.Instance.GetBundlePath(bundleName);
                 UnityWebRequest bundleRequest = UnityWebRequest.Get(bundlePath);
+                operation.StatusInfo = bundleName;
                 yield return bundleRequest.SendWebRequest();
                 if (bundleRequest.result != UnityWebRequest.Result.Success)
                 {
@@ -97,6 +100,7 @@ namespace GameFramework
                 string bundleUri = PathUtils.Combine(AssetSetting.Instance.RemoteBundleUri, bundle);
                 string bundlePath = PathUtils.Combine(AssetSetting.Instance.LocalBundlePath, bundle);
                 UnityWebRequest request = UnityWebRequest.Get(bundleUri);
+                operation.StatusInfo = bundle;
                 yield return request.SendWebRequest();
                 if (request.result != UnityWebRequest.Result.Success)
                 {

@@ -4,7 +4,7 @@ using Object = UnityEngine.Object;
 
 namespace GameFramework
 {
-    public class AssetAsyncOperation
+    public class AssetAsyncOperation : CustomYieldInstruction
     {
         protected bool isDone;
         protected Object result;
@@ -38,6 +38,11 @@ namespace GameFramework
         public virtual Object Result
         {
             get { return result; }
+        }
+
+        public override bool keepWaiting
+        {
+            get { return !isDone; }
         }
 
         public event Action<AssetAsyncOperation> OnCompleted

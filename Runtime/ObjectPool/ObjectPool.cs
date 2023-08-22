@@ -21,6 +21,11 @@ namespace GameFramework
         private int preloadCount;
         private AssetAsyncOperation operation;
 
+        public int PreloadCount
+        {
+            get { return preloadCount; }
+        }
+
         public static ObjectPool CreateInstance(Transform parent)
         {
             GameObject go = new GameObject();

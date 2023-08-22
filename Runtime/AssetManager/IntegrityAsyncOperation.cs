@@ -34,6 +34,8 @@ namespace GameFramework
             }
         }
 
+        public string StatusInfo { get; internal set; }
+
         public event Action<IntegrityAsyncOperation> OnCompleted
         {
             add

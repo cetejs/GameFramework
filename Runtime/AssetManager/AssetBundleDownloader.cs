@@ -69,6 +69,7 @@ namespace GameFramework
             if (remoteManifestRequest.result != UnityWebRequest.Result.Success)
             {
                 operation.Status = UpdateCatalogsStatus.NetworkError;
+                operation.StatusInfo = remoteManifestRequest.error;
                 GameLogger.LogError(remoteManifestRequest.error);
                 yield break;
             }
@@ -227,6 +228,7 @@ namespace GameFramework
                     if (request.result != UnityWebRequest.Result.Success)
                     {
                         operation.Status = UpdateCatalogsStatus.NetworkError;
+                        operation.StatusInfo = request.error;
                         GameLogger.LogError(request.error);
                         yield break;
                     }
@@ -252,6 +254,7 @@ namespace GameFramework
 
                 string bundleUri = PathUtils.Combine(AssetSetting.Instance.RemoteBundleUri, catalog.Bundle);
                 string bundlePath = PathUtils.Combine(AssetSetting.Instance.LocalBundlePath, catalog.Bundle);
+                operation.StatusInfo = catalog.Bundle;
                 yield return DownloadBundle(bundleUri, bundlePath);
                 if (operation.Status == UpdateCatalogsStatus.NetworkError)
                 {
@@ -277,6 +280,7 @@ namespace GameFramework
             if (request.result != UnityWebRequest.Result.Success)
             {
                 operation.Status = UpdateCatalogsStatus.NetworkError;
+                operation.StatusInfo = request.error;
                 GameLogger.LogError(request.error);
                 yield break;
             }
@@ -304,6 +308,7 @@ namespace GameFramework
                 }
 
                 string bundlePath = PathUtils.Combine(AssetSetting.Instance.LocalBundlePath, catalog.Bundle);
+                operation.StatusInfo = catalog.Bundle;
                 FileUtils.DeleteFile(bundlePath);
                 catalog.Competed = true;
                 PlayerPrefs.SetString(CatalogsKey, JsonUtils.ToJson(operation.Catalogs));

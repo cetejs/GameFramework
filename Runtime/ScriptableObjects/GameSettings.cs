@@ -33,6 +33,7 @@ namespace GameFramework
         public string PoolAssetName = "Prefabs/ObjectPool";
         public int PoolWorldPosScale = 99999;
         public int DefaultPoolCapacity = 10;
+        public bool PreloadOnStart;
         public List<PoolPreloadConfig> PoolPreloadConfigs = new List<PoolPreloadConfig>();
 
         [InspectorGroup("DevConsole", 10)]

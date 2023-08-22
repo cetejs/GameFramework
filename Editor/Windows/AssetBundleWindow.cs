@@ -453,7 +453,8 @@ namespace GameFramework
         private void CollectBundleHash(AssetBundleManifest manifest)
         {
             string outputPath = AssetSetting.Instance.BundleSavePath;
-            string[] bundleNames = manifest.GetAllAssetBundles();
+            List<string> bundleNames = new List<string>(manifest.GetAllAssetBundles());
+            bundleNames.Add(AssetSetting.Instance.ManifestBundleName);
             StringBuilder sb = new StringBuilder();
             bool first = true;
             foreach (string bundleName in bundleNames)

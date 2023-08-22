@@ -64,7 +64,9 @@ namespace GameFramework
         {
             get { return totalLength; }
         }
-        
+
+        public string StatusInfo { get; internal set; }
+
         public event Action<CatalogsAsyncOperation> OnCompleted
         {
             add
