@@ -47,5 +47,14 @@ namespace GameFramework
             assets.Clear();
             Resources.UnloadUnusedAssets();
         }
+
+        public void GetAssetsInfo(List<string> results)
+        {
+            results.Clear();
+            foreach (ResourcesAsset asset in assets.Values)
+            {
+                results.Add(asset.ToString());
+            }
+        }
     }
 }

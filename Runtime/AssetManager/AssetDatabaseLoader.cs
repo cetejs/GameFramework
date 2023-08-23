@@ -47,5 +47,10 @@ namespace GameFramework
             assets.Clear();
             Resources.UnloadUnusedAssets();
         }
+
+        public override string ToString()
+        {
+            return StringUtils.Join("\n", assets.Values);
+        }
     }
 }

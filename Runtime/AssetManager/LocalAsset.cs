@@ -50,5 +50,10 @@ namespace GameFramework
             asset = null;
             operation = null;
         }
+
+        public override string ToString()
+        {
+            return $"{path}:{asset}";
+        }
     }
 }

@@ -8,6 +8,7 @@ namespace GameFramework
     {
         private int currentIndex;
         private string taskInfo;
+        private string overrideInfo;
         private SceneAsyncOperation operation;
         private List<SceneConfig> sceneConfigs;
 
@@ -15,14 +16,14 @@ namespace GameFramework
         {
             get
             {
-                if (sceneConfigs.Count > 0)
+                if (currentIndex >= sceneConfigs.Count)
                 {
-                    if (currentIndex >= sceneConfigs.Count)
-                    {
-                        return 1f;
-                    }
+                    return 1f;
+                }
 
-                    return currentIndex / (float) sceneConfigs.Count + operation.Progress;
+                if (sceneConfigs.Count > 0 && operation != null)
+                {
+                    return (currentIndex + operation.Progress) / sceneConfigs.Count;
                 }
 
                 return 0f;
@@ -33,17 +34,18 @@ namespace GameFramework
         {
             get
             {
-                if (sceneConfigs.Count > 0)
+                if (overrideInfo != null)
                 {
-                    return StringUtils.Concat("LoadScene ", taskInfo);
+                    return overrideInfo;
                 }
 
-                return null;
+                return StringUtils.Concat("LoadScene ", taskInfo);
             }
         }
 
-        public LoadSceneTask(string sceneName, LoadSceneMode mode)
+        public LoadSceneTask(string sceneName, LoadSceneMode mode, string overrideInfo = null)
         {
+            this.overrideInfo = overrideInfo;
             sceneConfigs = new List<SceneConfig>
             {
                 new SceneConfig()
@@ -54,9 +56,10 @@ namespace GameFramework
             };
         }
 
-        public LoadSceneTask(List<SceneConfig> sceneName)
+        public LoadSceneTask(List<SceneConfig> sceneConfigs, string overrideInfo = null)
         {
-            sceneConfigs = sceneName;
+            this.overrideInfo = overrideInfo;
+            this.sceneConfigs = sceneConfigs;
         }
 
         public IEnumerator Run()

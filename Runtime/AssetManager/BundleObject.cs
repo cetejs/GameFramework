@@ -88,5 +88,10 @@ namespace GameFramework
             bundleAsset = null;
             assetOperation = null;
         }
+
+        public override string ToString()
+        {
+            return name;
+        }
     }
 }

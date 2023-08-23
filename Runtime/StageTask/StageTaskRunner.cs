@@ -29,7 +29,7 @@ namespace GameFramework
                         return 1f;
                     }
 
-                    return currentIndex / (float) tasks.Count + currentTask.Progress;
+                    return (currentIndex + currentTask.Progress) / tasks.Count;
                 }
 
                 return 0f;
@@ -47,11 +47,6 @@ namespace GameFramework
 
                 return null;
             }
-        }
-
-        public IStageTask CurrentTask
-        {
-            get { return currentTask; }
         }
 
         public event Action<StageTaskRunner> OnCompleted

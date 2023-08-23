@@ -188,5 +188,27 @@ namespace GameFramework
 
             assets.Clear();
         }
+
+        public override string ToString()
+        {
+            string result = $"{bundleName}:(";
+            bool first = true;
+            foreach (BundleObject asset in assets.Values)
+            {
+                if (first)
+                {
+                    first = false;
+                }
+                else
+                {
+                    result += ",";
+                }
+
+                result += asset;
+            }
+
+            result += ")";
+            return result;
+        }
     }
 }

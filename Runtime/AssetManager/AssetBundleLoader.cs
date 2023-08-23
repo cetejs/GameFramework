@@ -10,6 +10,7 @@ namespace GameFramework
 
         public AssetBundle LoadBundle(string bundleName)
         {
+            bundleName = bundleName.ToLower();
             bundleName = bundleName.RemoveLastOf(".");
             if (!assets.TryGetValue(bundleName, out BundleAsset asset))
             {
@@ -22,6 +23,7 @@ namespace GameFramework
 
         public void UnloadBundle(string bundleName, bool unloadAssets)
         {
+            bundleName = bundleName.ToLower();
             if (assets.TryGetValue(bundleName, out BundleAsset asset))
             {
                 asset.UnloadBundle(unloadAssets);
@@ -30,6 +32,7 @@ namespace GameFramework
 
         public AssetAsyncOperation LoadBundleAsync(string bundleName)
         {
+            bundleName = bundleName.ToLower();
             bundleName = bundleName.RemoveLastOf(".");
             if (!assets.TryGetValue(bundleName, out BundleAsset asset))
             {
@@ -42,6 +45,7 @@ namespace GameFramework
 
         public AssetAsyncOperation UnloadBundleAsync(string bundleName, bool unloadAssets)
         {
+            bundleName = bundleName.ToLower();
             if (!assets.TryGetValue(bundleName, out BundleAsset asset))
             {
                 asset = new BundleAsset(bundleName, this);
@@ -79,6 +83,7 @@ namespace GameFramework
 
         public Object LoadAsset(string path)
         {
+            path = path.ToLower();
             string bundleName = path.RemoveLastOf("/");
             string assetName = path.GetLastOf("/");
             if (!assets.TryGetValue(bundleName, out BundleAsset asset))
@@ -92,6 +97,7 @@ namespace GameFramework
 
         public void UnloadAsset(string path)
         {
+            path = path.ToLower();
             string bundleKey = path.RemoveLastOf("/");
             string assetName = path.GetLastOf("/");
             if (assets.TryGetValue(bundleKey, out BundleAsset asset))
@@ -102,6 +108,7 @@ namespace GameFramework
 
         public AssetAsyncOperation LoadAssetAsync(string path)
         {
+            path = path.ToLower();
             string bundleName = path.RemoveLastOf("/");
             string assetName = path.GetLastOf("/");
             if (!assets.TryGetValue(bundleName, out BundleAsset asset))
@@ -134,6 +141,27 @@ namespace GameFramework
             }
 
             return manifest.GetAllDependencies(bundleName);
+        }
+
+        public override string ToString()
+        {
+            string result = "";
+            bool first = true;
+            foreach (BundleAsset asset in assets.Values)
+            {
+                if (first)
+                {
+                    first = false;
+                }
+                else
+                {
+                    result += "\n";
+                }
+
+                result += asset;
+            }
+
+            return result;
         }
     }
 }

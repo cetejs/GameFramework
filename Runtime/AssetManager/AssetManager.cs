@@ -171,5 +171,22 @@ namespace GameFramework
         {
             return integrityChecker.CheckIntegrity();
         }
+
+        public override string ToString()
+        {
+            switch (AssetSetting.Instance.AssetLoadOption)
+            {
+                case AssetLoadOption.Simulate:
+#if UNITY_EDITOR
+                    return databaseLoader.ToString();
+#else
+                    return  bundleLoader.ToString();
+#endif
+                case AssetLoadOption.AssetBundle:
+                    return bundleLoader.ToString();
+                default:
+                    return resourcesLoader.ToString();
+            }
+        }
     }
 }

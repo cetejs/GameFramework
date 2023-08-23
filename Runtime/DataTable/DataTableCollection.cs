@@ -21,14 +21,18 @@ namespace GameFramework
                 loadPath = PathUtils.Combine(DataTableSetting.Instance.LoadTablePath, tableType.Name);
             }
 
-            public void PreloadTable()
+            public void PreloadTable(Action callback)
             {
                 if (loaded)
                 {
                     return;
                 }
 
-                LoadTextAsync(ReadRawData);
+                LoadTextAsync(text =>
+                {
+                    ReadRawData(text);
+                    callback?.Invoke();
+                });
             }
 
             public void ReloadTable()
@@ -37,10 +41,14 @@ namespace GameFramework
                 ReadRawData(LoadText());
             }
 
-            public void ReloadTableAsync()
+            public void ReloadTableAsync(Action callback)
             {
                 UnloadTable();
-                LoadTextAsync(ReadRawData);
+                LoadTextAsync(text =>
+                {
+                    ReadRawData(text);
+                    callback?.Invoke();
+                });
             }
             
             public void UnloadTable()
@@ -217,6 +225,28 @@ namespace GameFramework
                 }
 
                 return null;
+            }
+
+            public override string ToString()
+            {
+                string result = $"{tableType}:(";
+                bool first = true;
+                foreach (string key in dataTables.Keys)
+                {
+                    if (first)
+                    {
+                        first = false;
+                    }
+                    else
+                    {
+                        result += ",";
+                    }
+
+                    result += key;
+                }
+
+                result += ")";
+                return result;
             }
         }
     }

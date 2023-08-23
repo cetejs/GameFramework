@@ -7,9 +7,19 @@ namespace GameFramework
     {
         private Dictionary<Type, DataTableCollection> tableCollections = new Dictionary<Type, DataTableCollection>();
 
-        public void PreloadTable<T>() where T : IDataTable
+        public void PreloadTable(Type tableType, Action callback = null)
         {
-            GetDataTableCollection<T>().PreloadTable();
+            GetDataTableCollection(tableType).PreloadTable(callback);
+        }
+
+        public void ReloadTableAsync(Type tableType, Action callback = null)
+        {
+            GetDataTableCollection(tableType).ReloadTableAsync(callback);
+        }
+
+        public void PreloadTable<T>(Action callback = null) where T : IDataTable
+        {
+            GetDataTableCollection<T>().PreloadTable(callback);
         }
 
         public void ReloadTable<T>() where T : IDataTable
@@ -17,9 +27,9 @@ namespace GameFramework
             GetDataTableCollection<T>().ReloadTable();
         }
 
-        public void ReloadTableAsync<T>() where T : IDataTable
+        public void ReloadTableAsync<T>(Action callback = null) where T : IDataTable
         {
-            GetDataTableCollection<T>().ReloadTableAsync();
+            GetDataTableCollection<T>().ReloadTableAsync(callback);
         }
 
         public bool HasTable<T>(string id) where T : class, IDataTable, new()
@@ -70,13 +80,39 @@ namespace GameFramework
         private DataTableCollection GetDataTableCollection<T>() where T : IDataTable
         {
             Type key = typeof(T);
+            return GetDataTableCollection(key);
+        }
+
+        private DataTableCollection GetDataTableCollection(Type key)
+        {
             if (!tableCollections.TryGetValue(key, out DataTableCollection collection))
             {
-                collection = new DataTableCollection(typeof(T));
+                collection = new DataTableCollection(key);
                 tableCollections.Add(key, collection);
             }
 
             return collection;
+        }
+
+        public override string ToString()
+        {
+            string result = "";
+            bool first = true;
+            foreach (DataTableCollection collection in tableCollections.Values)
+            {
+                if (first)
+                {
+                    first = false;
+                }
+                else
+                {
+                    result += "\n";
+                }
+
+                result += collection;
+            }
+
+            return result;
         }
     }
 }

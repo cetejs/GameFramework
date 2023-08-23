@@ -15,6 +15,11 @@ namespace GameFramework
                     return 1f;
                 }
 
+                if (operation == null)
+                {
+                    return 0f;
+                }
+
                 float numOfOps = 1f;
                 float total = operation.progress;
                 if (dependency != null)

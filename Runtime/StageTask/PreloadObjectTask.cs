@@ -9,6 +9,7 @@ namespace GameFramework
         private int totalLength;
         private int preloadedCount;
         private string taskInfo;
+        private string overrideInfo;
         private List<PoolPreloadConfig> configs;
 
         public float Progress
@@ -26,16 +27,26 @@ namespace GameFramework
 
         public string TaskInfo
         {
-            get { return StringUtils.Concat("Preload ", taskInfo); }
+            get
+            {
+                if (overrideInfo != null)
+                {
+                    return overrideInfo;
+                }
+
+                return StringUtils.Concat("PreloadObject ", taskInfo);
+            }
         }
 
-        public PreloadObjectTask()
+        public PreloadObjectTask(string overrideInfo = null)
         {
+            this.overrideInfo = overrideInfo;
             configs = GameSettings.Instance.PoolPreloadConfigs;
         }
 
-        public PreloadObjectTask(List<PoolPreloadConfig> configs)
+        public PreloadObjectTask(List<PoolPreloadConfig> configs, string overrideInfo = null)
         {
+            this.overrideInfo = overrideInfo;
             this.configs = configs;
         }
 

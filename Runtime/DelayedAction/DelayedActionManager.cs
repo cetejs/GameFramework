@@ -75,10 +75,25 @@ namespace GameFramework
             }
         }
 
-        public void GetDelegateInfos(List<DelegateInfo> list)
+        public override string ToString()
         {
-            list.Clear();
-            list.AddRange(delegateInfos);
+            string result = "";
+            bool first = true;
+            foreach (DelegateInfo info in delegateInfos)
+            {
+                if (first)
+                {
+                    first = false;
+                }
+                else
+                {
+                    result += "\n";
+                }
+
+                result += info;
+            }
+
+            return result;
         }
 
         private int InternalAddAction(Delegate action, float delay = 0f, params object[] param)

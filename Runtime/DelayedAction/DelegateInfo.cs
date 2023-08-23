@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace GameFramework
 {
-    public struct DelegateInfo : IComparable<DelegateInfo>
+    internal struct DelegateInfo : IComparable<DelegateInfo>
     {
         private static int autoId;
 

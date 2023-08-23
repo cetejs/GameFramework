@@ -72,13 +72,25 @@ namespace GameFramework
             return referenceCollection;
         }
 
-        public void GetPoolInfos(List<string> results)
+        public override string ToString()
         {
-            results.Clear();
+            string result = "";
+            bool first = true;
             foreach (ReferenceCollection collection in referenceCollections.Values)
             {
-                results.Add(collection.ToString());
+                if (first)
+                {
+                    first = false;
+                }
+                else
+                {
+                    result += "\n";
+                }
+
+                result += collection;
             }
+
+            return result;
         }
     }
 }
