@@ -97,7 +97,7 @@ namespace GameFramework
             Object.DestroyImmediate(settingEditor);
         }
 
-        public void BuildAssetBundles()
+        private void BuildAssetBundles()
         {
             try
             {
