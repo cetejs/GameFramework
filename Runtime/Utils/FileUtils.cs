@@ -24,6 +24,7 @@ namespace GameFramework
         {
             if (!File.Exists(path))
             {
+                CheckDirectory(path);
                 File.Create(path);
             }
         }
