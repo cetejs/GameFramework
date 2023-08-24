@@ -15,6 +15,7 @@ namespace GameFramework
         private float lastTimeScale;
         private CursorLockMode lastLockMode;
         private bool lastVisible;
+        private InputManager input;
 
         public float TimeScale
         {
@@ -54,6 +55,7 @@ namespace GameFramework
 
         private void Start()
         {
+            input = InputManager.Instance;
             showConsoleBtn.onClick.AddListener(EnableMainPanel);
         }
 
@@ -73,12 +75,12 @@ namespace GameFramework
             {
                 lastTimeScale = Time.timeScale;
                 Time.timeScale = GameSettings.Instance.ConsoleTimeScale;
-                InputManager.Instance.SetSelectedGameObject(defaultSelectedGo);
+                input.SetSelectedGameObject(defaultSelectedGo);
             }
             else
             {
                 Time.timeScale = lastTimeScale;
-                InputManager.Instance.SetSelectedGameObject(showConsoleBtn.gameObject);
+                input.SetSelectedGameObject(showConsoleBtn.gameObject);
             }
 
 #if UNITY_EDITOR || UNITY_STANDALONE
