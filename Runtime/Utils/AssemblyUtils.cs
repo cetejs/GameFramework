@@ -8,6 +8,7 @@ namespace GameFramework
     public static class AssemblyUtils
     {
         private static Dictionary<Assembly, List<Type>> assemblyOfTypes = new Dictionary<Assembly, List<Type>>();
+        private static Dictionary<Type, List<Type>> typeOfAssignableTypes = new Dictionary<Type, List<Type>>();
         private static Dictionary<Type, List<FieldInfo>> typeOfFieldInfos = new Dictionary<Type, List<FieldInfo>>();
         private static Dictionary<Type, List<Attribute>> typeOfAttributes = new Dictionary<Type, List<Attribute>>();
         private static List<Type> cachedTypes = new List<Type>();
@@ -25,9 +26,52 @@ namespace GameFramework
             return assemblies.Find(assembly => assembly.GetName().Name == assemblyName) != null;
         }
 
-        public static List<Type> SelectAssignableTypes(List<Type> types, Type assignableType)
+        public static List<Type> GetAssignableTypes(Assembly assembly, Type assignableType)
         {
-            return types.Where(t => t != assignableType && assignableType.IsAssignableFrom(t)).ToList();
+            List<Type> types = GetTypes(assembly);
+            if (!typeOfAssignableTypes.TryGetValue(assignableType, out List<Type> results))
+            {
+                results = new List<Type>();
+                foreach (Type type in types)
+                {
+                    if (type != assignableType && assignableType.IsAssignableFrom(type))
+                    {
+                        results.Add(type);
+                    }
+                }
+
+                typeOfAssignableTypes.Add(assignableType, results);
+            }
+
+            return results;
+        }
+
+        public static List<Type> GetAssignableTypes(Type assignableType)
+        {
+            if (assemblies == null)
+            {
+                assemblies = new List<Assembly>(AppDomain.CurrentDomain.GetAssemblies());
+            }
+
+            if (!typeOfAssignableTypes.TryGetValue(assignableType, out List<Type> results))
+            {
+                results = new List<Type>();
+                foreach (Assembly assembly in assemblies)
+                {
+                    List<Type> types = GetTypes(assembly);
+                    foreach (Type type in types)
+                    {
+                        if (type != assignableType && assignableType.IsAssignableFrom(type))
+                        {
+                            results.Add(type);
+                        }
+                    }
+                }
+
+                typeOfAssignableTypes.Add(assignableType, results);
+            }
+
+            return results;
         }
 
         public static List<Type> GetTypes(Assembly assembly)

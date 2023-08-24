@@ -23,8 +23,7 @@ namespace GameFramework
         {
             if (subWindowTypes == null)
             {
-                List<Type> types = AssemblyUtils.GetTypes(GetType().Assembly);
-                subWindowTypes = AssemblyUtils.SelectAssignableTypes(types, typeof(SubWindow));
+                subWindowTypes = AssemblyUtils.GetAssignableTypes(GetType().Assembly, typeof(SubWindow));
             }
 
             if (subWindows == null)

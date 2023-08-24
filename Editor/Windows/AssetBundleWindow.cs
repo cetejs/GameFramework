@@ -79,7 +79,9 @@ namespace GameFramework
 
             if (GUILayout.Button("Build"))
             {
+                ExecutePreprocessBuild();
                 BuildAssetBundles();
+                ExecutePostprocessBuild();
             }
 
             if (GUILayout.Button("Clear"))
@@ -169,6 +171,24 @@ namespace GameFramework
             }
 
             AssetDatabase.Refresh();
+        }
+
+        private void ExecutePreprocessBuild()
+        {
+            List<Type> types = AssemblyUtils.GetAssignableTypes(typeof(IPreprocessBuildAssetBundle));
+            foreach (Type type in types)
+            {
+                ((IPreprocessBuildAssetBundle) Activator.CreateInstance(type)).OnPreprocessBuild();
+            }
+        }
+
+        private void ExecutePostprocessBuild()
+        {
+            List<Type> types = AssemblyUtils.GetAssignableTypes(typeof(IPostprocessBuildAssetBundle));
+            foreach (Type type in types)
+            {
+                ((IPostprocessBuildAssetBundle) Activator.CreateInstance(type)).OnPostprocessBuild();
+            }
         }
 
         private void AddBundleBuild(string bundleName, string assetName)
@@ -477,7 +497,7 @@ namespace GameFramework
             if (sb.Length > 0)
             {
                 string fullPath = StringUtils.Concat(outputPath, "/", AssetSetting.Instance.BundleHashName, ".txt");
-                File.WriteAllText(fullPath, sb.ToString());   
+                File.WriteAllText(fullPath, sb.ToString());
             }
         }
 
@@ -495,5 +515,15 @@ namespace GameFramework
             public List<string> keywords;
             public List<string> remainingKeywords;
         }
+    }
+
+    public interface IPreprocessBuildAssetBundle
+    {
+        void OnPreprocessBuild();
+    }
+
+    public interface IPostprocessBuildAssetBundle
+    {
+        void OnPostprocessBuild();
     }
 }

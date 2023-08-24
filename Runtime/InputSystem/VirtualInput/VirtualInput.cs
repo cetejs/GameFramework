@@ -6,7 +6,7 @@ namespace GameFramework
 {
     internal abstract class VirtualInput
     {
-        private static Dictionary<string, KeyCode> KeyCodes = new Dictionary<string, KeyCode>();
+        private static Dictionary<string, KeyCode> keyCodes = new Dictionary<string, KeyCode>();
 
         public abstract float GetAxis(InputMapping input);
 
@@ -26,7 +26,7 @@ namespace GameFramework
 
         protected KeyCode ConvertToKeyCode(string name)
         {
-            if (KeyCodes.TryGetValue(name, out KeyCode keyCode))
+            if (keyCodes.TryGetValue(name, out KeyCode keyCode))
             {
                 return keyCode;
             }
@@ -34,7 +34,7 @@ namespace GameFramework
             if (Enum.TryParse(typeof(KeyCode), name, out object keyCodeObj))
             {
                 keyCode = (KeyCode) keyCodeObj;
-                KeyCodes.Add(name, keyCode);
+                keyCodes.Add(name, keyCode);
             }
 
             return keyCode;
