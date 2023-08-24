@@ -20,6 +20,14 @@ namespace GameFramework
             return new FileInfo(path).Exists;
         }
 
+        public static void ExistOrCreate(string path)
+        {
+            if (!File.Exists(path))
+            {
+                File.Create(path);
+            }
+        }
+
         public static void GetFiles(string path, List<FileInfo> fileInfos, params string[] ignoreFilters)
         {
             fileInfos.Clear();
