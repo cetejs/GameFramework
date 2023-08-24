@@ -62,7 +62,7 @@ namespace GameFramework
         {
             base.Init("AssetBundle", parent);
             settingEditor = Editor.CreateEditor(AssetSetting.Instance);
-            buildTarget = EditorUserBuildSettings.selectedStandaloneTarget;
+            buildTarget = EditorUserBuildSettings.activeBuildTarget;
         }
 
         public override void OnGUI()
