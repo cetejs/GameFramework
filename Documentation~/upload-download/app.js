@@ -24,19 +24,25 @@ app.put("*", function (req, res) {
 
         req.on("end", function () {
             ws.end();
-            res.send("Success");
+            res.send("success");
         });
     });
 });
 
 app.delete("*", function (req, res) {
     var dirPath = path.join(root, req.path);
+	fs.exists(dirPath, function(exists) {
+		if(exists == false) {
+			res.send("fail");
+			return;
+		}	
+	});
     fs.rmdir(dirPath, {recursive: true}, function (err) {
         if (err) {
             return console.error(err);
         }
 
-        res.send("Success");
+        res.send("success");
     });
 });
 

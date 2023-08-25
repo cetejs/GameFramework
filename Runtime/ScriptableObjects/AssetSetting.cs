@@ -11,7 +11,7 @@ namespace GameFramework
         public string BundleBuildPath = "StreamingAssets";
         public string BundleHashName = "BundleHash";
         public string BuiltinResourcesBundleName = "builtin_extra";
-        public string DownloadUri;
+        public string DownloadUri = "http://127.0.0.1:3000/AssetBundle";
         public AssetLoadOption AssetLoadOption;
         [InspectorGroup("ShaderSetting", 3)]
         public string ShaderBundleName = "shaders";

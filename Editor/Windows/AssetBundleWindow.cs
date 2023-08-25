@@ -113,14 +113,21 @@ namespace GameFramework
                     Debug.LogError("DownloadUri is invalid");
                 }
 
-                UnityWebRequest deleteRequest = UnityWebRequest.Delete(AssetSetting.Instance.RemoteBundleUri);
-                deleteRequest.SendWebRequest();
-                while (!deleteRequest.isDone)
+                using UnityWebRequest deleteRequest = UnityWebRequest.Delete(AssetSetting.Instance.RemoteBundleUri);
+                if (deleteRequest.uri.IsFile)
                 {
-                    if (EditorUtility.DisplayCancelableProgressBar("Delete AssetBundles", "", deleteRequest.uploadProgress))
+                    DirectoryUtils.DeleteDirectory(AssetSetting.Instance.RemoteBundleUri);
+                }
+                else
+                {
+                    deleteRequest.SendWebRequest();
+                    while (!deleteRequest.isDone)
                     {
-                        EditorUtility.ClearProgressBar();
-                        return;
+                        if (EditorUtility.DisplayCancelableProgressBar("Delete AssetBundles", "", deleteRequest.uploadProgress))
+                        {
+                            EditorUtility.ClearProgressBar();
+                            return;
+                        }
                     }
                 }
 
@@ -171,17 +178,23 @@ namespace GameFramework
                     string uploadName = uploadNames[i];
                     string putUri = PathUtils.Combine(AssetSetting.Instance.RemoteBundleUri, uploadName);
                     string fullPath = PathUtils.Combine(AssetSetting.Instance.BundleSavePath, uploadName);
-                    UnityWebRequest uploadRequest = UnityWebRequest.Put(putUri, File.ReadAllBytes(fullPath));
-                    uploadRequest.SendWebRequest();
-                    do
+                    using UnityWebRequest uploadRequest = UnityWebRequest.Put(putUri, File.ReadAllBytes(fullPath));
+                    if (uploadRequest.uri.IsFile)
                     {
-                        if (EditorUtility.DisplayCancelableProgressBar("Upload AssetBundles", uploadName, (i + uploadRequest.uploadProgress) / uploadNames.Count))
-                        {
-                            EditorUtility.ClearProgressBar();
-                            return;
-                        }
+                        FileUtils.WriteAllBytes(putUri, File.ReadAllBytes(fullPath));
                     }
-                    while (!uploadRequest.isDone);
+                    else
+                    {
+                        uploadRequest.SendWebRequest();
+                        do
+                        {
+                            if (EditorUtility.DisplayCancelableProgressBar("Upload AssetBundles", uploadName, (i + uploadRequest.uploadProgress) / uploadNames.Count))
+                            {
+                                EditorUtility.ClearProgressBar();
+                                return;
+                            }
+                        } while (!uploadRequest.isDone);
+                    }
 
                     if (!string.IsNullOrEmpty(uploadRequest.error))
                     {
@@ -190,6 +203,8 @@ namespace GameFramework
                         return;
                     }
                 }
+
+                Debug.Log("UploadAssetBundles Success");
             }
             catch (Exception e)
             {
@@ -254,6 +269,7 @@ namespace GameFramework
                     DirectoryUtils.CreateDirectory(outputPath);
                     AssetBundleManifest manifest = BuildPipeline.BuildAssetBundles(outputPath, bundleBuilds.ToArray(), buildOptions, buildTarget);
                     CollectBundleHash(manifest);
+                    Debug.Log("BuildAssetBundles Success");
                 }
 
                 if (AssetSetting.Instance.DeleteShaderVariantsWhenBuild)

@@ -37,6 +37,7 @@ namespace GameFramework
             }
 
             operation.Status = IntegrityStatus.Success;
+            operation.StatusInfo = null;
             operation.Complete();
         }
         
@@ -52,7 +53,7 @@ namespace GameFramework
             }
 
             string hashUri = StringUtils.Concat(AssetSetting.Instance.RemoteBundleUri, "/", AssetSetting.Instance.BundleHashName, ".txt");
-            UnityWebRequest hashRequest = UnityWebRequest.Get(hashUri);
+            using UnityWebRequest hashRequest = UnityWebRequest.Get(hashUri);
             yield return hashRequest.SendWebRequest();
             if (hashRequest.result != UnityWebRequest.Result.Success)
             {
@@ -99,7 +100,7 @@ namespace GameFramework
             {
                 string bundleUri = PathUtils.Combine(AssetSetting.Instance.RemoteBundleUri, bundle);
                 string bundlePath = PathUtils.Combine(AssetSetting.Instance.LocalBundlePath, bundle);
-                UnityWebRequest request = UnityWebRequest.Get(bundleUri);
+                using UnityWebRequest request = UnityWebRequest.Get(bundleUri);
                 operation.StatusInfo = bundle;
                 yield return request.SendWebRequest();
                 if (request.result != UnityWebRequest.Result.Success)

@@ -40,6 +40,7 @@ namespace GameFramework
 
             yield return DeleteRedundancy();
             operation.Status = UpdateCatalogsStatus.Success;
+            operation.StatusInfo = null;
             operation.Complete();
         }
 
@@ -64,7 +65,7 @@ namespace GameFramework
             }
 
             string manifestUri = PathUtils.Combine(AssetSetting.Instance.RemoteBundleUri, AssetSetting.Instance.ManifestBundleName);
-            UnityWebRequest remoteManifestRequest = UnityWebRequestAssetBundle.GetAssetBundle(manifestUri);
+            using UnityWebRequest remoteManifestRequest = UnityWebRequestAssetBundle.GetAssetBundle(manifestUri);
             yield return remoteManifestRequest.SendWebRequest();
             if (remoteManifestRequest.result != UnityWebRequest.Result.Success)
             {
@@ -78,7 +79,7 @@ namespace GameFramework
             yield return null;
 
             string localManifestPath = AssetSetting.Instance.GetBundlePath(AssetSetting.Instance.ManifestBundleName);
-            UnityWebRequest localManifestRequest = UnityWebRequestAssetBundle.GetAssetBundle(localManifestPath);
+            using UnityWebRequest localManifestRequest = UnityWebRequestAssetBundle.GetAssetBundle(localManifestPath);
             yield return localManifestRequest.SendWebRequest();
             Dictionary<string, Hash128> localBundleHash = CollectBundleHash(localManifestRequest);
             yield return null;
@@ -209,7 +210,7 @@ namespace GameFramework
                 }
 
                 string bundleUri = PathUtils.Combine(AssetSetting.Instance.RemoteBundleUri, catalog.Bundle);
-                UnityWebRequest request = UnityWebRequest.Head(bundleUri);
+                using UnityWebRequest request = UnityWebRequest.Head(bundleUri);
                 if (request.uri.IsFile)
                 {
                     FileInfo fileInfo = new FileInfo(bundleUri);
@@ -269,7 +270,7 @@ namespace GameFramework
 
         private IEnumerator DownloadBundle(string uri, string path)
         {
-            UnityWebRequest request = UnityWebRequest.Get(uri);
+            using UnityWebRequest request = UnityWebRequest.Get(uri);
             request.SendWebRequest();
             while (!request.isDone)
             {

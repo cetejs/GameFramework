@@ -32,7 +32,7 @@ namespace GameFramework
             string fullPath = Path.Combine(setting.OutputTablePath, fileName);
             if (setting.EncryptionType == EncryptionType.AES)
             {
-                FileUtils.WriteAllTBytes(fullPath, EncryptionUtils.AES.EncryptToBytes(sb.ToString(), setting.Password));
+                FileUtils.WriteAllBytes(fullPath, EncryptionUtils.AES.EncryptToBytes(sb.ToString(), setting.Password));
             }
             else
             {

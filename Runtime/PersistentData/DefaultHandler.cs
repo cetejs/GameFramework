@@ -105,7 +105,7 @@ namespace GameFramework
                 bytes = Encoding.UTF8.GetBytes(json);
             }
 
-            FileUtils.WriteAllTBytes(savePath, bytes);
+            FileUtils.WriteAllBytes(savePath, bytes);
         }
 
         public void SaveAsync(Action callback)

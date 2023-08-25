@@ -141,7 +141,7 @@ namespace GameFramework
             callback?.Invoke();
         }
         
-        public static void WriteAllTBytes(string path, byte[] contents)
+        public static void WriteAllBytes(string path, byte[] contents)
         {
             CheckDirectory(path);
             File.WriteAllBytes(path, contents);

@@ -12,11 +12,11 @@ namespace GameFramework
             }
         }
 
-        public static void DeleteDirectory(string path)
+        public static void DeleteDirectory(string path, bool recursive = true)
         {
             if (Directory.Exists(path))
             {
-                Directory.Delete(path, true);
+                Directory.Delete(path, recursive);
             }
         }
     }
