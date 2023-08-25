@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Text;
 using UnityEditor;
 using UnityEditor.U2D;
+using UnityEngine.Networking;
 using UnityEngine.Rendering;
 using UnityEngine.U2D;
 using Object = UnityEngine.Object;
@@ -84,6 +85,12 @@ namespace GameFramework
                 ExecutePostprocessBuild();
             }
 
+            if (GUILayout.Button("Upload"))
+            {
+                DeleteAssetBundles();
+                UploadAssetBundles();
+            }
+
             if (GUILayout.Button("Clear"))
             {
                 ClearAssetBundle();
@@ -95,6 +102,101 @@ namespace GameFramework
         public override void OnDestroy()
         {
             Object.DestroyImmediate(settingEditor);
+        }
+
+        private void DeleteAssetBundles()
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(AssetSetting.Instance.DownloadUri))
+                {
+                    Debug.LogError("DownloadUri is invalid");
+                }
+
+                UnityWebRequest deleteRequest = UnityWebRequest.Delete(AssetSetting.Instance.RemoteBundleUri);
+                deleteRequest.SendWebRequest();
+                while (!deleteRequest.isDone)
+                {
+                    if (EditorUtility.DisplayCancelableProgressBar("Delete AssetBundles", "", deleteRequest.uploadProgress))
+                    {
+                        EditorUtility.ClearProgressBar();
+                        return;
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(deleteRequest.error))
+                {
+                    Debug.LogError(deleteRequest.error);
+                    EditorUtility.ClearProgressBar();
+                    return;
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+
+            EditorUtility.ClearProgressBar();
+        }
+
+        private void UploadAssetBundles()
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(AssetSetting.Instance.DownloadUri))
+                {
+                    Debug.LogError("DownloadUri is invalid");
+                }
+
+                string manifestPath = PathUtils.Combine(AssetSetting.Instance.BundleSavePath, AssetSetting.Instance.ManifestBundleName);
+                if (!File.Exists(manifestPath))
+                {
+                    Debug.LogError("ManifestPath is invalid");
+                    return;
+                }
+
+                AssetBundle manifestBundle = AssetBundle.LoadFromFile(manifestPath);
+                AssetBundleManifest manifest = manifestBundle.LoadAsset<AssetBundleManifest>("AssetBundleManifest");
+                List<string> uploadNames = new List<string>()
+                {
+                    AssetSetting.Instance.ManifestBundleName,
+                    $"{AssetSetting.Instance.BundleHashName}.txt"
+                };
+
+                uploadNames.AddRange(manifest.GetAllAssetBundles());
+                manifestBundle.Unload(true);
+
+                for (int i = 0; i < uploadNames.Count; i++)
+                {
+                    string uploadName = uploadNames[i];
+                    string putUri = PathUtils.Combine(AssetSetting.Instance.RemoteBundleUri, uploadName);
+                    string fullPath = PathUtils.Combine(AssetSetting.Instance.BundleSavePath, uploadName);
+                    UnityWebRequest uploadRequest = UnityWebRequest.Put(putUri, File.ReadAllBytes(fullPath));
+                    uploadRequest.SendWebRequest();
+                    do
+                    {
+                        if (EditorUtility.DisplayCancelableProgressBar("Upload AssetBundles", uploadName, (i + uploadRequest.uploadProgress) / uploadNames.Count))
+                        {
+                            EditorUtility.ClearProgressBar();
+                            return;
+                        }
+                    }
+                    while (!uploadRequest.isDone);
+
+                    if (!string.IsNullOrEmpty(uploadRequest.error))
+                    {
+                        Debug.LogError(uploadRequest.error);
+                        EditorUtility.ClearProgressBar();
+                        return;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+
+            EditorUtility.ClearProgressBar();
         }
 
         private void BuildAssetBundles()
@@ -165,9 +267,9 @@ namespace GameFramework
                     FileUtils.DeleteFile(StringUtils.Concat(SpriteAtlasAssetPath, ".meta"));
                 }
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                GameLogger.LogException(ex);
+                Debug.LogException(e);
             }
 
             AssetDatabase.Refresh();

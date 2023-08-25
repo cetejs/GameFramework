@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace GameFramework
 {
@@ -12,7 +11,7 @@ namespace GameFramework
         public string BundleBuildPath = "StreamingAssets";
         public string BundleHashName = "BundleHash";
         public string BuiltinResourcesBundleName = "builtin_extra";
-        [FormerlySerializedAs("DownloadURL")] public string DownloadUri;
+        public string DownloadUri;
         public AssetLoadOption AssetLoadOption;
         [InspectorGroup("ShaderSetting", 3)]
         public string ShaderBundleName = "shaders";
@@ -48,7 +47,7 @@ namespace GameFramework
 
         public string RemoteBundleUri
         {
-            get { return PathUtils.Combine(Instance.DownloadUri, Instance.Platform, Instance.BundleAssetName); }
+            get { return PathUtils.Combine(DownloadUri, Platform, BundleAssetName); }
         }
 
         public string ManifestBundleName
