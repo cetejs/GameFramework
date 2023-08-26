@@ -99,7 +99,7 @@ namespace GameFramework
 #if UNITY_EDITOR
                     return databaseLoader.UnloadAllAssetsAsync();
 #else
-                    return bundleLoader.UnloadAllAssets();
+                    return bundleLoader.UnloadAllAssetsAsync();
 #endif
                 case AssetLoadOption.AssetBundle:
                     return bundleLoader.UnloadAllAssetsAsync();
