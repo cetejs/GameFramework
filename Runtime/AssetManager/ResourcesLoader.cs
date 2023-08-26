@@ -47,14 +47,40 @@ namespace GameFramework
             assets.Clear();
             Resources.UnloadUnusedAssets();
         }
-
-        public void GetAssetsInfo(List<string> results)
+        
+        public AssetAsyncOperation UnloadAllAssetsAsync()
         {
-            results.Clear();
+            AssetListAsyncOperation operation = new AssetListAsyncOperation();
             foreach (ResourcesAsset asset in assets.Values)
             {
-                results.Add(asset.ToString());
+                asset.Unload();
             }
+
+            assets.Clear();
+            Resources.UnloadUnusedAssets();
+            operation.Completed(null);
+            return operation;
+        }
+
+        public override string ToString()
+        {
+            string result = "";
+            bool first = true;
+            foreach (string path in assets.Keys)
+            {
+                if (first)
+                {
+                    first = false;
+                }
+                else
+                {
+                    result += "\n";
+                }
+
+                result += path;
+            }
+
+            return result;
         }
     }
 }

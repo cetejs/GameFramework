@@ -91,6 +91,23 @@ namespace GameFramework
             }
         }
 
+        public AssetAsyncOperation UnloadAllAssetsAsync()
+        {
+            switch (AssetSetting.Instance.AssetLoadOption)
+            {
+                case AssetLoadOption.Simulate:
+#if UNITY_EDITOR
+                    return databaseLoader.UnloadAllAssetsAsync();
+#else
+                    return bundleLoader.UnloadAllAssets();
+#endif
+                case AssetLoadOption.AssetBundle:
+                    return bundleLoader.UnloadAllAssetsAsync();
+                default:
+                    return resourcesLoader.UnloadAllAssetsAsync();
+            }
+        }
+
         public AssetBundle LoadBundle(string bundleName)
         {
             if (AssetSetting.Instance.UseAssetBundle)

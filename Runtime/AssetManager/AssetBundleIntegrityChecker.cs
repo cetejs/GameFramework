@@ -24,6 +24,8 @@ namespace GameFramework
 
         private IEnumerator InternalCheckIntegrity()
         {
+            yield return AssetManager.Instance.UnloadAllAssetsAsync();
+
             yield return CompareHash();
             if (operation.Status == IntegrityStatus.NetworkError)
             {

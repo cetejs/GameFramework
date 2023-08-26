@@ -48,9 +48,39 @@ namespace GameFramework
             Resources.UnloadUnusedAssets();
         }
 
+        public AssetAsyncOperation UnloadAllAssetsAsync()
+        {
+            AssetListAsyncOperation operation = new AssetListAsyncOperation();
+            foreach (LocalAsset asset in assets.Values)
+            {
+                asset.Unload();
+            }
+
+            assets.Clear();
+            Resources.UnloadUnusedAssets();
+            operation.Completed(null);
+            return operation;
+        }
+
         public override string ToString()
         {
-            return StringUtils.Join("\n", assets.Values);
+            string result = "";
+            bool first = true;
+            foreach (string path in assets.Keys)
+            {
+                if (first)
+                {
+                    first = false;
+                }
+                else
+                {
+                    result += "\n";
+                }
+
+                result += path;
+            }
+
+            return result;
         }
     }
 }

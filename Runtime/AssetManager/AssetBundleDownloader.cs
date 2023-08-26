@@ -26,6 +26,8 @@ namespace GameFramework
 
         private IEnumerator InternalUpdateCatalogs()
         {
+            yield return AssetManager.Instance.UnloadAllAssetsAsync();
+            
             yield return CollectCatalogs();
             if (operation.Status == UpdateCatalogsStatus.NetworkError)
             {

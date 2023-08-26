@@ -122,6 +122,12 @@ namespace GameFramework
 
         public void UnloadAllAssets()
         {
+            if (manifest != null)
+            {
+                Resources.UnloadAsset(manifest);
+                manifest = null;
+            }
+
             foreach (BundleAsset asset in assets.Values)
             {
                 asset.UnloadBundle(true);
@@ -131,13 +137,39 @@ namespace GameFramework
             Resources.UnloadUnusedAssets();
         }
 
+        public AssetAsyncOperation UnloadAllAssetsAsync()
+        {
+            if (manifest != null)
+            {
+                Resources.UnloadAsset(manifest);
+                manifest = null;
+            }
+
+            AssetListAsyncOperation operation = new AssetListAsyncOperation();
+            if (assets.Count == 0)
+            {
+                operation.Completed(null);
+            }
+            else
+            {
+                foreach (BundleAsset asset in assets.Values)
+                {
+                    operation.AddOperation(asset.UnloadBundleAsync(true));
+                }
+            }
+
+            assets.Clear();
+            return operation;
+        }
+
         public string[] GetAllDependencies(string bundleName)
         {
-            if (!manifest)
+            if (manifest == null)
             {
                 string bundlePath = AssetSetting.Instance.GetBundlePath(AssetSetting.Instance.ManifestBundleName);
                 AssetBundle bundle = AssetBundle.LoadFromFile(bundlePath);
                 manifest = bundle.LoadAsset<AssetBundleManifest>("AssetBundleManifest");
+                bundle.Unload(false);
             }
 
             return manifest.GetAllDependencies(bundleName);
