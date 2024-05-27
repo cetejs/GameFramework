@@ -26,7 +26,7 @@ namespace GameFramework
             pool.Init(prefab, capacity);
         }
 
-        public T Get(Transform parent)
+        public T Get(Transform parent = null)
         {
             return pool.Get<T>(parent);
         }

@@ -67,7 +67,7 @@ namespace GameFramework
             RefreshPoolCount();
         }
 
-        public T Get<T>(Transform parent) where T : PoolObject
+        public PoolObject Get(Transform parent)
         {
             if (unusedObjects.Count <= 0)
             {
@@ -76,13 +76,19 @@ namespace GameFramework
 
             PoolObject obj = unusedObjects.Pop();
             obj.transform.SetParent(parent, false);
+            SetActive(obj, true);
             obj.WakeUp();
             usingObjects.Add(obj);
             RefreshPoolCount();
-            return obj as T;
+            return obj;
         }
 
-        public void GetAsync<T>(Transform parent, Action<T> callback) where T : PoolObject
+        public T Get<T>(Transform parent) where T : PoolObject
+        {
+            return Get(parent) as T;
+        }
+
+        public void GetAsync(Transform parent, Action<PoolObject> callback)
         {
             if (prefab == null)
             {
@@ -96,14 +102,22 @@ namespace GameFramework
                 {
                     GameObject go = operation.GetResult<GameObject>();
                     LoadPrefabComplete(go);
-                    T result = Get<T>(parent);
+                    PoolObject result = Get(parent);
                     callback?.Invoke(result);
                 };
             }
             else
             {
-                callback?.Invoke(Get<T>(parent));
+                callback?.Invoke(Get(parent));
             }
+        }
+
+        public void GetAsync<T>(Transform parent, Action<T> callback) where T : PoolObject
+        {
+            GetAsync(parent, obj =>
+            {
+                callback?.Invoke(obj as T);
+            });
         }
 
         public void Release(PoolObject obj)
@@ -162,6 +176,7 @@ namespace GameFramework
             obj.name = string.Concat(path.Replace("/", "_"), "_", objectId++);
 #endif
             obj.Init(this);
+            SetActive(obj, false);
             unusedObjects.Add(obj);
             RefreshPoolCount();
             return true;
@@ -196,7 +211,7 @@ namespace GameFramework
 
             obj.Sleep();
             obj.transform.SetParent(transform, false);
-            obj.transform.localPosition = Vector3.up * GameSettings.Instance.PoolWorldPosScale;
+            SetActive(obj, false);
             unusedObjects.Add(obj);
             RefreshPoolCount();
         }
@@ -214,6 +229,19 @@ namespace GameFramework
             {
                 prefab = go.AddComponent<EmptyObject>();
                 GameLogger.LogError($"ObjectPool {name} not have {typeof(PoolObject)}");
+            }
+        }
+
+        private void SetActive(PoolObject obj, bool value)
+        {
+            switch (GameSettings.Instance.PoolReleaseOperation)
+            {
+                case PoolReleaseOperation.SetActive:
+                    obj.gameObject.SetActive(value);
+                    break;
+                case PoolReleaseOperation.MovePosition:
+                    obj.transform.localPosition = value ? Vector3.zero : Vector3.up * GameSettings.Instance.PoolWorldPosScale;
+                    break;
             }
         }
 

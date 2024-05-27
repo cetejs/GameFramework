@@ -13,6 +13,24 @@ namespace GameFramework
             "Assembly-CSharp"
         };
 
+        [InspectorButton("BuildProjectDirectories")]
+        public bool BuildProjectDirectoriesButton;
+
+        private static void BuildProjectDirectories()
+        {
+#if UNITY_EDITOR
+            string bundleAssetPath = PathUtils.Combine(PathUtils.AssetPath, AssetSetting.Instance.BundleAssetName);
+            string excelRootPath = PathUtils.Combine(PathUtils.ProjectPath, DataTableSetting.Instance.ExcelRootPath);
+            string poolAssetPath = PathUtils.Combine(bundleAssetPath, Instance.PoolAssetName);
+            string windowAssetPath = PathUtils.Combine(bundleAssetPath, Instance.WindowAssetName);
+            DirectoryUtils.CreateDirectory(bundleAssetPath);
+            DirectoryUtils.CreateDirectory(excelRootPath);
+            DirectoryUtils.CreateDirectory(poolAssetPath);
+            DirectoryUtils.CreateDirectory(windowAssetPath);
+            UnityEditor.AssetDatabase.Refresh();
+#endif
+        }
+
         [InspectorGroup("RuntimeReload", 3)]
         public List<string> RuntimeReloadAssemblyNames = new List<string>()
         {
@@ -31,6 +49,8 @@ namespace GameFramework
 
         [InspectorGroup("ObjectPool", 7)]
         public string PoolAssetName = "Prefabs/ObjectPool";
+        public PoolReleaseOperation PoolReleaseOperation;
+        [EnumCondition("PoolReleaseOperation", true, (int) PoolReleaseOperation.MovePosition)]
         public int PoolWorldPosScale = 99999;
         public int DefaultPoolCapacity = 10;
         public bool PreloadOnStart;
@@ -50,9 +70,11 @@ namespace GameFramework
 
         private static void ImportInputManager()
         {
+#if UNITY_EDITOR
             string srcPath = PathUtils.Combine(PathUtils.GetPackageFullPath(), "Contents/InputManager.txt");
             string desPath = PathUtils.Combine(PathUtils.ProjectPath, "ProjectSettings/InputManager.asset");
             FileUtils.CopyFile(srcPath, desPath, true);
+#endif
         }
     }
 
@@ -63,5 +85,11 @@ namespace GameFramework
         public string name;
         public int capacity;
         public int preloadCount;
+    }
+
+    public enum PoolReleaseOperation
+    {
+        SetActive,
+        MovePosition
     }
 }

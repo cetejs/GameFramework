@@ -9,7 +9,6 @@ namespace GameFramework
         private ObjectPool pool;
         [SerializeField]
         private float lifeTime = -1f;
-        private float defaultLifeTime;
         private float lifeTimer;
 
         public float LifeTime
@@ -24,8 +23,14 @@ namespace GameFramework
 
         public bool IsReleased { get; private set; }
 
-        protected virtual void Update()
+        private void Update()
         {
+            if (IsReleased)
+            {
+                return;
+            }
+
+            OnUpdate();
             if (lifeTime <= -1)
             {
                 return;
@@ -52,8 +57,6 @@ namespace GameFramework
             {
                 pool.Release(this);
             }
-
-            lifeTime = -1;
         }
 
         internal void Init(ObjectPool pool)
@@ -65,6 +68,7 @@ namespace GameFramework
         internal void WakeUp()
         {
             IsReleased = false;
+            lifeTimer = lifeTime;
             OnWakeUp();
         }
 
@@ -72,6 +76,7 @@ namespace GameFramework
         {
             OnSleep();
             IsReleased = true;
+            lifeTimer = -1;
         }
 
         protected virtual void OnInit()
@@ -83,6 +88,10 @@ namespace GameFramework
         }
 
         protected virtual void OnSleep()
+        {
+        }
+
+        protected virtual void OnUpdate()
         {
         }
     }

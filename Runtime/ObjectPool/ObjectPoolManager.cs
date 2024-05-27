@@ -24,14 +24,32 @@ namespace GameFramework
             }
         }
 
+        public PoolObject Get(string path, Transform parent = null)
+        {
+            return GetObjectPool(path).Get(parent);
+        }
+
         public T Get<T>(string path, Transform parent = null) where T : PoolObject
         {
             return GetObjectPool(path).Get<T>(parent);
         }
 
+        public void GetAsync(string path, Action<PoolObject> callback)
+        {
+            GetAsync(path, null, callback);
+        }
+
+        public void GetAsync(string path, Transform parent, Action<PoolObject> callback)
+        {
+            GetObjectPoolAsync(path, pool =>
+            {
+                pool.GetAsync(parent, callback);
+            });
+        }
+
         public void GetAsync<T>(string path, Action<T> callback) where T : PoolObject
         {
-            GetAsync<T>(path, null, callback);
+            GetAsync(path, null, callback);
         }
 
         public void GetAsync<T>(string path, Transform parent, Action<T> callback) where T : PoolObject

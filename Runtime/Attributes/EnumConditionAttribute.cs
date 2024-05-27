@@ -29,6 +29,10 @@ namespace GameFramework
         {
             Condition = condition;
             Hidden = hideInInspector;
+            foreach (int value in values) 
+            {
+                Bit |= 1 << value;
+            }
         }
     }
 }
