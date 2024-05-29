@@ -10,7 +10,8 @@ namespace GameFramework
 
         public LocalAsset(string path)
         {
-            this.path = path;
+            path = PathUtils.Combine("Assets", AssetSetting.Instance.BundleAssetName, path);
+            this.path = StringUtils.Concat(path, FileUtils.GetExtension(path));
         }
 
         public Object Load()
@@ -20,8 +21,6 @@ namespace GameFramework
                 return asset;
             }
 
-            path = PathUtils.Combine("Assets", AssetSetting.Instance.BundleAssetName, path);
-            path = StringUtils.Concat(path, FileUtils.GetExtension(path));
 #if UNITY_EDITOR
             asset = UnityEditor.AssetDatabase.LoadMainAssetAtPath(path);
 #endif

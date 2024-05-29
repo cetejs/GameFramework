@@ -14,10 +14,10 @@ namespace GameFramework
             savePath = PersistentSetting.Instance.GetSavePath(storageId);
 
             string json;
-            if (PersistentSetting.Instance.EncryptionType == EncryptionType.AES)
+            if (PersistentSetting.Instance.EncryptionType == EncryptionType.Aes)
             {
                 byte[] bytes = FileUtils.ReadAllBytes(savePath);
-                json = EncryptionUtils.AES.DecryptFromBytes(bytes, PersistentSetting.Instance.Password);
+                json = CryptoUtils.Aes.DecryptStringFromBytes(bytes, PersistentSetting.Instance.Password);
             }
             else
             {
@@ -96,9 +96,9 @@ namespace GameFramework
         {
             string json = JsonUtils.ToJson(data);
             byte[] bytes;
-            if (PersistentSetting.Instance.EncryptionType == EncryptionType.AES)
+            if (PersistentSetting.Instance.EncryptionType == EncryptionType.Aes)
             {
-                bytes = EncryptionUtils.AES.EncryptToBytes(json, PersistentSetting.Instance.Password);
+                bytes = CryptoUtils.Aes.EncryptStringToBytes(json, PersistentSetting.Instance.Password);
             }
             else
             {
@@ -111,9 +111,9 @@ namespace GameFramework
         public void SaveAsync(Action callback)
         {
             string json = JsonUtils.ToJson(data);
-            if (PersistentSetting.Instance.EncryptionType == EncryptionType.AES)
+            if (PersistentSetting.Instance.EncryptionType == EncryptionType.Aes)
             {
-                byte[] bytes = EncryptionUtils.AES.EncryptToBytes(json, PersistentSetting.Instance.Password);
+                byte[] bytes = CryptoUtils.Aes.EncryptStringToBytes(json, PersistentSetting.Instance.Password);
                 FileUtils.WriteAllBytesAsync(savePath, bytes, callback);
             }
             else

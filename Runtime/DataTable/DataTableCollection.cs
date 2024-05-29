@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 namespace GameFramework
@@ -11,14 +12,24 @@ namespace GameFramework
             private Type tableType;
             private string loadPath;
             private bool loaded;
+            private MemoryStream stream;
+            private BinaryReader reader;
             private Dictionary<string, IDataTable> dataTables = new Dictionary<string, IDataTable>();
-            private Dictionary<string, string> rawDataRows = new Dictionary<string, string>();
+            private List<long> rowOffsets = new List<long>();
             private List<string> allKeys = new List<string>();
 
             public DataTableCollection(Type tableType)
             {
                 this.tableType = tableType;
                 loadPath = PathUtils.Combine(DataTableSetting.Instance.LoadTablePath, tableType.Name);
+                stream = new MemoryStream();
+                reader = new BinaryReader(stream);
+            }
+
+            ~DataTableCollection()
+            {
+                stream.Dispose();
+                reader.Dispose();
             }
 
             public void PreloadTable(Action callback)
@@ -28,9 +39,9 @@ namespace GameFramework
                     return;
                 }
 
-                LoadTextAsync(text =>
+                LoadTextAsync(bytes =>
                 {
-                    ReadRawData(text);
+                    ReadRawData(bytes);
                     callback?.Invoke();
                 });
             }
@@ -50,13 +61,13 @@ namespace GameFramework
                     callback?.Invoke();
                 });
             }
-            
+
             public void UnloadTable()
             {
                 loaded = false;
                 dataTables.Clear();
                 allKeys.Clear();
-                rawDataRows.Clear();
+                rowOffsets.Clear();
                 AssetManager.Instance.UnloadAsset(loadPath);
             }
 
@@ -151,7 +162,7 @@ namespace GameFramework
                 });
             }
 
-            private string LoadText()
+            private byte[] LoadText()
             {
                 TextAsset asset = AssetManager.Instance.LoadAsset<TextAsset>(loadPath);
                 if (asset == null)
@@ -161,15 +172,15 @@ namespace GameFramework
                 }
 
                 DataTableSetting setting = DataTableSetting.Instance;
-                if (setting.EncryptionType == EncryptionType.AES)
+                if (setting.EncryptionType == EncryptionType.Aes)
                 {
-                    return EncryptionUtils.AES.DecryptFromBytes(asset.bytes, setting.Password);
+                    return CryptoUtils.Aes.DecryptBytesFromBytes(asset.bytes, setting.Password);
                 }
 
-                return asset.text;
+                return asset.bytes;
             }
 
-            private void LoadTextAsync(Action<string> callback)
+            private void LoadTextAsync(Action<byte[]> callback)
             {
                 AssetAsyncOperation operation = AssetManager.Instance.LoadAssetAsync(loadPath);
                 operation.OnCompleted += _ =>
@@ -182,18 +193,18 @@ namespace GameFramework
                     }
 
                     DataTableSetting setting = DataTableSetting.Instance;
-                    if (setting.EncryptionType == EncryptionType.AES)
+                    if (setting.EncryptionType == EncryptionType.Aes)
                     {
-                        callback?.Invoke(EncryptionUtils.AES.DecryptFromBytes(asset.bytes, setting.Password));
+                        callback?.Invoke(CryptoUtils.Aes.DecryptBytesFromBytes(asset.bytes, setting.Password));
                     }
                     else
                     {
-                        callback?.Invoke(asset.text);
+                        callback?.Invoke(asset.bytes);
                     }
                 };
             }
 
-            private void ReadRawData(string text)
+            private void ReadRawData(byte[] bytes)
             {
                 if (loaded)
                 {
@@ -201,25 +212,39 @@ namespace GameFramework
                 }
 
                 loaded = true;
+                stream.SetLength(0);
+                stream.Write(bytes);
                 allKeys.Clear();
-                rawDataRows.Clear();
-                string[] lines = text.Split("\n", StringSplitOptions.RemoveEmptyEntries);
-                foreach (string line in lines)
+                rowOffsets.Clear();
+                stream.Seek(0, SeekOrigin.Begin);
+                int count = reader.ReadInt32();
+                for (int i = 0; i < count; i++)
                 {
-                    int index = line.IndexOf(",", StringComparison.Ordinal);
-                    string rawId = line.Substring(0, index);
-                    allKeys.Add(rawId);
-                    rawDataRows.Add(rawId, line);
+                    rowOffsets.Add(reader.ReadInt64());
+                }
+
+                for (int i = 0; i < count; i++)
+                {
+                    stream.Seek(rowOffsets[i], SeekOrigin.Begin);
+                    string key = reader.ReadString();
+                    if (key.StartsWith("\0"))
+                    {
+                        stream.Seek(rowOffsets[i], SeekOrigin.Begin);
+                        key = reader.ReadInt32().ToString();
+                    }
+
+                    allKeys.Add(key);
                 }
             }
 
             private T ReadTableFromRawData<T>(string id) where T : class, IDataTable, new()
             {
-                if (rawDataRows.TryGetValue(id, out string input))
+                int index = allKeys.IndexOf(id);
+                if (index >= 0)
                 {
                     T table = new T();
-                    table.Read(input);
-                    rawDataRows.Remove(id);
+                    stream.Seek(rowOffsets[index], SeekOrigin.Begin);
+                    table.Read(reader);
                     dataTables.Add(id, table);
                     return table;
                 }
@@ -231,7 +256,7 @@ namespace GameFramework
             {
                 string result = $"{tableType}:(";
                 bool first = true;
-                foreach (string key in dataTables.Keys)
+                foreach (string key in allKeys)
                 {
                     if (first)
                     {

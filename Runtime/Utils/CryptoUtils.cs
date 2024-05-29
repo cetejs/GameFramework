@@ -4,24 +4,24 @@ using System.Security.Cryptography;
 
 namespace GameFramework
 {
-    public static class EncryptionUtils
+    public static class CryptoUtils
     {
-        public static class AES
+        public static class Aes
         {
             private static readonly byte[] DefaultIV = new byte[16];
 
-            public static string EncryptToString(string plainText, string password)
+            public static string EncryptStringToString(string plainText, string password)
             {
                 if (string.IsNullOrEmpty(plainText))
                 {
                     return plainText;
                 }
 
-                byte[] cipherBytes = EncryptToBytes(plainText, password);
+                byte[] cipherBytes = EncryptStringToBytes(plainText, password);
                 return Convert.ToBase64String(cipherBytes);
             }
 
-            public static string DecryptFromString(string cipherText, string password)
+            public static string DecryptStringFromString(string cipherText, string password)
             {
                 if (string.IsNullOrEmpty(cipherText))
                 {
@@ -29,10 +29,54 @@ namespace GameFramework
                 }
 
                 byte[] cipherBytes = Convert.FromBase64String(cipherText);
-                return DecryptFromBytes(cipherBytes, password);
+                return DecryptStringFromBytes(cipherBytes, password);
             }
 
-            public static byte[] EncryptToBytes(string plainText, string password)
+            public static byte[] EncryptBytesToBytes(byte[] plainBytes, string password)
+            {
+                if (plainBytes == null || plainBytes.Length == 0)
+                {
+                    return null;
+                }
+
+                using (RijndaelManaged rijAlg = new RijndaelManaged())
+                {
+                    rijAlg.Mode = CipherMode.CBC;
+                    rijAlg.Padding = PaddingMode.PKCS7;
+                    rijAlg.IV = DefaultIV;
+
+                    Rfc2898DeriveBytes key = new Rfc2898DeriveBytes(password, rijAlg.IV, 32);
+                    rijAlg.Key = key.GetBytes(16);
+
+                    ICryptoTransform encryptor = rijAlg.CreateEncryptor(rijAlg.Key, rijAlg.IV);
+                    return encryptor.TransformFinalBlock(plainBytes, 0, plainBytes.Length);
+                }
+            }
+
+            public static byte[] DecryptBytesFromBytes(byte[] cipherBytes, string password)
+            {
+                if (cipherBytes == null || cipherBytes.Length == 0)
+                {
+                    return null;
+                }
+
+                byte[] plainBytes;
+                using (RijndaelManaged rijAlg = new RijndaelManaged())
+                {
+                    rijAlg.Mode = CipherMode.CBC;
+                    rijAlg.Padding = PaddingMode.PKCS7;
+                    rijAlg.IV = DefaultIV;
+
+                    Rfc2898DeriveBytes key = new Rfc2898DeriveBytes(password, rijAlg.IV, 32);
+                    rijAlg.Key = key.GetBytes(16);
+                    ICryptoTransform decryptor = rijAlg.CreateDecryptor(rijAlg.Key, rijAlg.IV);
+                    plainBytes = decryptor.TransformFinalBlock(cipherBytes, 0, cipherBytes.Length);
+                }
+
+                return plainBytes;
+            }
+
+            public static byte[] EncryptStringToBytes(string plainText, string password)
             {
                 if (string.IsNullOrEmpty(plainText))
                 {
@@ -68,14 +112,14 @@ namespace GameFramework
                 return cipherBytes;
             }
 
-            public static string DecryptFromBytes(byte[] cipherBytes, string password)
+            public static string DecryptStringFromBytes(byte[] cipherBytes, string password)
             {
                 if (cipherBytes == null || cipherBytes.Length == 0)
                 {
                     return null;
                 }
 
-                string plaintext;
+                string plainText;
                 using (RijndaelManaged rijAlg = new RijndaelManaged())
                 {
                     rijAlg.Mode = CipherMode.CBC;
@@ -92,13 +136,13 @@ namespace GameFramework
                         {
                             using (StreamReader srDecrypt = new StreamReader(csDecrypt))
                             {
-                                plaintext = srDecrypt.ReadToEnd();
+                                plainText = srDecrypt.ReadToEnd();
                             }
                         }
                     }
                 }
 
-                return plaintext;
+                return plainText;
             }
         }
     }
@@ -106,6 +150,6 @@ namespace GameFramework
     public enum EncryptionType
     {
         None,
-        AES
+        Aes
     }
 }

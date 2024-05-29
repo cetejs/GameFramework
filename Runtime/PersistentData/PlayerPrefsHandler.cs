@@ -117,9 +117,9 @@ namespace GameFramework
 
         private string TryEncrypt(string text)
         {
-            if (PersistentSetting.Instance.EncryptionType == EncryptionType.AES)
+            if (PersistentSetting.Instance.EncryptionType == EncryptionType.Aes)
             {
-                text = EncryptionUtils.AES.EncryptToString(text, PersistentSetting.Instance.Password);
+                text = CryptoUtils.Aes.EncryptStringToString(text, PersistentSetting.Instance.Password);
             }
 
             return text;
@@ -127,9 +127,9 @@ namespace GameFramework
 
         private string TryDecrypt(string text)
         {
-            if (PersistentSetting.Instance.EncryptionType == EncryptionType.AES)
+            if (PersistentSetting.Instance.EncryptionType == EncryptionType.Aes)
             {
-                text = EncryptionUtils.AES.DecryptFromString(text, PersistentSetting.Instance.Password);
+                text = CryptoUtils.Aes.DecryptStringFromString(text, PersistentSetting.Instance.Password);
             }
 
             return text;

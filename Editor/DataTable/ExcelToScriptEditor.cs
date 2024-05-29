@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using System.IO;
 using System.Text;
 
@@ -20,59 +21,33 @@ namespace GameFramework
             string tempTableText = File.ReadAllText(tempTextPath).ReplaceNewline();
             DataRow fieldRow = dataTable.Rows[0];
             // DataRow desRow = dataTable.Rows[1];
-            DataRow primitiveRow = dataTable.Rows[2];
+            DataRow typeRow = dataTable.Rows[2];
             // DataRow ruleRow = dataTable.Rows[3];
-            string propertyTab = GetPreLineTab(tempTableText, "#Field#");
-            string propertySetTab = GetPreLineTab(tempTableText, "#FieldSet#");
             int propertySetLastCount = 1;
             for (int i = 0; i < dataTable.Columns.Count; i++)
             {
                 string field = fieldRow[i].ToString().InitialsToUpper();
-                string primitive = primitiveRow[i].ToString().ToLower();
-                propertyBuilder.Append($"{propertyTab}public {primitive} {field}" + " { get; private set; }\n");
-                if (primitive.Contains("[]"))
+                string type = typeRow[i].ToString().ToLower();
+                propertyBuilder.AppendPadLeft($"public {type} {field}" + " { get; private set; }\n", 8);
+                if (type.EndsWith("[]"))
                 {
-                    string fileContent = string.Concat(field.InitialsToLower(), "Array");
-                    string primitiveContent = primitive.RemoveLastOf("[]");
-                    propertySetBuilder.Append($"{propertySetTab}string[] {fileContent} = columns[{i}].Split('|');\n");
-                    propertySetBuilder.Append($"{propertySetTab}{field} = new {primitiveContent}[{fileContent}.Length];\n");
-                    propertySetBuilder.Append($"{propertySetTab}for (int j = 0; j < {fileContent}.Length; j++)\n");
-                    propertySetBuilder.Append(propertySetTab + "{\n");
-                    if (primitiveContent == "string")
-                    {
-                        propertySetBuilder.Append($"{propertySetTab}    {field}[j] = {fileContent}[j];\n");
-                    }
-                    else if (primitiveContent == "bool")
-                    {
-                        propertySetBuilder.Append($"{propertySetTab}    {field}[j] = byte.Parse({fileContent}[j]) > 0;\n");
-                    }
-                    else
-                    {
-                        propertySetBuilder.Append($"{propertySetTab}    {field}[j] = {primitiveContent}.Parse({fileContent}[j]);\n");
-                    }
-
-                    propertySetBuilder.Append(propertySetTab + "}\n\n");
+                    string fileLength = string.Concat(field.InitialsToLower(), "Length");
+                    propertySetBuilder.AppendPadLeft($"int {fileLength} = reader.ReadInt32();\n", 12);
+                    string argType = type.RemoveLastOf("[]");
+                    propertySetBuilder.AppendPadLeft($"{field} = new {argType}[{fileLength}];\n", 12);
+                    propertySetBuilder.AppendPadLeft($"for (int i = 0; i < {fileLength}; i++)\n", 12);
+                    propertySetBuilder.AppendPadLeft("{\n", 12);
+                    propertySetBuilder.AppendPadLeft($"{field}[i] = reader.Read{GetReadType(argType)}();\n", 16);
+                    propertySetBuilder.AppendPadLeft("}\n\n", 12);
                     propertySetLastCount = 2;
                 }
                 else
                 {
-                    if (primitive == "string")
-                    {
-                        propertySetBuilder.Append($"{propertySetTab}{field} = columns[{i}];\n");
-                    }
-                    else if (primitive == "bool")
-                    {
-                        propertySetBuilder.Append($"{propertySetTab}{field} = byte.Parse(columns[{i}]) > 0;\n");
-                    }
-                    else
-                    {
-                        propertySetBuilder.Append($"{propertySetTab}{field} = {primitive}.Parse(columns[{i}]);\n");
-                    }
-
+                    propertySetBuilder.AppendPadLeft($"{field} = reader.Read{GetReadType(type)}();\n", 12);
                     propertySetLastCount = 1;
                 }
 
-                if (primitive.Contains("[]"))
+                if (type.Contains("[]"))
                 {
                     toStringBuilder.Append(field + " = {string.Join(\", \", " + field + ")}; ");
                 }
@@ -88,16 +63,48 @@ namespace GameFramework
             stringBuilder.Append(tempTableText);
             stringBuilder.Replace("#Namespace#", setting.ScriptNamespace);
             stringBuilder.Replace("#Name#", Path.GetFileNameWithoutExtension(fileName));
-            stringBuilder.Replace(string.Concat(propertyTab, "#Field#"), propertyBuilder.ToString());
-            stringBuilder.Replace(string.Concat(propertySetTab, "#FieldSet#"), propertySetBuilder.ToString());
+            stringBuilder.Replace("#Field#".PadLeft(15), propertyBuilder.ToString());
+            stringBuilder.Replace("#FieldSet#".PadLeft(22), propertySetBuilder.ToString());
             stringBuilder.Replace("#ToString#", toStringBuilder.ToString());
             string fullPath = Path.Combine(setting.OutputScriptPath, fileName);
             FileUtils.WriteAllText(fullPath, stringBuilder.ToString());
         }
 
-        private string GetPreLineTab(string text, string content)
+        private string GetReadType(string type)
         {
-            return text.GetFirstOf(content).GetLastOf("\n");
+            switch (type)
+            {
+                case "bool":
+                    return "Boolean";
+                case "byte":
+                    return "Byte";
+                case "sbyte":
+                    return "SByte";
+                case "char":
+                    return "Char";
+                case "double":
+                    return "Double";
+                case "decimal":
+                    return "Decimal";
+                case "short":
+                    return "Int16";
+                case "ushort":
+                    return "UInt16";
+                case "int":
+                    return "Int32";
+                case "uint":
+                    return "UInt32";
+                case "long":
+                    return "Int64";
+                case "ulong":
+                    return "UInt64";
+                case "float":
+                    return "Sinagle";
+                case "string":
+                    return "String";
+                default:
+                    throw new NotSupportedException($"{type} is not support");
+            }
         }
     }
 }

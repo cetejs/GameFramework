@@ -300,24 +300,30 @@ namespace GameFramework
 
         #region StringBuilder
 
-        public static void RemoveFirstCount(this StringBuilder text, int count = 1)
+        public static void RemoveFirstCount(this StringBuilder builder, int count = 1)
         {
-            if (text.Length < count)
+            if (builder.Length < count)
             {
                 return;
             }
 
-            text.Remove(0, count);
+            builder.Remove(0, count);
         }
 
-        public static void RemoveLastCount(this StringBuilder text, int count = 1)
+        public static void RemoveLastCount(this StringBuilder builder, int count = 1)
         {
-            if (text.Length < count)
+            if (builder.Length < count)
             {
                 return;
             }
 
-            text.Remove(text.Length - count, count);
+            builder.Remove(builder.Length - count, count);
+        }
+
+        public static void AppendPadLeft(this StringBuilder builder, string text, int width)
+        {
+            builder.Append(' ', width);
+            builder.Append(text);
         }
 
         #endregion

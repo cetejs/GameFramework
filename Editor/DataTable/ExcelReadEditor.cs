@@ -10,10 +10,13 @@ namespace GameFramework
 
         public DataTableCollection ReadExcel(string path)
         {
-            using FileStream stream = File.OpenRead(path);
-            IExcelDataReader reader = ExcelReaderFactory.CreateOpenXmlReader(stream);
-            DataSet dataSet = reader.AsDataSet();
-            return dataSet.Tables;
+            using (FileStream stream = File.OpenRead(path))
+            {
+                using (IExcelDataReader reader = ExcelReaderFactory.CreateOpenXmlReader(stream))
+                {
+                    return reader.AsDataSet().Tables;
+                }
+            }
         }
     }
 }

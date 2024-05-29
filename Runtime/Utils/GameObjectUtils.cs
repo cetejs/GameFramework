@@ -24,5 +24,13 @@ namespace GameFramework
 
             return result;
         }
+
+        public static void SetActiveSafe(this GameObject go, bool value)
+        {
+            if (go.activeSelf != value)
+            {
+                go.SetActive(value);
+            }
+        }
     }
 }

@@ -12,6 +12,7 @@ namespace GameFramework
     {
         private List<ExcelData> excelDataList = new List<ExcelData>();
         private List<ExcelData> lastDataList = new List<ExcelData>();
+        private ExportOperation operation;
         private bool allSelected;
         private bool showSettings;
         private Editor settingEditor;
@@ -34,16 +35,22 @@ namespace GameFramework
                 settingEditor.OnInspectorGUI();
             }
 
+            operation = (ExportOperation) EditorGUILayout.EnumPopup("Export Operation", operation);
+
             for (int i = 0; i < excelDataList.Count; i++)
             {
                 ExcelData excelData = excelDataList[i];
+                
+                EditorGUILayout.BeginHorizontal();
                 excelData.Selected = EditorGUILayout.Toggle(excelData.Name, excelData.Selected);
+                EditorGUILayout.EndHorizontal();
                 excelDataList[i] = excelData;
             }
 
             EditorGUILayout.BeginHorizontal();
 
-            if (GUILayout.Button("Select All"))
+            string selectButtonName = allSelected ? "Unselect All" : "Select All";
+            if (GUILayout.Button(selectButtonName))
             {
                 SelectAllExcels(!allSelected);
             }
@@ -55,8 +62,19 @@ namespace GameFramework
 
             if (GUILayout.Button("Build"))
             {
-                ExcelToTable(true);
-                ExcelToScript();
+                switch (operation)
+                {
+                    case ExportOperation.ExcelToTable:
+                        ExcelToTable(true);
+                        break;
+                    case ExportOperation.ExcelToScript:
+                        ExcelToScript();
+                        break;
+                    default:
+                        ExcelToTable(true);
+                        ExcelToScript();
+                        break;
+                }
             }
 
             EditorGUILayout.EndHorizontal();
@@ -221,6 +239,13 @@ namespace GameFramework
 
             EditorUtility.ClearProgressBar();
             AssetDatabase.Refresh();
+        }
+        
+        private enum ExportOperation
+        {
+            All,
+            ExcelToTable,
+            ExcelToScript
         }
 
         private struct ExcelData
