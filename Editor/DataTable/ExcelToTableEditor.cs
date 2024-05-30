@@ -9,7 +9,7 @@ namespace GameFramework
     {
         public static readonly ExcelToTableEditor Default = new ExcelToTableEditor();
 
-        public void ExcelToCsv(DataTable dataTable, string fileName)
+        public void ExcelToBinary(DataTable dataTable, string fileName)
         {
             if (dataTable.Rows.Count < 4)
             {

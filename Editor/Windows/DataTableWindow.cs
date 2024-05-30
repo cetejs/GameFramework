@@ -165,7 +165,7 @@ namespace GameFramework
                             return;
                         }
 
-                        ExcelToTableEditor.Default.ExcelToCsv(dataTables[0], fileInfo.Name.Replace(fileInfo.Extension, ".txt"));
+                        ExcelToTableEditor.Default.ExcelToBinary(dataTables[0], fileInfo.Name.Replace(fileInfo.Extension, ".txt"));
                     }
                     else if (dataTables.Count > 1)
                     {
@@ -176,7 +176,7 @@ namespace GameFramework
                                 return;
                             }
 
-                            ExcelToTableEditor.Default.ExcelToCsv(dataTables[j], string.Concat(dataTables[j].TableName, ".txt"));
+                            ExcelToTableEditor.Default.ExcelToBinary(dataTables[j], string.Concat(dataTables[j].TableName, ".txt"));
                         }
                     }
 
