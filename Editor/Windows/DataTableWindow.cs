@@ -154,7 +154,7 @@ namespace GameFramework
                     DataTableCollection dataTables = ExcelReadEditor.Default.ReadExcel(fileInfo.FullName);
                     if (dataTables.Count <= 0)
                     {
-                        Debug.LogError($"Table {fileInfo.FullName} count is zero");
+                        Debug.LogError($"table {fileInfo.FullName} count is zero");
                         continue;
                     }
 
@@ -183,9 +183,9 @@ namespace GameFramework
                     EditorUtility.DisplayProgressBar("ExcelToTable", fileInfo.Name, i / (float) fileInfo.Length);
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Debug.LogException(e);
+                Debug.LogException(ex);
             }
 
             EditorUtility.ClearProgressBar();
@@ -213,7 +213,7 @@ namespace GameFramework
                     DataTableCollection dataTables = ExcelReadEditor.Default.ReadExcel(fileInfo.FullName);
                     if (dataTables.Count <= 0)
                     {
-                        Debug.LogError($"Table {fileInfo.FullName} count is zero");
+                        Debug.LogError($"table {fileInfo.FullName} count is zero");
                         continue;
                     }
 
@@ -232,9 +232,9 @@ namespace GameFramework
                     EditorUtility.DisplayProgressBar("ExcelToScript", fileInfo.Name, i / (float) fileInfo.Length);
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Debug.LogException(e);
+                Debug.LogException(ex);
             }
 
             EditorUtility.ClearProgressBar();

@@ -2,9 +2,11 @@
 {
     public class PersistentSetting : ScriptableObjectSingleton<PersistentSetting>
     {
-        public string SaveDataName = "SaveData/SaveData";
-        public string SaveDataExtension = "pd";
-        public EncryptionType EncryptionType;
+        public string SaveDirectory = "SaveData";
+        public string DefaultStorageName = "DefaultSaveData";
+        public string SaveDataExtension = "dat";
+        public CryptoType CryptoType;
+        [EnumCondition("CryptoType", (int) CryptoType.AES)]
         public string Password = "password";
 
         public string SaveDataPath
@@ -12,21 +14,22 @@
             get
             {
 #if UNITY_EDITOR
-                return PathUtils.Combine(PathUtils.StreamingAssetsPath, SaveDataName);
+                return PathUtils.Combine(PathUtils.StreamingAssetsPath, SaveDirectory);
 #else
-                return PathUtils.Combine(PathUtils.PersistentDataPath, SaveDataName);
+                return PathUtils.Combine(PathUtils.PersistentDataPath, SaveDirectory);
 #endif
             }
         }
 
-        public string GetSavePath(int storageId)
+        public string GetSavePath(string storageName)
         {
-            if (string.IsNullOrEmpty(SaveDataExtension))
+            string path = PathUtils.Combine(SaveDataPath, storageName);
+            if (string.IsNullOrEmpty(SaveDataExtension) || storageName.LastIndexOf(".") >= 0)
             {
-                return StringUtils.Concat(SaveDataPath, storageId);
+                return path;
             }
 
-            return StringUtils.Concat(SaveDataPath, storageId, ".", SaveDataExtension);
+            return StringUtils.Concat(path, ".", SaveDataExtension);
         }
     }
 }

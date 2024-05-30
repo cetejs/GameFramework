@@ -110,7 +110,7 @@ namespace GameFramework
             {
                 if (string.IsNullOrEmpty(AssetSetting.Instance.DownloadUri))
                 {
-                    Debug.LogError("DownloadUri is invalid");
+                    Debug.LogError("download uri is invalid");
                 }
 
                 using UnityWebRequest deleteRequest = UnityWebRequest.Delete(AssetSetting.Instance.RemoteBundleUri);
@@ -138,9 +138,9 @@ namespace GameFramework
                     return;
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Debug.LogException(e);
+                Debug.LogException(ex);
             }
 
             EditorUtility.ClearProgressBar();
@@ -152,13 +152,13 @@ namespace GameFramework
             {
                 if (string.IsNullOrEmpty(AssetSetting.Instance.DownloadUri))
                 {
-                    Debug.LogError("DownloadUri is invalid");
+                    Debug.LogError("download uri is invalid");
                 }
 
                 string manifestPath = PathUtils.Combine(AssetSetting.Instance.BundleSavePath, AssetSetting.Instance.ManifestBundleName);
                 if (!File.Exists(manifestPath))
                 {
-                    Debug.LogError("ManifestPath is invalid");
+                    Debug.LogError("manifest path is invalid");
                     return;
                 }
 
@@ -204,11 +204,11 @@ namespace GameFramework
                     }
                 }
 
-                Debug.Log("UploadAssetBundles Success");
+                Debug.Log("upload asset bundles is success");
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Debug.LogException(e);
+                Debug.LogException(ex);
             }
 
             EditorUtility.ClearProgressBar();
@@ -269,7 +269,7 @@ namespace GameFramework
                     DirectoryUtils.CreateDirectory(outputPath);
                     AssetBundleManifest manifest = BuildPipeline.BuildAssetBundles(outputPath, bundleBuilds.ToArray(), buildOptions, buildTarget);
                     CollectBundleHash(manifest);
-                    Debug.Log("BuildAssetBundles Success");
+                    Debug.Log("build asset bundles is success");
                 }
 
                 if (AssetSetting.Instance.DeleteShaderVariantsWhenBuild)
@@ -283,9 +283,9 @@ namespace GameFramework
                     FileUtils.DeleteFile(StringUtils.Concat(SpriteAtlasAssetPath, ".meta"));
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Debug.LogException(e);
+                Debug.LogException(ex);
             }
 
             AssetDatabase.Refresh();

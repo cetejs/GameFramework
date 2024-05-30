@@ -172,7 +172,7 @@ namespace GameFramework
                 }
 
                 DataTableSetting setting = DataTableSetting.Instance;
-                if (setting.EncryptionType == EncryptionType.Aes)
+                if (setting.CryptoType == CryptoType.AES)
                 {
                     return CryptoUtils.Aes.DecryptBytesFromBytes(asset.bytes, setting.Password);
                 }
@@ -193,7 +193,7 @@ namespace GameFramework
                     }
 
                     DataTableSetting setting = DataTableSetting.Instance;
-                    if (setting.EncryptionType == EncryptionType.Aes)
+                    if (setting.CryptoType == CryptoType.AES)
                     {
                         callback?.Invoke(CryptoUtils.Aes.DecryptBytesFromBytes(asset.bytes, setting.Password));
                     }

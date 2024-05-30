@@ -118,6 +118,17 @@ namespace GameFramework
             return File.ReadAllText(path);
         }
 
+        public static async void ReadAllTextAsync(string path, Action<string> callback)
+        {
+            if (!File.Exists(path))
+            {
+                callback?.Invoke(null);
+            }
+
+            string text = await File.ReadAllTextAsync(path);
+            callback?.Invoke(text);
+        }
+
         public static byte[] ReadAllBytes(string path)
         {
             if (!File.Exists(path))
@@ -128,27 +139,58 @@ namespace GameFramework
             return File.ReadAllBytes(path);
         }
 
+        public static async void ReadAllBytesAsync(string path, Action<byte[]> callback)
+        {
+            if (!File.Exists(path))
+            {
+                callback?.Invoke(null);
+            }
+
+            byte[] bytes = await File.ReadAllBytesAsync(path);
+            callback?.Invoke(bytes);
+        }
+
         public static void WriteAllText(string path, string contents)
         {
+            if (contents == null)
+            {
+                return;
+            }
+
             CheckDirectory(path);
             File.WriteAllText(path, contents);
         }
 
         public static async void WriteAllTextAsync(string path, string contents, Action callback)
         {
+            if (contents == null)
+            {
+                return;
+            }
+
             CheckDirectory(path);
             await File.WriteAllTextAsync(path, contents);
             callback?.Invoke();
         }
-        
+
         public static void WriteAllBytes(string path, byte[] contents)
         {
+            if (contents == null)
+            {
+                return;
+            }
+
             CheckDirectory(path);
             File.WriteAllBytes(path, contents);
         }
 
-        public static async void WriteAllBytesAsync(string path,  byte[] contents, Action callback)
+        public static async void WriteAllBytesAsync(string path, byte[] contents, Action callback)
         {
+            if (contents == null)
+            {
+                return;
+            }
+
             CheckDirectory(path);
             await File.WriteAllBytesAsync(path, contents);
             callback?.Invoke();

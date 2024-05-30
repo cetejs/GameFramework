@@ -43,7 +43,7 @@ namespace GameFramework
                     writer.Write(offsets);
                 }
 
-                if (setting.EncryptionType == EncryptionType.Aes)
+                if (setting.CryptoType == CryptoType.AES)
                 {
                     FileUtils.WriteAllBytes(fullPath, CryptoUtils.Aes.EncryptBytesToBytes(stream.GetBuffer(), setting.Password));
                 }

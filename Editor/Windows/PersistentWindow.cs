@@ -12,36 +12,30 @@ namespace GameFramework
         private PersistentManager manager;
         private PersistentData newData = new PersistentData();
         private bool showNewDataBox;
-        private StorageType storageType;
-        private int storageId;
+        private string storageName;
+        private IPersistentStorage storage;
 
         private List<string> allKeys = new List<string>();
         private List<PersistentData> dataList = new List<PersistentData>();
-
-        private PersistentManager Manager
-        {
-            get
-            {
-                if (Application.isPlaying)
-                {
-                    return PersistentManager.Instance;
-                }
-
-                if (!manager)
-                {
-                    manager = new GameObject().AddComponent<PersistentManager>();
-                    manager.gameObject.hideFlags = HideFlags.HideAndDontSave;
-                    manager.ChangeStorage(StorageType.Default);
-                }
-
-                return manager;
-            }
-        }
 
         public override void Init(string name, GameWindow parent)
         {
             base.Init("PersistentData", parent);
             settingEditor = Editor.CreateEditor(PersistentSetting.Instance);
+            storageName = PersistentSetting.Instance.DefaultStorageName;
+            if (Application.isPlaying)
+            {
+                manager = PersistentManager.Instance;
+            }
+
+            if (!manager)
+            {
+                manager = new GameObject().AddComponent<PersistentManager>();
+                manager.gameObject.hideFlags = HideFlags.HideAndDontSave;
+                manager.Load(storageName);
+                storage = manager.GetStorage(storageName);
+            }
+
             RefreshData();
         }
 
@@ -52,13 +46,15 @@ namespace GameFramework
                 settingEditor.OnInspectorGUI();
             }
 
-            storageType = (StorageType) EditorGUILayout.EnumPopup("Storage Type", Manager.StorageType);
-            storageId = EditorGUILayout.IntField("Storage Id", Manager.StorageId);
-            if (storageType != Manager.StorageType || storageId != Manager.StorageId)
+            EditorGUILayout.BeginHorizontal();
+            storageName = EditorGUILayout.TextField("Storage Name", storageName);
+            if (GUILayout.Button("Load", GUILayout.Width(100)))
             {
-                Manager.ChangeStorage(storageType, storageId);
+                storage.Load(storageName);
                 RefreshData();
             }
+
+            EditorGUILayout.EndHorizontal();
 
             for (int i = 0; i < dataList.Count; i++)
             {
@@ -68,11 +64,6 @@ namespace GameFramework
             if (showNewDataBox)
             {
                 DrawNewData();
-            }
-
-            if (GUILayout.Button("Refresh"))
-            {
-                RefreshData();
             }
 
             GUILayout.BeginHorizontal();
@@ -96,7 +87,7 @@ namespace GameFramework
 
             if (GUILayout.Button("Save"))
             {
-                Manager.Save();
+                storage.Save();
                 AssetDatabase.Refresh();
             }
 
@@ -120,13 +111,13 @@ namespace GameFramework
         private void RefreshData()
         {
             dataList.Clear();
-            Manager.GetAllKeys(allKeys);
+            storage.GetAllKeys(allKeys);
             foreach (string key in allKeys)
             {
                 PersistentData localData = new PersistentData
                 {
                     Key = key,
-                    Value = Manager.GetString(key)
+                    Value = storage.GetData<string>(key, default)
                 };
                 dataList.Add(localData);
             }
@@ -136,14 +127,14 @@ namespace GameFramework
         {
             EditorGUILayout.BeginHorizontal();
             data.Value = EditorGUILayout.TextField(data.Key, data.Value);
-            if (GUILayout.Button("Set"))
+            if (GUILayout.Button("Set", GUILayout.Width(100)))
             {
-                Manager.SetData(data.Key, data.Value);
+                storage.SetData(data.Key, data.Value);
             }
 
-            if (GUILayout.Button("Delete"))
+            if (GUILayout.Button("Delete", GUILayout.Width(100)))
             {
-                Manager.DeleteKey(data.Key);
+                storage.DeleteKey(data.Key);
                 dataList.Remove(data);
             }
 
@@ -167,25 +158,25 @@ namespace GameFramework
                 bool error = false;
                 if (string.IsNullOrEmpty(newData.Key))
                 {
-                    Debug.LogError("Key is invalid");
+                    Debug.LogError("key is invalid");
                     error = true;
                 }
 
                 if (!error && string.IsNullOrEmpty(newData.Value))
                 {
-                    Debug.LogError("Value is invalid");
+                    Debug.LogError("value is invalid");
                     error = true;
                 }
 
-                if (!error && Manager.HasKey(newData.Key))
+                if (!error && storage.HasKey(newData.Key))
                 {
-                    Debug.LogError($"Key {newData.Key} is already exist");
+                    Debug.LogError($"key {newData.Key} is already exist");
                     error = true;
                 }
 
                 if (!error)
                 {
-                    Manager.SetData(newData.Key, newData.Value);
+                    storage.SetData(newData.Key, newData.Value);
                     dataList.Add(newData);
                     newData = new PersistentData();
                     showNewDataBox = false;
@@ -202,31 +193,31 @@ namespace GameFramework
 
         private void ImportData()
         {
-            string importPath = EditorUtility.OpenFilePanel("Import persistent data", Path.GetFullPath("Assets/.."), "pd");
+            string importPath = EditorUtility.OpenFilePanel("Import persistent data", Path.GetFullPath("Assets/.."), PersistentSetting.Instance.SaveDataExtension);
             if (string.IsNullOrEmpty(importPath))
             {
                 return;
             }
 
-            Manager.ImportData(File.ReadAllText(importPath, Encoding.UTF8));
+            storage.ImportData(File.ReadAllText(importPath, Encoding.UTF8));
             RefreshData();
         }
 
         private void ExportData()
         {
-            string exportPath = EditorUtility.SaveFilePanel("Export persistent data", Path.GetFullPath("Assets/.."), PlayerSettings.productName, "pd");
+            string exportPath = EditorUtility.SaveFilePanel("Export persistent data", Path.GetFullPath("Assets/.."), PlayerSettings.productName, PersistentSetting.Instance.SaveDataExtension);
             if (string.IsNullOrEmpty(exportPath))
             {
                 return;
             }
 
-            string json = Manager.ExportAllData();
+            string json = storage.ExportAllData();
             File.WriteAllText(exportPath, json, Encoding.UTF8);
         }
 
         private void DeleteAll()
         {
-            Manager.DeleteAll();
+            storage.DeleteAll();
             dataList.Clear();
             showNewDataBox = false;
         }

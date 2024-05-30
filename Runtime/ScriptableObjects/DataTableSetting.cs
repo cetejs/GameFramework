@@ -8,7 +8,8 @@
         public string TableBuildPath = "Configs/Tables";
         public string ScriptBuildPath = "Scripts/Tables";
         public string ScriptNamespace = "GameFramework";
-        public EncryptionType EncryptionType;
+        public CryptoType CryptoType;
+        [EnumCondition("CryptoType", (int) CryptoType.AES)]
         public string Password = "password";
 
         private void OnEnable()

@@ -58,6 +58,7 @@ namespace GameFramework
             string srcPath = PathUtils.Combine(PathUtils.GetPackageFullPath(), "Contents/InputManager.txt");
             string desPath = PathUtils.Combine(PathUtils.ProjectPath, "ProjectSettings/InputManager.asset");
             FileUtils.CopyFile(srcPath, desPath, true);
+            AssetDatabase.Refresh();
         }
     }
 }

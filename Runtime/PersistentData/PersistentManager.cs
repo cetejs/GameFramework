@@ -1,131 +1,218 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace GameFramework
 {
     public class PersistentManager : PersistentSingleton<PersistentManager>
     {
-        private float autoSaveEndTime;
-        private IPersistentStorage storage = new PersistentStorage();
-        public float AutoSaveTime { get; set; } = 1f;
+        private Dictionary<string, IPersistentStorage> storages = new Dictionary<string, IPersistentStorage>();
 
-        public StorageType StorageType { get; private set; }
-        public int StorageId { get; private set; }
-
-        private void OnEnable()
+        public IPersistentStorage GetStorage(string storageName)
         {
-            ChangeStorage(StorageType.Default);
+            if (!storages.TryGetValue(storageName, out IPersistentStorage storage))
+            {
+                storage = Load(storageName);
+            }
+
+            return storage;
         }
 
-        private void Update()
+        public IPersistentStorage Load()
         {
-            if (AutoSaveTime > 0f && Time.realtimeSinceStartup - autoSaveEndTime > AutoSaveTime)
+            return Load(PersistentSetting.Instance.DefaultStorageName);
+        }
+
+        public IPersistentStorage Load(string storageName)
+        {
+            if (!storages.TryGetValue(storageName, out IPersistentStorage storage))
             {
-                autoSaveEndTime = Time.realtimeSinceStartup;
-                Save();
+                storage = new PersistentJsonStorage();
+                storage.Load(storageName);
+                storages.Add(storageName, storage);
+            }
+
+            return storage;
+        }
+
+        public IPersistentStorage LoadAsync(Action<PersistentState> callback)
+        {
+            return LoadAsync(PersistentSetting.Instance.DefaultStorageName, callback);
+        }
+
+        public IPersistentStorage LoadAsync(string storageName, Action<PersistentState> callback)
+        {
+            if (!storages.TryGetValue(storageName, out IPersistentStorage storage))
+            {
+                storage = new PersistentJsonStorage();
+                storage.LoadAsync(storageName, callback);
+                storages.Add(storageName, storage);
+            }
+
+            return storage;
+        }
+
+        public void Unload()
+        {
+            Unload(PersistentSetting.Instance.DefaultStorageName);
+        }
+
+        public void Unload(string storageName)
+        {
+            if (storages.TryGetValue(storageName, out IPersistentStorage storage))
+            {
+                storage.Unload();
+                storages.Remove(storageName);
             }
         }
 
-        public void ChangeStorage(StorageType type, int storageId = 0)
+        public void Save()
         {
-            StorageId = storageId;
-            StorageType = type;
-            switch (type)
+            Save(PersistentSetting.Instance.DefaultStorageName);
+        }
+
+        public void Save(string storageName)
+        {
+            if (storages.TryGetValue(storageName, out IPersistentStorage storage))
             {
-                case StorageType.PlayerPrefs:
-                    storage.SetHandler(new PlayerPrefsHandler(storageId));
-                    break;
-                default:
-                    storage.SetHandler(new DefaultHandler(storageId));
-                    break;
+                storage.Save();
+            }
+        }
+
+        public void SaveAsync(Action<PersistentState> callback)
+        {
+            SaveAsync(PersistentSetting.Instance.DefaultStorageName, callback);
+        }
+
+        public void SaveAsync(string storageName, Action<PersistentState> callback)
+        {
+            if (storages.TryGetValue(storageName, out IPersistentStorage storage))
+            {
+                storage.SaveAsync(callback);
+            }
+            else
+            {
+                callback?.Invoke(PersistentState.None);
             }
         }
 
         public T GetData<T>(string key, T defaultValue = default)
         {
-            return storage.GetData(key, defaultValue);
+            return GetData<T>(PersistentSetting.Instance.DefaultStorageName, key, defaultValue);
+        }
+
+        public T GetData<T>(string storageName, string key, T defaultValue = default)
+        {
+            return GetStorage(storageName).GetData(key, defaultValue);
         }
 
         public void SetData<T>(string key, T value)
         {
-            storage.SetData(key, value);
+            SetData(PersistentSetting.Instance.DefaultStorageName, key, value);
         }
 
-        public string GetString(string key, string defaultValue = default)
+        public void SetData<T>(string storageName, string key, T value)
         {
-            return storage.GetString(key, defaultValue);
-        }
-
-        public void SetString(string key, string value)
-        {
-            storage.SetString(key, value);
+            GetStorage(storageName).SetData(key, value);
         }
 
         public string[] GetAllKeys()
         {
-            return storage.GetAllKeys();
+            return GetAllKeys(PersistentSetting.Instance.DefaultStorageName);
+        }
+
+        public string[] GetAllKeys(string storageName)
+        {
+            return GetStorage(storageName).GetAllKeys();
         }
 
         public void GetAllKeys(List<string> results)
         {
-            storage.GetAllKeys(results);
+            GetAllKeys(PersistentSetting.Instance.DefaultStorageName, results);
+        }
+
+        public void GetAllKeys(string storageName, List<string> results)
+        {
+            GetStorage(storageName).GetAllKeys(results);
         }
 
         public bool HasKey(string key)
         {
-            return storage.HasKey(key);
+            return HasKey(PersistentSetting.Instance.DefaultStorageName, key);
+        }
+
+        public bool HasKey(string storageName, string key)
+        {
+            return GetStorage(storageName).HasKey(key);
         }
 
         public void DeleteKey(string key)
         {
-            storage.DeleteKey(key);
+            DeleteKey(PersistentSetting.Instance.DefaultStorageName, key);
+        }
+
+        public void DeleteKey(string storageName, string key)
+        {
+            GetStorage(storageName).DeleteKey(key);
         }
 
         public void DeleteNodeKey(string key)
         {
-            storage.DeleteNodeKey(key);
+            DeleteNodeKey(PersistentSetting.Instance.DefaultStorageName, key);
+        }
+
+        public void DeleteNodeKey(string storageName, string key)
+        {
+            GetStorage(storageName).DeleteNodeKey(key);
         }
 
         public void ImportData(string json)
         {
-            storage.ImportData(json);
+            ImportData(PersistentSetting.Instance.DefaultStorageName, json);
+        }
+
+        public void ImportData(string storageName, string json)
+        {
+            GetStorage(storageName).ImportData(json);
         }
 
         public string ExportData(string key)
         {
-            return storage.ExportData(key);
+            return ExportData(PersistentSetting.Instance.DefaultStorageName, key);
+        }
+
+        public string ExportData(string storageName, string key)
+        {
+            return GetStorage(storageName).ExportData(key);
         }
 
         public string ExportNodeData(string key)
         {
-            return storage.ExportNodeData(key);
+            return ExportNodeData(PersistentSetting.Instance.DefaultStorageName, key);
+        }
+
+        public string ExportNodeData(string storageName, string key)
+        {
+            return GetStorage(storageName).ExportNodeData(key);
         }
 
         public string ExportAllData()
         {
-            return storage.ExportAllData();
+            return ExportAllData(PersistentSetting.Instance.DefaultStorageName);
+        }
+
+        public string ExportAllData(string storageName)
+        {
+            return GetStorage(storageName).ExportAllData();
         }
 
         public void DeleteAll()
         {
-            storage.DeleteAll();
+            DeleteAll(PersistentSetting.Instance.DefaultStorageName);
         }
 
-        public void Save()
+        public void DeleteAll(string storageName)
         {
-            storage.Save();
+            GetStorage(storageName).DeleteAll();
         }
-
-        public void SaveAsync(Action callback)
-        {
-            storage.SaveAsync(callback);
-        }
-    }
-
-    public enum StorageType
-    {
-        Default,
-        PlayerPrefs,
     }
 }

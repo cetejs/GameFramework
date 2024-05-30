@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Security.Cryptography;
+using UnityEngine;
 
 namespace GameFramework
 {
@@ -10,28 +11,6 @@ namespace GameFramework
         {
             private static readonly byte[] DefaultIV = new byte[16];
 
-            public static string EncryptStringToString(string plainText, string password)
-            {
-                if (string.IsNullOrEmpty(plainText))
-                {
-                    return plainText;
-                }
-
-                byte[] cipherBytes = EncryptStringToBytes(plainText, password);
-                return Convert.ToBase64String(cipherBytes);
-            }
-
-            public static string DecryptStringFromString(string cipherText, string password)
-            {
-                if (string.IsNullOrEmpty(cipherText))
-                {
-                    return cipherText;
-                }
-
-                byte[] cipherBytes = Convert.FromBase64String(cipherText);
-                return DecryptStringFromBytes(cipherBytes, password);
-            }
-
             public static byte[] EncryptBytesToBytes(byte[] plainBytes, string password)
             {
                 if (plainBytes == null || plainBytes.Length == 0)
@@ -39,18 +18,28 @@ namespace GameFramework
                     return null;
                 }
 
-                using (RijndaelManaged rijAlg = new RijndaelManaged())
+                byte[] cipherBytes = null;
+                try
                 {
-                    rijAlg.Mode = CipherMode.CBC;
-                    rijAlg.Padding = PaddingMode.PKCS7;
-                    rijAlg.IV = DefaultIV;
+                    using (RijndaelManaged rijAlg = new RijndaelManaged())
+                    {
+                        rijAlg.Mode = CipherMode.CBC;
+                        rijAlg.Padding = PaddingMode.PKCS7;
+                        rijAlg.IV = DefaultIV;
 
-                    Rfc2898DeriveBytes key = new Rfc2898DeriveBytes(password, rijAlg.IV, 32);
-                    rijAlg.Key = key.GetBytes(16);
+                        Rfc2898DeriveBytes key = new Rfc2898DeriveBytes(password, rijAlg.IV, 32);
+                        rijAlg.Key = key.GetBytes(16);
 
-                    ICryptoTransform encryptor = rijAlg.CreateEncryptor(rijAlg.Key, rijAlg.IV);
-                    return encryptor.TransformFinalBlock(plainBytes, 0, plainBytes.Length);
+                        ICryptoTransform encryptor = rijAlg.CreateEncryptor(rijAlg.Key, rijAlg.IV);
+                        cipherBytes = encryptor.TransformFinalBlock(plainBytes, 0, plainBytes.Length);
+                    }
                 }
+                catch (Exception ex)
+                {
+                    Debug.LogException(ex);
+                }
+
+                return cipherBytes;
             }
 
             public static byte[] DecryptBytesFromBytes(byte[] cipherBytes, string password)
@@ -60,17 +49,24 @@ namespace GameFramework
                     return null;
                 }
 
-                byte[] plainBytes;
-                using (RijndaelManaged rijAlg = new RijndaelManaged())
+                byte[] plainBytes = null;
+                try
                 {
-                    rijAlg.Mode = CipherMode.CBC;
-                    rijAlg.Padding = PaddingMode.PKCS7;
-                    rijAlg.IV = DefaultIV;
+                    using (RijndaelManaged rijAlg = new RijndaelManaged())
+                    {
+                        rijAlg.Mode = CipherMode.CBC;
+                        rijAlg.Padding = PaddingMode.PKCS7;
+                        rijAlg.IV = DefaultIV;
 
-                    Rfc2898DeriveBytes key = new Rfc2898DeriveBytes(password, rijAlg.IV, 32);
-                    rijAlg.Key = key.GetBytes(16);
-                    ICryptoTransform decryptor = rijAlg.CreateDecryptor(rijAlg.Key, rijAlg.IV);
-                    plainBytes = decryptor.TransformFinalBlock(cipherBytes, 0, cipherBytes.Length);
+                        Rfc2898DeriveBytes key = new Rfc2898DeriveBytes(password, rijAlg.IV, 32);
+                        rijAlg.Key = key.GetBytes(16);
+                        ICryptoTransform decryptor = rijAlg.CreateDecryptor(rijAlg.Key, rijAlg.IV);
+                        plainBytes = decryptor.TransformFinalBlock(cipherBytes, 0, cipherBytes.Length);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogException(ex);
                 }
 
                 return plainBytes;
@@ -83,30 +79,37 @@ namespace GameFramework
                     return null;
                 }
 
-                byte[] cipherBytes;
-                using (RijndaelManaged rijAlg = new RijndaelManaged())
+                byte[] cipherBytes = null;
+                try
                 {
-                    rijAlg.Mode = CipherMode.CBC;
-                    rijAlg.Padding = PaddingMode.PKCS7;
-                    rijAlg.IV = DefaultIV;
-
-                    Rfc2898DeriveBytes key = new Rfc2898DeriveBytes(password, rijAlg.IV, 32);
-                    rijAlg.Key = key.GetBytes(16);
-
-                    ICryptoTransform encryptor = rijAlg.CreateEncryptor(rijAlg.Key, rijAlg.IV);
-
-                    using (MemoryStream msEncrypt = new MemoryStream())
+                    using (RijndaelManaged rijAlg = new RijndaelManaged())
                     {
-                        using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
-                        {
-                            using (StreamWriter swEncrypt = new StreamWriter(csEncrypt))
-                            {
-                                swEncrypt.Write(plainText);
-                            }
+                        rijAlg.Mode = CipherMode.CBC;
+                        rijAlg.Padding = PaddingMode.PKCS7;
+                        rijAlg.IV = DefaultIV;
 
-                            cipherBytes = msEncrypt.ToArray();
+                        Rfc2898DeriveBytes key = new Rfc2898DeriveBytes(password, rijAlg.IV, 32);
+                        rijAlg.Key = key.GetBytes(16);
+
+                        ICryptoTransform encryptor = rijAlg.CreateEncryptor(rijAlg.Key, rijAlg.IV);
+
+                        using (MemoryStream msEncrypt = new MemoryStream())
+                        {
+                            using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+                            {
+                                using (StreamWriter swEncrypt = new StreamWriter(csEncrypt))
+                                {
+                                    swEncrypt.Write(plainText);
+                                }
+
+                                cipherBytes = msEncrypt.ToArray();
+                            }
                         }
                     }
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogException(ex);
                 }
 
                 return cipherBytes;
@@ -119,27 +122,34 @@ namespace GameFramework
                     return null;
                 }
 
-                string plainText;
-                using (RijndaelManaged rijAlg = new RijndaelManaged())
+                string plainText = null;
+                try
                 {
-                    rijAlg.Mode = CipherMode.CBC;
-                    rijAlg.Padding = PaddingMode.PKCS7;
-                    rijAlg.IV = DefaultIV;
-
-                    Rfc2898DeriveBytes key = new Rfc2898DeriveBytes(password, rijAlg.IV, 32);
-                    rijAlg.Key = key.GetBytes(16);
-                    ICryptoTransform decryptor = rijAlg.CreateDecryptor(rijAlg.Key, rijAlg.IV);
-
-                    using (MemoryStream msDecrypt = new MemoryStream(cipherBytes))
+                    using (RijndaelManaged rijAlg = new RijndaelManaged())
                     {
-                        using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
+                        rijAlg.Mode = CipherMode.CBC;
+                        rijAlg.Padding = PaddingMode.PKCS7;
+                        rijAlg.IV = DefaultIV;
+
+                        Rfc2898DeriveBytes key = new Rfc2898DeriveBytes(password, rijAlg.IV, 32);
+                        rijAlg.Key = key.GetBytes(16);
+                        ICryptoTransform decryptor = rijAlg.CreateDecryptor(rijAlg.Key, rijAlg.IV);
+
+                        using (MemoryStream msDecrypt = new MemoryStream(cipherBytes))
                         {
-                            using (StreamReader srDecrypt = new StreamReader(csDecrypt))
+                            using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
                             {
-                                plainText = srDecrypt.ReadToEnd();
+                                using (StreamReader srDecrypt = new StreamReader(csDecrypt))
+                                {
+                                    plainText = srDecrypt.ReadToEnd();
+                                }
                             }
                         }
                     }
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogException(ex);
                 }
 
                 return plainText;
@@ -147,9 +157,9 @@ namespace GameFramework
         }
     }
 
-    public enum EncryptionType
+    public enum CryptoType
     {
         None,
-        Aes
+        AES
     }
 }
