@@ -99,7 +99,7 @@ namespace GameFramework
                 case "ulong":
                     return "UInt64";
                 case "float":
-                    return "Sinagle";
+                    return "Single";
                 case "string":
                     return "String";
                 default:
