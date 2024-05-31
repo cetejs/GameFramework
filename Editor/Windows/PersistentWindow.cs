@@ -32,7 +32,6 @@ namespace GameFramework
             {
                 manager = new GameObject().AddComponent<PersistentManager>();
                 manager.gameObject.hideFlags = HideFlags.HideAndDontSave;
-                manager.Load(storageName);
                 storage = manager.GetStorage(storageName);
             }
 
@@ -158,19 +157,19 @@ namespace GameFramework
                 bool error = false;
                 if (string.IsNullOrEmpty(newData.Key))
                 {
-                    Debug.LogError("key is invalid");
+                    GameLogger.LogError("Add new data is fail, because key is invalid");
                     error = true;
                 }
 
                 if (!error && string.IsNullOrEmpty(newData.Value))
                 {
-                    Debug.LogError("value is invalid");
+                    GameLogger.LogError("Add new data is fail, because value is invalid");
                     error = true;
                 }
 
                 if (!error && storage.HasKey(newData.Key))
                 {
-                    Debug.LogError($"key {newData.Key} is already exist");
+                    GameLogger.LogError($"Add new data is fail, because key {newData.Key} is already exist");
                     error = true;
                 }
 

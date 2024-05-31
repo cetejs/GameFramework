@@ -98,7 +98,7 @@ namespace GameFramework
         {
             if (value == null)
             {
-                GameLogger.LogError("Value is invalid");
+                GameLogger.LogError("Heap add is fail, because value is invalid");
                 return;
             }
 

@@ -110,7 +110,7 @@ namespace GameFramework
             {
                 if (string.IsNullOrEmpty(AssetSetting.Instance.DownloadUri))
                 {
-                    Debug.LogError("download uri is invalid");
+                    GameLogger.LogError("Delete asset bundles is fail, because download uri is invalid");
                 }
 
                 using UnityWebRequest deleteRequest = UnityWebRequest.Delete(AssetSetting.Instance.RemoteBundleUri);
@@ -133,14 +133,14 @@ namespace GameFramework
 
                 if (!string.IsNullOrEmpty(deleteRequest.error))
                 {
-                    Debug.LogError(deleteRequest.error);
+                    GameLogger.LogError(deleteRequest.error);
                     EditorUtility.ClearProgressBar();
                     return;
                 }
             }
             catch (Exception ex)
             {
-                Debug.LogException(ex);
+                GameLogger.LogException(ex);
             }
 
             EditorUtility.ClearProgressBar();
@@ -152,13 +152,13 @@ namespace GameFramework
             {
                 if (string.IsNullOrEmpty(AssetSetting.Instance.DownloadUri))
                 {
-                    Debug.LogError("download uri is invalid");
+                    GameLogger.LogError("upload asset bundles is fail, because Download uri is invalid");
                 }
 
                 string manifestPath = PathUtils.Combine(AssetSetting.Instance.BundleSavePath, AssetSetting.Instance.ManifestBundleName);
                 if (!File.Exists(manifestPath))
                 {
-                    Debug.LogError("manifest path is invalid");
+                    GameLogger.LogError("upload asset bundles is fail, because manifest path is invalid");
                     return;
                 }
 
@@ -198,17 +198,17 @@ namespace GameFramework
 
                     if (!string.IsNullOrEmpty(uploadRequest.error))
                     {
-                        Debug.LogError(uploadRequest.error);
+                        GameLogger.LogError(uploadRequest.error);
                         EditorUtility.ClearProgressBar();
                         return;
                     }
                 }
 
-                Debug.Log("upload asset bundles is success");
+                GameLogger.Log("Upload asset bundles is success");
             }
             catch (Exception ex)
             {
-                Debug.LogException(ex);
+                GameLogger.LogException(ex);
             }
 
             EditorUtility.ClearProgressBar();
@@ -269,7 +269,7 @@ namespace GameFramework
                     DirectoryUtils.CreateDirectory(outputPath);
                     AssetBundleManifest manifest = BuildPipeline.BuildAssetBundles(outputPath, bundleBuilds.ToArray(), buildOptions, buildTarget);
                     CollectBundleHash(manifest);
-                    Debug.Log("build asset bundles is success");
+                    GameLogger.Log("Build asset bundles is success");
                 }
 
                 if (AssetSetting.Instance.DeleteShaderVariantsWhenBuild)
@@ -285,7 +285,7 @@ namespace GameFramework
             }
             catch (Exception ex)
             {
-                Debug.LogException(ex);
+                GameLogger.LogException(ex);
             }
 
             AssetDatabase.Refresh();

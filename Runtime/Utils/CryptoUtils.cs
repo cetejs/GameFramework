@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Security.Cryptography;
-using UnityEngine;
 
 namespace GameFramework
 {
@@ -36,7 +35,7 @@ namespace GameFramework
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogException(ex);
+                    GameLogger.LogException(ex);
                 }
 
                 return cipherBytes;
@@ -66,7 +65,7 @@ namespace GameFramework
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogException(ex);
+                    GameLogger.LogException(ex);
                 }
 
                 return plainBytes;
@@ -109,7 +108,7 @@ namespace GameFramework
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogException(ex);
+                    GameLogger.LogException(ex);
                 }
 
                 return cipherBytes;
@@ -149,7 +148,7 @@ namespace GameFramework
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogException(ex);
+                    GameLogger.LogException(ex);
                 }
 
                 return plainText;

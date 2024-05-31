@@ -187,14 +187,14 @@ namespace GameFramework
             if (!obj)
             {
                 usingObjects.Remove(obj);
-                GameLogger.LogError("Pool Object is be destroy");
+                GameLogger.LogError("Pool object is be destroy");
                 return;
             }
 
 #if UNITY_EDITOR
             if (unusedObjects.Contains(obj))
             {
-                GameLogger.LogError($"Pool Object {obj} is already released");
+                GameLogger.LogError($"Pool object {obj} is already released");
                 return;
             }
 #endif
@@ -228,7 +228,7 @@ namespace GameFramework
             if (!go.TryGetComponent(out prefab))
             {
                 prefab = go.AddComponent<EmptyObject>();
-                GameLogger.LogError($"ObjectPool {name} not have {typeof(PoolObject)}");
+                GameLogger.LogError($"Object pool {name} not have {typeof(PoolObject)}");
             }
         }
 

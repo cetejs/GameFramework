@@ -164,7 +164,7 @@ namespace GameFramework
                 return ps4;
             }
 
-            Debug.LogError($"ps4 mapping is not exist key {code}");
+            GameLogger.LogError($"The ps4 mapping is not exist key {code}");
             return null;
         }
 

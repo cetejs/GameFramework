@@ -154,7 +154,7 @@ namespace GameFramework
                     DataTableCollection dataTables = ExcelReadEditor.Default.ReadExcel(fileInfo.FullName);
                     if (dataTables.Count <= 0)
                     {
-                        Debug.LogError($"table {fileInfo.FullName} count is zero");
+                        GameLogger.LogError($"Excel to table is fail, because table {fileInfo.FullName} count is zero");
                         continue;
                     }
 
@@ -165,7 +165,7 @@ namespace GameFramework
                             return;
                         }
 
-                        ExcelToTableEditor.Default.ExcelToBinary(dataTables[0], fileInfo.Name.Replace(fileInfo.Extension, ".txt"));
+                        ExcelToTableEditor.Default.ExcelToBinary(dataTables[0], fileInfo.Name.Replace(fileInfo.Extension, ".bytes"));
                     }
                     else if (dataTables.Count > 1)
                     {
@@ -176,7 +176,7 @@ namespace GameFramework
                                 return;
                             }
 
-                            ExcelToTableEditor.Default.ExcelToBinary(dataTables[j], string.Concat(dataTables[j].TableName, ".txt"));
+                            ExcelToTableEditor.Default.ExcelToBinary(dataTables[j], string.Concat(dataTables[j].TableName, ".bytes"));
                         }
                     }
 
@@ -185,7 +185,7 @@ namespace GameFramework
             }
             catch (Exception ex)
             {
-                Debug.LogException(ex);
+                GameLogger.LogException(ex);
             }
 
             EditorUtility.ClearProgressBar();
@@ -213,7 +213,7 @@ namespace GameFramework
                     DataTableCollection dataTables = ExcelReadEditor.Default.ReadExcel(fileInfo.FullName);
                     if (dataTables.Count <= 0)
                     {
-                        Debug.LogError($"table {fileInfo.FullName} count is zero");
+                        GameLogger.LogError($"Excel to script is fail, because table {fileInfo.FullName} count is zero");
                         continue;
                     }
 
@@ -234,7 +234,7 @@ namespace GameFramework
             }
             catch (Exception ex)
             {
-                Debug.LogException(ex);
+                GameLogger.LogException(ex);
             }
 
             EditorUtility.ClearProgressBar();

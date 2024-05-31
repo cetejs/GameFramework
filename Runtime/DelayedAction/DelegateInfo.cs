@@ -30,7 +30,7 @@ namespace GameFramework
             }
             catch (Exception ex)
             {
-                GameLogger.LogError($"DynamicInvoke is thrown exception : {ex} {this}");
+                GameLogger.LogException(ex);
             }
         }
 

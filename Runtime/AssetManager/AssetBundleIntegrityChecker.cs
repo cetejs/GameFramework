@@ -49,8 +49,8 @@ namespace GameFramework
             if (string.IsNullOrEmpty(AssetSetting.Instance.DownloadUri))
             {
                 operation.Status = IntegrityStatus.NetworkError;
-                operation.StatusInfo = "DownloadUri is invalid";
-                GameLogger.LogError("DownloadUri is invalid");
+                operation.StatusInfo = "Download uri is invalid";
+                GameLogger.LogError("Download bundles is fail, because download uri is invalid");
                 yield break;
             }
 

@@ -7,12 +7,30 @@ namespace GameFramework
     {
         public static string ToJson(object obj)
         {
-            return JsonMapper.ToJson(obj);
+            try
+            {
+                return JsonMapper.ToJson(obj);
+            }
+            catch (Exception ex)
+            {
+                GameLogger.LogException(ex);
+            }
+
+            return null;
         }
 
         public static T ToObject<T>(string json)
         {
-            return JsonMapper.ToObject<T>(json);
+            try
+            {
+                return JsonMapper.ToObject<T>(json);
+            }
+            catch (Exception ex)
+            {
+                GameLogger.LogException(ex);
+            }
+
+            return default;
         }
 
         public static bool IsComplexObject<T>(T value)
@@ -29,7 +47,7 @@ namespace GameFramework
         {
             if (obj == null)
             {
-                GameLogger.LogError("Object is invalid");
+                GameLogger.LogError("Object to json is fail, because obj is invalid");
                 return null;
             }
 
@@ -50,7 +68,7 @@ namespace GameFramework
         {
             if (string.IsNullOrEmpty(text))
             {
-                GameLogger.LogError("Text is invalid");
+                GameLogger.LogError("Json to object is fail, because text is invalid");
                 return default;
             }
 
@@ -61,7 +79,7 @@ namespace GameFramework
         {
             if (string.IsNullOrEmpty(text))
             {
-                GameLogger.LogError("Text is invalid");
+                GameLogger.LogError("Json to object is fail, because text is invalid");
                 return null;
             }
 

@@ -55,7 +55,7 @@ namespace GameFramework
         {
             if (referenceType == null)
             {
-                GameLogger.LogError("Reference type is invalid");
+                GameLogger.LogError("Reference object is release fail, because reference type is invalid");
                 return null;
             }
 

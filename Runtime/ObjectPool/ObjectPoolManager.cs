@@ -64,7 +64,7 @@ namespace GameFramework
         {
             if (obj == null)
             {
-                Debug.LogError("pool object is invalid");
+                GameLogger.LogError("Pool object is release fail, because pool object is invalid");
                 return;
             }
 

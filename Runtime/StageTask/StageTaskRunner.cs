@@ -68,7 +68,7 @@ namespace GameFramework
         {
             if (task == null)
             {
-                GameLogger.LogError("StageTask is invalid");
+                GameLogger.LogError("Stage task is add fail, because task is invalid");
                 return;
             }
 

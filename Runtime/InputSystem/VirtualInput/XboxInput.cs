@@ -159,7 +159,7 @@ namespace GameFramework
                 return xbox;
             }
 
-            Debug.LogError($"xbox mapping is not exist key {code}");
+            GameLogger.LogError($"The xbox mapping is not exist key {code}");
             return null;
         }
 

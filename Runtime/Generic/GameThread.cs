@@ -71,7 +71,7 @@ namespace GameFramework
                 }
                 catch (Exception ex)
                 {
-                    GameLogger.LogError($"GameThread is thrown exception : {ex} {this}");
+                    GameLogger.LogException(ex);
                     return;
                 }
 

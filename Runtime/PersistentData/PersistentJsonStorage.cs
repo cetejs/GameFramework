@@ -83,7 +83,8 @@ namespace GameFramework
             {
                 data = JsonUtils.ToObject<Dictionary<string, string>>(json);
             }
-            else
+
+            if (data == null)
             {
                 data = new Dictionary<string, string>();
             }
@@ -205,7 +206,7 @@ namespace GameFramework
         {
             if (string.IsNullOrEmpty(key))
             {
-                GameLogger.LogError("Key is invalid");
+                GameLogger.LogError("Persistent get data is fail, because key is invalid");
                 return defaultValue;
             }
 
@@ -222,13 +223,13 @@ namespace GameFramework
         {
             if (string.IsNullOrEmpty(key))
             {
-                GameLogger.LogError("Key is invalid");
+                GameLogger.LogError("Persistent set data is fail, because key is invalid");
                 return;
             }
 
             if (value == null)
             {
-                GameLogger.LogError("Value is invalid");
+                GameLogger.LogError("Persistent set data is fail, because value is invalid");
                 return;
             }
 

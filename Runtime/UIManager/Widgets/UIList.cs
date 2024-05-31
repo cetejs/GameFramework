@@ -85,7 +85,7 @@ namespace GameFramework
         {
             if (!cell)
             {
-                GameLogger.LogError("Init failed, cell is invalid");
+                GameLogger.LogError("Init failed, because cell is invalid");
                 return;
             }
 

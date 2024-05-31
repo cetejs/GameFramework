@@ -21,6 +21,11 @@ namespace GameFramework
 
         public bool IsLogTypeAllowed(LogLevel logLevel)
         {
+            if (Application.isEditor)
+            {
+                return true;
+            }
+
             if (!EnableLog)
             {
                 return false;

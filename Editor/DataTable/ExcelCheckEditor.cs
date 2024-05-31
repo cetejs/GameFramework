@@ -1,7 +1,6 @@
 ﻿using System.Data;
 using System.Collections.Generic;
 using System.IO;
-using UnityEngine;
 
 namespace GameFramework
 {
@@ -40,7 +39,7 @@ namespace GameFramework
                     string data = dataTable.Rows[j][columns[i]].ToString();
                     if (uniqueDataSet.Contains(data))
                     {
-                        Debug.LogError($"[unique] Excel {fileName} has data {data} in row {j + 1} column {columns[i] + 1}");
+                        GameLogger.LogError($"[unique] Excel {fileName} has data {data} in row {j + 1} column {columns[i] + 1}");
                         return false;
                     }
 
@@ -80,14 +79,14 @@ namespace GameFramework
 
                 if (linkTable == null)
                 {
-                    Debug.LogError($"[link] Excel {fileName} has link name {linkName} is invalid");
+                    GameLogger.LogError($"[link] Excel {fileName} has link name {linkName} is invalid");
                     return false;
                 }
 
                 GetDataColumns(linkTable, field, lineTableColumns);
                 if (lineTableColumns.Count <= 0)
                 {
-                    Debug.LogError($"[link] Excel {fileName} link excel {linkName.Split('.')[0]} not found field {field}");
+                    GameLogger.LogError($"[link] Excel {fileName} link excel {linkName.Split('.')[0]} not found field {field}");
                 }
 
                 for (int j = 4; j < dataTable.Rows.Count; ++j)
@@ -95,7 +94,7 @@ namespace GameFramework
                     string data = dataTable.Rows[j][columns[i]].ToString();
                     if (!lineTableColumns.Contains(data))
                     {
-                        Debug.LogError($"[link] Excel {fileName} link excel {linkName.Split('.')[0]} has field {field} not exist data {data}");
+                        GameLogger.LogError($"[link] Excel {fileName} link excel {linkName.Split('.')[0]} has field {field} not exist data {data}");
                         return false;
                     }
                 }

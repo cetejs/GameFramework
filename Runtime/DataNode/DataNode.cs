@@ -33,7 +33,7 @@ namespace GameFramework
             {
                 if (!IsValidName(name))
                 {
-                    GameLogger.LogError("Name of data node is invalid");
+                    GameLogger.LogError("Data node is create fail, because name of data node is invalid");
                 }
 
                 DataNode node = ReferencePool.Instance.Get<DataNode>();
@@ -98,7 +98,7 @@ namespace GameFramework
             {
                 if (!IsValidName(name))
                 {
-                    GameLogger.LogError("Name is invalid");
+                    GameLogger.LogError("Data node is get fail, because name is invalid");
                 }
 
                 if (children == null)
@@ -151,7 +151,7 @@ namespace GameFramework
             {
                 if (results == null)
                 {
-                    GameLogger.LogError("Results is invalid");
+                    GameLogger.LogError("Children is get fail, because results is invalid");
                     return;
                 }
 

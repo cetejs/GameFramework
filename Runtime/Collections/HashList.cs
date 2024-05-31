@@ -30,7 +30,7 @@ namespace GameFramework
                 {
                     if (index >= list.Count)
                     {
-                        GameLogger.LogError($"Hash list is get fail, {index} is out of range");
+                        GameLogger.LogError($"Hash list is get fail, because {index} is out of range");
                         return default;
                     }
 
@@ -45,7 +45,7 @@ namespace GameFramework
             {
                 if (!dict.TryGetValue(key, out TValue value))
                 {
-                    GameLogger.LogError($"Hash list is get fail, {value} is not exist");
+                    GameLogger.LogError($"Hash list is get fail, because {value} is not exist");
                     return default;
                 }
 
@@ -78,13 +78,13 @@ namespace GameFramework
             {
                 if (value == null)
                 {
-                    GameLogger.LogError("Hash list is add fail, type is null");
+                    GameLogger.LogError("Hash list is add fail, because type is null");
                     return;
                 }
 
                 if (dict.ContainsKey(key))
                 {
-                    GameLogger.LogError($"Hash list is add fail, {value} is already exist");
+                    GameLogger.LogError($"Hash list is add fail, because {value} is already exist");
                     return;
                 }
 

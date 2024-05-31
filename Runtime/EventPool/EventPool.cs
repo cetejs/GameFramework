@@ -123,7 +123,7 @@ namespace GameFramework
                     }
                     catch (Exception ex)
                     {
-                        GameLogger.LogError($"PersistentStorage is thrown exception : {ex} {this}");
+                        GameLogger.LogException(ex);
                     }
                 }
             }

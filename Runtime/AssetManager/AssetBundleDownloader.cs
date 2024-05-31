@@ -62,7 +62,7 @@ namespace GameFramework
             if (string.IsNullOrEmpty(AssetSetting.Instance.DownloadUri))
             {
                 operation.Status = UpdateCatalogsStatus.NetworkError;
-                GameLogger.LogError("DownloadUri is invalid");
+                GameLogger.LogError("Collect catalogs is fail, because download uri is invalid");
                 yield break;
             }
 
@@ -219,7 +219,7 @@ namespace GameFramework
                     if (!fileInfo.Exists)
                     {
                         operation.Status = UpdateCatalogsStatus.NetworkError;
-                        GameLogger.LogError($"{bundleUri} is not exist");
+                        GameLogger.LogError($"Download bundles is fail, because {bundleUri} is not exist");
                         yield break;
                     }
 

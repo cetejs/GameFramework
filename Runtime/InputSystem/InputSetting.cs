@@ -160,7 +160,7 @@ namespace GameFramework
                 return input;
             }
 
-            Debug.LogError($"input mapping is not exist key {name}");
+            GameLogger.LogError($"The input mapping is not exist key {name}");
             return null;
         }
 
@@ -187,7 +187,7 @@ namespace GameFramework
                 return bound;
             }
 
-            Debug.LogError($"input mapping is not exist key {name}");
+            GameLogger.LogError($"The input mapping is not exist key {name}");
             return null;
         }
 
