@@ -6,9 +6,17 @@ namespace GameFramework
     public class PersistentManager : PersistentSingleton<PersistentManager>
     {
         private Dictionary<string, IPersistentStorage> storages = new Dictionary<string, IPersistentStorage>();
+        public event Action<string> OnStorageLoading;
+        public event Action<string> OnStorageSaving;
 
         public IPersistentStorage GetStorage(string storageName)
         {
+            if (string.IsNullOrEmpty(storageName))
+            {
+                GameLogger.LogError("Storage is get fail, because storage name is invalid");
+                return null;
+            }
+
             if (!storages.TryGetValue(storageName, out IPersistentStorage storage))
             {
                 storage = Load(storageName);
@@ -24,13 +32,20 @@ namespace GameFramework
 
         public IPersistentStorage Load(string storageName)
         {
+            if (string.IsNullOrEmpty(storageName))
+            {
+                GameLogger.LogError("Storage is load fail, because storage name is invalid");
+                return null;
+            }
+
             if (!storages.TryGetValue(storageName, out IPersistentStorage storage))
             {
                 storage = new PersistentJsonStorage();
-                storage.Load(storageName);
                 storages.Add(storageName, storage);
             }
 
+            storage.Load(storageName);
+            OnStorageLoading?.Invoke(storageName);
             return storage;
         }
 
@@ -41,13 +56,20 @@ namespace GameFramework
 
         public IPersistentStorage LoadAsync(string storageName, Action<PersistentState> callback)
         {
+            if (string.IsNullOrEmpty(storageName))
+            {
+                GameLogger.LogError("Storage is load fail, because storage name is invalid");
+                return null;
+            }
+
             if (!storages.TryGetValue(storageName, out IPersistentStorage storage))
             {
                 storage = new PersistentJsonStorage();
-                storage.LoadAsync(storageName, callback);
                 storages.Add(storageName, storage);
             }
 
+            storage.LoadAsync(storageName, callback);
+            OnStorageLoading?.Invoke(storageName);
             return storage;
         }
 
@@ -58,10 +80,20 @@ namespace GameFramework
 
         public void Unload(string storageName)
         {
+            if (string.IsNullOrEmpty(storageName))
+            {
+                GameLogger.LogError("Storage is unload fail, because storage name is invalid");
+                return;
+            }
+
             if (storages.TryGetValue(storageName, out IPersistentStorage storage))
             {
                 storage.Unload();
                 storages.Remove(storageName);
+            }
+            else
+            {
+                GameLogger.LogError($"Storage is unload fail, because storage {storageName} is not loaded");
             }
         }
 
@@ -72,9 +104,20 @@ namespace GameFramework
 
         public void Save(string storageName)
         {
+            if (string.IsNullOrEmpty(storageName))
+            {
+                GameLogger.LogError("Storage is save fail, because storage name is invalid");
+                return;
+            }
+
             if (storages.TryGetValue(storageName, out IPersistentStorage storage))
             {
+                OnStorageSaving?.Invoke(storageName);
                 storage.Save();
+            }
+            else
+            {
+                GameLogger.LogError($"Storage is save fail, because storage {storageName} is not loaded");
             }
         }
 
@@ -85,13 +128,20 @@ namespace GameFramework
 
         public void SaveAsync(string storageName, Action<PersistentState> callback)
         {
+            if (string.IsNullOrEmpty(storageName))
+            {
+                GameLogger.LogError("Storage is save fail, because storage name is invalid");
+                return;
+            }
+
             if (storages.TryGetValue(storageName, out IPersistentStorage storage))
             {
+                OnStorageSaving?.Invoke(storageName);
                 storage.SaveAsync(callback);
             }
             else
             {
-                callback?.Invoke(PersistentState.None);
+                GameLogger.LogError($"Storage is save fail, because storage {storageName} is not loaded");
             }
         }
 

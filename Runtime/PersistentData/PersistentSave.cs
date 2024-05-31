@@ -3,14 +3,14 @@ using UnityEngine;
 
 namespace GameFramework
 {
-    public abstract class PersistentSave<T> : GameBehaviour, ISerializationCallbackReceiver where T : new()
+    public abstract class PersistentSave<T> : GameBehaviour where T : new()
     {
         [SerializeField]
         protected string storageName;
         [SerializeField]
         protected string persistentKey;
 
-        public T SaveData { get; protected set; }
+        public T PersistentData { get; protected set; }
 
         protected virtual void Reset()
         {
@@ -20,29 +20,55 @@ namespace GameFramework
 
         protected virtual void OnEnable()
         {
-            SaveData = PersistentManager.Instance.GetData<T>(storageName, persistentKey) ?? new T();
+            PersistentData = PersistentManager.Instance.GetData<T>(storageName, persistentKey, PersistentData) ?? new T();
+            OnGetPersistentData();
+
+            PersistentManager.Instance.OnStorageLoading += OnStorageLoading;
+            PersistentManager.Instance.OnStorageSaving += OnStorageSaving;
         }
 
         protected virtual void OnDisable()
         {
-            PersistentManager.Instance.SetData(storageName, persistentKey, SaveData);
-        }
-
-        public virtual void OnBeforeSerialize()
-        {
-            if (string.IsNullOrEmpty(storageName))
+            if (UnityEventCenter.IsApplicationQuit)
             {
-                storageName = PersistentSetting.Instance.DefaultStorageName;
+                return;
             }
 
-            if (string.IsNullOrEmpty(persistentKey))
-            {
-                persistentKey = Guid.NewGuid().ToString();
-            }
+            PersistentManager.Instance.OnStorageLoading -= OnStorageLoading;
+            PersistentManager.Instance.OnStorageSaving -= OnStorageSaving;
+
+            OnSavePersistentData();
+            PersistentManager.Instance.SetData(storageName, persistentKey, PersistentData);
         }
 
-        public virtual void OnAfterDeserialize()
+        protected virtual void OnGetPersistentData()
         {
+        }
+
+        protected virtual void OnSavePersistentData()
+        {
+        }
+
+        private void OnStorageLoading(string storageName)
+        {
+            if (this.storageName != storageName)
+            {
+                return;
+            }
+
+            PersistentData = PersistentManager.Instance.GetData<T>(storageName, persistentKey, PersistentData) ?? new T();
+            OnGetPersistentData();
+        }
+
+        private void OnStorageSaving(string storageName)
+        {
+            if (this.storageName != storageName)
+            {
+                return;
+            }
+
+            OnSavePersistentData();
+            PersistentManager.Instance.SetData(storageName, persistentKey, PersistentData);
         }
     }
 }

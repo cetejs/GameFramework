@@ -15,6 +15,11 @@
 			"displayName": "SimpleController",
 			"description": "SimpleController Sample",
 			"path": "Samples~/SimpleController"
+		},
+		{
+			"displayName": "PersistentData",
+			"description": "PersistentData Sample",
+			"path": "Samples~/PersistentData"
 		}
 	]
 }
