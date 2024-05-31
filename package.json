@@ -3,7 +3,7 @@
 	"displayName": "Game Framework",
 	"description": "Game Framework",
 	"version": "1.0.0",
-	"unity": "2021.3",
+	"unity": "2022.3",
 	"license": "MIT",
 	"author" : {
 		"name": "Cetejs",
@@ -15,6 +15,11 @@
 			"displayName": "SimpleController",
 			"description": "SimpleController Sample",
 			"path": "Samples~/SimpleController"
+		},
+		{
+			"displayName": "DataTable",
+			"description": "DataTable Sample",
+			"path": "Samples~/DataTable"
 		},
 		{
 			"displayName": "PersistentData",
