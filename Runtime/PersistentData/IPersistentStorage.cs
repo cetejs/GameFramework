@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 namespace GameFramework
@@ -9,15 +8,17 @@ namespace GameFramework
 
         PersistentState State { get; }
 
-        void Load(string storageName);
+        bool IsValid { get; }
 
-        void LoadAsync(string storageName, Action<PersistentState> callback);
+        internal void Load(string storageName);
 
-        void Unload();
+        internal StorageAsyncOperation LoadAsync(string storageName);
+
+        internal void Unload();
 
         void Save();
 
-        void SaveAsync(Action<PersistentState> callback);
+        StorageAsyncOperation SaveAsync();
 
         T GetData<T>(string key, T defaultValue);
 
@@ -29,19 +30,11 @@ namespace GameFramework
 
         bool HasKey(string key);
 
-        bool DeleteKey(string key);
+        void DeleteKey(string key);
 
-        void DeleteNodeKey(string key);
+        void DeleteNode(string key);
 
         void DeleteAll();
-
-        void ImportData(string json);
-
-        string ExportData(string key);
-
-        string ExportNodeData(string key);
-
-        string ExportAllData();
     }
 
     public enum PersistentState

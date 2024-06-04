@@ -1,8 +1,8 @@
+using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using UnityEditor;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace GameFramework
 {
@@ -49,7 +49,8 @@ namespace GameFramework
             storageName = EditorGUILayout.TextField("Storage Name", storageName);
             if (GUILayout.Button("Load", GUILayout.Width(100)))
             {
-                storage.Load(storageName);
+                manager.Unload(storageName);
+                storage = manager.GetStorage(storageName);
                 RefreshData();
             }
 
@@ -64,19 +65,6 @@ namespace GameFramework
             {
                 DrawNewData();
             }
-
-            GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Import Data"))
-            {
-                ImportData();
-            }
-
-            if (GUILayout.Button("Export Data"))
-            {
-                ExportData();
-            }
-
-            GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("New Data"))
@@ -115,9 +103,18 @@ namespace GameFramework
             {
                 PersistentData localData = new PersistentData
                 {
-                    Key = key,
-                    Value = storage.GetData<string>(key, default)
+                    Key = key
                 };
+
+                try
+                {
+                    localData.Value = storage.GetData<string>(key, default);
+                }
+                catch (Exception ex)
+                {
+                    localData.Value = null;
+                }
+
                 dataList.Add(localData);
             }
         }
@@ -125,12 +122,22 @@ namespace GameFramework
         private void DrawData(PersistentData data)
         {
             EditorGUILayout.BeginHorizontal();
-            data.Value = EditorGUILayout.TextField(data.Key, data.Value);
+            if (data.Value == null)
+            {
+                GUI.enabled = false;
+                EditorGUILayout.TextField(data.Key, "This type of display is not supported");
+            }
+            else
+            {
+                data.Value = EditorGUILayout.TextField(data.Key, data.Value);
+            }
+
             if (GUILayout.Button("Set", GUILayout.Width(100)))
             {
                 storage.SetData(data.Key, data.Value);
             }
 
+            GUI.enabled = true;
             if (GUILayout.Button("Delete", GUILayout.Width(100)))
             {
                 storage.DeleteKey(data.Key);
@@ -188,30 +195,6 @@ namespace GameFramework
             }
 
             EditorGUILayout.EndHorizontal();
-        }
-
-        private void ImportData()
-        {
-            string importPath = EditorUtility.OpenFilePanel("Import persistent data", Path.GetFullPath("Assets/.."), PersistentSetting.Instance.SaveDataExtension);
-            if (string.IsNullOrEmpty(importPath))
-            {
-                return;
-            }
-
-            storage.ImportData(File.ReadAllText(importPath, Encoding.UTF8));
-            RefreshData();
-        }
-
-        private void ExportData()
-        {
-            string exportPath = EditorUtility.SaveFilePanel("Export persistent data", Path.GetFullPath("Assets/.."), PlayerSettings.productName, PersistentSetting.Instance.SaveDataExtension);
-            if (string.IsNullOrEmpty(exportPath))
-            {
-                return;
-            }
-
-            string json = storage.ExportAllData();
-            File.WriteAllText(exportPath, json, Encoding.UTF8);
         }
 
         private void DeleteAll()

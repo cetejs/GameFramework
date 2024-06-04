@@ -1,12 +1,14 @@
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace GameFramework
 {
-    internal class PersistentJsonStorage : IPersistentStorage
+    public class PersistentBinaryStorage : IPersistentStorage
     {
         private string savePath;
-        private Dictionary<string, string> data;
+        private Dictionary<string, byte[]> data = new Dictionary<string, byte[]>();
         private List<string> tempKeys = new List<string>();
         private StorageAsyncOperation operation;
 
@@ -29,17 +31,8 @@ namespace GameFramework
             Name = storageName;
             State = PersistentState.Loading;
             savePath = PersistentSetting.Instance.GetSavePath(storageName);
-            if (PersistentSetting.Instance.CryptoType == CryptoType.AES)
-            {
-                byte[] bytes = FileUtils.ReadAllBytes(savePath);
-                string json = CryptoUtils.Aes.DecryptStringFromBytes(bytes, PersistentSetting.Instance.Password);
-                ReadToData(json);
-            }
-            else
-            {
-                string json = FileUtils.ReadAllText(savePath);
-                ReadToData(json);
-            }
+            byte[] bytes = FileUtils.ReadAllBytes(savePath);
+            ReadToData(bytes);
         }
 
         StorageAsyncOperation IPersistentStorage.LoadAsync(string storageName)
@@ -57,23 +50,11 @@ namespace GameFramework
             Name = storageName;
             State = PersistentState.Loading;
             savePath = PersistentSetting.Instance.GetSavePath(storageName);
-            if (PersistentSetting.Instance.CryptoType == CryptoType.AES)
+            FileUtils.ReadAllBytesAsync(savePath, bytes =>
             {
-                FileUtils.ReadAllBytesAsync(savePath, bytes =>
-                {
-                    string json = CryptoUtils.Aes.DecryptStringFromBytes(bytes, PersistentSetting.Instance.Password);
-                    ReadToData(json);
-                    operation.Completed();
-                });
-            }
-            else
-            {
-                FileUtils.ReadAllTextAsync(savePath, json =>
-                {
-                    ReadToData(json);
-                    operation.Completed();
-                });
-            }
+                ReadToData(bytes);
+                operation.Completed();
+            });
 
             return operation;
         }
@@ -89,19 +70,93 @@ namespace GameFramework
             State = PersistentState.None;
         }
 
-        private void ReadToData(string json)
+        private void ReadToData(byte[] bytes)
         {
-            if (!string.IsNullOrEmpty(json))
+            if (bytes == null)
             {
-                data = JsonUtils.ToObject<Dictionary<string, string>>(json);
+                State = PersistentState.Completed;
+                return;
             }
 
-            if (data == null)
+            if (PersistentSetting.Instance.CryptoType == CryptoType.AES)
             {
-                data = new Dictionary<string, string>();
+                bytes = CryptoUtils.Aes.DecryptBytesFromBytes(bytes, PersistentSetting.Instance.Password);
             }
 
-            State = PersistentState.Completed;
+            try
+            {
+                using (MemoryStream stream = new MemoryStream(bytes))
+                {
+                    using (BinaryReader reader = new BinaryReader(stream))
+                    {
+                        int count = reader.ReadInt32();
+                        if (count > 0)
+                        {
+                            data.Clear();
+                            data.EnsureCapacity(count);
+                            List<int> lengths = new List<int>();
+                            for (int i = 0; i < count; i++)
+                            {
+                                lengths.Add(reader.ReadInt32());
+                            }
+
+                            for (int i = 0; i < lengths.Count; i++)
+                            {
+                                string key = reader.ReadString();
+                                byte[] value = new byte[lengths[i]];
+                                Array.Copy(bytes, stream.Position, value, 0, value.Length);
+                                data.Add(key, value);
+                                stream.Seek(lengths[i], SeekOrigin.Current);
+                            }
+                        }
+                    }
+
+                    State = PersistentState.Completed;
+                }
+            }
+            catch (Exception ex)
+            {
+                GameLogger.LogException(ex);
+            }
+        }
+
+        private byte[] WriteToBinary()
+        {
+            byte[] bytes = null;
+            try
+            {
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    using (BinaryWriter writer = new BinaryWriter(stream))
+                    {
+                        writer.Write(data.Count);
+
+                        foreach (KeyValuePair<string, byte[]> kvPair in data)
+                        {
+                            writer.Write(kvPair.Value.Length);
+                        }
+
+                        foreach (KeyValuePair<string, byte[]> kvPair in data)
+                        {
+                            writer.Write(kvPair.Key);
+                            writer.Write(kvPair.Value);
+                        }
+                    }
+
+                    bytes = stream.ToArray();
+                }
+
+                if (PersistentSetting.Instance.CryptoType == CryptoType.AES)
+                {
+                    bytes = CryptoUtils.Aes.DecryptBytesFromBytes(bytes, PersistentSetting.Instance.Password);
+                }
+            }
+            catch (Exception ex)
+            {
+                GameLogger.LogException(ex);
+            }
+
+            return bytes;
         }
 
         public void Save()
@@ -112,20 +167,9 @@ namespace GameFramework
             }
 
             State = PersistentState.Saving;
-            string json = JsonUtils.ToJson(data);
-            byte[] bytes;
-            if (PersistentSetting.Instance.CryptoType == CryptoType.AES)
-            {
-                bytes = CryptoUtils.Aes.EncryptStringToBytes(json, PersistentSetting.Instance.Password);
-            }
-            else
-            {
-                bytes = Encoding.UTF8.GetBytes(json);
-            }
-
+            byte[] bytes = WriteToBinary();
             FileUtils.WriteAllBytes(savePath, bytes);
             State = PersistentState.Completed;
-
 #if UNITY_EDITOR
             UnityEditor.AssetDatabase.Refresh();
 #endif
@@ -144,38 +188,21 @@ namespace GameFramework
             }
 
             State = PersistentState.Saving;
-            string json = JsonUtils.ToJson(data);
-            if (PersistentSetting.Instance.CryptoType == CryptoType.AES)
+            byte[] bytes = WriteToBinary();
+            FileUtils.WriteAllBytesAsync(savePath, bytes, () =>
             {
-                byte[] bytes = CryptoUtils.Aes.EncryptStringToBytes(json, PersistentSetting.Instance.Password);
-                FileUtils.WriteAllBytesAsync(savePath, bytes, () =>
-                {
-                    State = PersistentState.Completed;
-                    operation.Completed();
-                });
-            }
-            else
-            {
-                FileUtils.WriteAllTextAsync(savePath, json, () =>
-                {
-                    State = PersistentState.Completed;
-                    operation.Completed();
+                State = PersistentState.Completed;
+                operation.Completed();
 #if UNITY_EDITOR
-                    UnityEditor.AssetDatabase.Refresh();
+                UnityEditor.AssetDatabase.Refresh();
 #endif
-                });
-            }
+            });
 
             return operation;
         }
 
         public T GetData<T>(string key, T defaultValue)
         {
-            if (!IsValid)
-            {
-                return defaultValue;
-            }
-
             if (string.IsNullOrEmpty(key))
             {
                 GameLogger.LogError("Persistent get data is fail, because key is invalid");
@@ -187,9 +214,13 @@ namespace GameFramework
                 return defaultValue;
             }
 
-            if (data.TryGetValue(key, out string value))
+            if (data.TryGetValue(key, out byte[] bytes))
             {
-                return JsonUtils.ConvertToObject<T>(value);
+                using (MemoryStream stream = new MemoryStream(bytes))
+                {
+                    BinaryFormatter formatter = new BinaryFormatter();
+                    defaultValue = (T) formatter.Deserialize(stream);
+                }
             }
 
             return defaultValue;
@@ -197,11 +228,6 @@ namespace GameFramework
 
         public void SetData<T>(string key, T value)
         {
-            if (!IsValid)
-            {
-                return;
-            }
-
             if (string.IsNullOrEmpty(key))
             {
                 GameLogger.LogError("Persistent set data is fail, because key is invalid");
@@ -214,8 +240,12 @@ namespace GameFramework
                 return;
             }
 
-            string json = JsonUtils.ConvertToJson(value);
-            data[key] = json;
+            using (MemoryStream stream = new MemoryStream())
+            {
+                BinaryFormatter formatter = new BinaryFormatter();
+                formatter.Serialize(stream, value);
+                data[key] = stream.ToArray();
+            }
         }
 
         public string[] GetAllKeys()

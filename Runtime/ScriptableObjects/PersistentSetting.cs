@@ -5,6 +5,7 @@
         public string SaveDirectory = "SaveData";
         public string DefaultStorageName = "DefaultSaveData";
         public string SaveDataExtension = "dat";
+        public StorageMode storageMode;
         public CryptoType CryptoType;
         [EnumCondition("CryptoType", (int) CryptoType.AES)]
         public string Password = "password";
@@ -31,5 +32,11 @@
 
             return StringUtils.Concat(path, ".", SaveDataExtension);
         }
+    }
+
+    public enum StorageMode
+    {
+        Json,
+        Binary
     }
 }

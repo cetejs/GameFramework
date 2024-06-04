@@ -40,7 +40,19 @@ namespace GameFramework
 
             if (!storages.TryGetValue(storageName, out IPersistentStorage storage))
             {
-                storage = new PersistentJsonStorage();
+                switch (PersistentSetting.Instance.storageMode)
+                {
+                    case StorageMode.Json:
+                        storage = new PersistentJsonStorage();
+                        break;
+                    case StorageMode.Binary:
+                        storage = new PersistentBinaryStorage();
+                        break;
+                    default:
+                        storage = new PersistentJsonStorage();
+                        break;
+                }
+
                 storages.Add(storageName, storage);
             }
 
@@ -49,12 +61,12 @@ namespace GameFramework
             return storage;
         }
 
-        public IPersistentStorage LoadAsync(Action<PersistentState> callback)
+        public StorageAsyncOperation LoadAsync()
         {
-            return LoadAsync(PersistentSetting.Instance.DefaultStorageName, callback);
+            return LoadAsync(PersistentSetting.Instance.DefaultStorageName);
         }
 
-        public IPersistentStorage LoadAsync(string storageName, Action<PersistentState> callback)
+        public StorageAsyncOperation LoadAsync(string storageName)
         {
             if (string.IsNullOrEmpty(storageName))
             {
@@ -68,9 +80,12 @@ namespace GameFramework
                 storages.Add(storageName, storage);
             }
 
-            storage.LoadAsync(storageName, callback);
-            OnStorageLoading?.Invoke(storageName);
-            return storage;
+            StorageAsyncOperation operation = storage.LoadAsync(storageName);
+            operation.OnCompleted += _ =>
+            {
+                OnStorageLoading?.Invoke(storageName);
+            };
+            return operation;
         }
 
         public void Unload()
@@ -126,23 +141,22 @@ namespace GameFramework
             SaveAsync(PersistentSetting.Instance.DefaultStorageName, callback);
         }
 
-        public void SaveAsync(string storageName, Action<PersistentState> callback)
+        public StorageAsyncOperation SaveAsync(string storageName, Action<PersistentState> callback)
         {
             if (string.IsNullOrEmpty(storageName))
             {
                 GameLogger.LogError("Storage is save fail, because storage name is invalid");
-                return;
+                return null;
             }
 
             if (storages.TryGetValue(storageName, out IPersistentStorage storage))
             {
                 OnStorageSaving?.Invoke(storageName);
-                storage.SaveAsync(callback);
+                return storage.SaveAsync();
             }
-            else
-            {
-                GameLogger.LogError($"Storage is save fail, because storage {storageName} is not loaded");
-            }
+
+            GameLogger.LogError($"Storage is save fail, because storage {storageName} is not loaded");
+            return null;
         }
 
         public T GetData<T>(string key, T defaultValue = default)
@@ -205,54 +219,14 @@ namespace GameFramework
             GetStorage(storageName).DeleteKey(key);
         }
 
-        public void DeleteNodeKey(string key)
+        public void DeleteNode(string key)
         {
-            DeleteNodeKey(PersistentSetting.Instance.DefaultStorageName, key);
+            DeleteNode(PersistentSetting.Instance.DefaultStorageName, key);
         }
 
-        public void DeleteNodeKey(string storageName, string key)
+        public void DeleteNode(string storageName, string key)
         {
-            GetStorage(storageName).DeleteNodeKey(key);
-        }
-
-        public void ImportData(string json)
-        {
-            ImportData(PersistentSetting.Instance.DefaultStorageName, json);
-        }
-
-        public void ImportData(string storageName, string json)
-        {
-            GetStorage(storageName).ImportData(json);
-        }
-
-        public string ExportData(string key)
-        {
-            return ExportData(PersistentSetting.Instance.DefaultStorageName, key);
-        }
-
-        public string ExportData(string storageName, string key)
-        {
-            return GetStorage(storageName).ExportData(key);
-        }
-
-        public string ExportNodeData(string key)
-        {
-            return ExportNodeData(PersistentSetting.Instance.DefaultStorageName, key);
-        }
-
-        public string ExportNodeData(string storageName, string key)
-        {
-            return GetStorage(storageName).ExportNodeData(key);
-        }
-
-        public string ExportAllData()
-        {
-            return ExportAllData(PersistentSetting.Instance.DefaultStorageName);
-        }
-
-        public string ExportAllData(string storageName)
-        {
-            return GetStorage(storageName).ExportAllData();
+            GetStorage(storageName).DeleteNode(key);
         }
 
         public void DeleteAll()
