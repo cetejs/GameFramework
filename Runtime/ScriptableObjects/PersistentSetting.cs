@@ -3,7 +3,7 @@
     public class PersistentSetting : ScriptableObjectSingleton<PersistentSetting>
     {
         public string SaveDirectory = "SaveData";
-        public string DefaultStorageName = "DefaultSaveData";
+        public string DefaultStorageName = "DefaultStorage";
         public string SaveDataExtension = "dat";
         public StorageMode storageMode;
         public CryptoType CryptoType;
