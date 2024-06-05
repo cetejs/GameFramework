@@ -136,12 +136,12 @@ namespace GameFramework
             }
         }
 
-        public void SaveAsync(Action<PersistentState> callback)
+        public StorageAsyncOperation SaveAsync()
         {
-            SaveAsync(PersistentSetting.Instance.DefaultStorageName, callback);
+            return SaveAsync(PersistentSetting.Instance.DefaultStorageName);
         }
 
-        public StorageAsyncOperation SaveAsync(string storageName, Action<PersistentState> callback)
+        public StorageAsyncOperation SaveAsync(string storageName)
         {
             if (string.IsNullOrEmpty(storageName))
             {
