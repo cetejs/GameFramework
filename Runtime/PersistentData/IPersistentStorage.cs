@@ -26,7 +26,7 @@ namespace GameFramework
 
         string[] GetAllKeys();
 
-        void GetAllKeys(List<string> results);
+        void GetAllKeys(List<string> result);
 
         bool HasKey(string key);
 

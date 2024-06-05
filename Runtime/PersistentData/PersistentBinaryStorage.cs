@@ -33,6 +33,7 @@ namespace GameFramework
             savePath = PersistentSetting.Instance.GetSavePath(storageName);
             byte[] bytes = FileUtils.ReadAllBytes(savePath);
             ReadToData(bytes);
+            State = PersistentState.Completed;
         }
 
         StorageAsyncOperation IPersistentStorage.LoadAsync(string storageName)
@@ -53,6 +54,7 @@ namespace GameFramework
             FileUtils.ReadAllBytesAsync(savePath, bytes =>
             {
                 ReadToData(bytes);
+                State = PersistentState.Completed;
                 operation.Completed();
             });
 
@@ -74,7 +76,6 @@ namespace GameFramework
         {
             if (bytes == null)
             {
-                State = PersistentState.Completed;
                 return;
             }
 
@@ -83,11 +84,11 @@ namespace GameFramework
                 bytes = CryptoUtils.Aes.DecryptBytesFromBytes(bytes, PersistentSetting.Instance.Password);
             }
 
-            try
+            using (MemoryStream stream = new MemoryStream(bytes))
             {
-                using (MemoryStream stream = new MemoryStream(bytes))
+                using (BinaryReader reader = new BinaryReader(stream))
                 {
-                    using (BinaryReader reader = new BinaryReader(stream))
+                    try
                     {
                         int count = reader.ReadInt32();
                         if (count > 0)
@@ -110,24 +111,24 @@ namespace GameFramework
                             }
                         }
                     }
-
-                    State = PersistentState.Completed;
+                    catch (Exception ex)
+                    {
+                        data = new Dictionary<string, byte[]>();
+                        GameLogger.LogException(ex);
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                GameLogger.LogException(ex);
             }
         }
 
         private byte[] WriteToBinary()
         {
             byte[] bytes = null;
-            try
+
+            using (MemoryStream stream = new MemoryStream())
             {
-                using (MemoryStream stream = new MemoryStream())
+                using (BinaryWriter writer = new BinaryWriter(stream))
                 {
-                    using (BinaryWriter writer = new BinaryWriter(stream))
+                    try
                     {
                         writer.Write(data.Count);
 
@@ -141,19 +142,19 @@ namespace GameFramework
                             writer.Write(kvPair.Key);
                             writer.Write(kvPair.Value);
                         }
+
+                        bytes = stream.ToArray();
                     }
-
-                    bytes = stream.ToArray();
-                }
-
-                if (PersistentSetting.Instance.CryptoType == CryptoType.AES)
-                {
-                    bytes = CryptoUtils.Aes.DecryptBytesFromBytes(bytes, PersistentSetting.Instance.Password);
+                    catch (Exception ex)
+                    {
+                        GameLogger.LogException(ex);
+                    }
                 }
             }
-            catch (Exception ex)
+
+            if (PersistentSetting.Instance.CryptoType == CryptoType.AES)
             {
-                GameLogger.LogException(ex);
+                bytes = CryptoUtils.Aes.DecryptBytesFromBytes(bytes, PersistentSetting.Instance.Password);
             }
 
             return bytes;
@@ -256,29 +257,29 @@ namespace GameFramework
             }
 
             int i = 0;
-            string[] results = new string[data.Count];
+            string[] result = new string[data.Count];
             foreach (string key in data.Keys)
             {
-                results[i++] = key;
+                result[i++] = key;
             }
 
-            return results;
+            return result;
         }
 
-        public void GetAllKeys(List<string> results)
+        public void GetAllKeys(List<string> result)
         {
-            results.Clear();
+            result.Clear();
             if (!IsValid)
             {
                 return;
             }
 
-            if (results.Capacity < data.Count)
+            if (result.Capacity < data.Count)
             {
-                results.Capacity = data.Count;
+                result.Capacity = data.Count;
             }
 
-            results.AddRange(data.Keys);
+            result.AddRange(data.Keys);
         }
 
         public bool HasKey(string key)

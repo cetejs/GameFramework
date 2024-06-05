@@ -40,6 +40,8 @@ namespace GameFramework
                 string json = FileUtils.ReadAllText(savePath);
                 ReadToData(json);
             }
+
+            State = PersistentState.Completed;
         }
 
         StorageAsyncOperation IPersistentStorage.LoadAsync(string storageName)
@@ -63,6 +65,7 @@ namespace GameFramework
                 {
                     string json = CryptoUtils.Aes.DecryptStringFromBytes(bytes, PersistentSetting.Instance.Password);
                     ReadToData(json);
+                    State = PersistentState.Completed;
                     operation.Completed();
                 });
             }
@@ -71,6 +74,7 @@ namespace GameFramework
                 FileUtils.ReadAllTextAsync(savePath, json =>
                 {
                     ReadToData(json);
+                    State = PersistentState.Completed;
                     operation.Completed();
                 });
             }
@@ -100,8 +104,6 @@ namespace GameFramework
             {
                 data = new Dictionary<string, string>();
             }
-
-            State = PersistentState.Completed;
         }
 
         public void Save()
@@ -226,29 +228,29 @@ namespace GameFramework
             }
 
             int i = 0;
-            string[] results = new string[data.Count];
+            string[] result = new string[data.Count];
             foreach (string key in data.Keys)
             {
-                results[i++] = key;
+                result[i++] = key;
             }
 
-            return results;
+            return result;
         }
 
-        public void GetAllKeys(List<string> results)
+        public void GetAllKeys(List<string> result)
         {
-            results.Clear();
+            result.Clear();
             if (!IsValid)
             {
                 return;
             }
 
-            if (results.Capacity < data.Count)
+            if (result.Capacity < data.Count)
             {
-                results.Capacity = data.Count;
+                result.Capacity = data.Count;
             }
 
-            results.AddRange(data.Keys);
+            result.AddRange(data.Keys);
         }
 
         public bool HasKey(string key)

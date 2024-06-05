@@ -10,7 +10,7 @@ namespace GameFramework
     internal class GameBehaviourInspector : Editor
     {
         private List<SerializedProperty> propertyList = new List<SerializedProperty>();
-        private Dictionary<string, GroupData> groupDataDict = new Dictionary<string, GroupData>();
+        private Dictionary<string, GroupData> groupDataMap = new Dictionary<string, GroupData>();
         private bool showDefaultInspector;
 
         public override bool RequiresConstantRepaint()
@@ -35,7 +35,7 @@ namespace GameFramework
                 return;
             }
 
-            foreach (GroupData groupData in groupDataDict.Values)
+            foreach (GroupData groupData in groupDataMap.Values)
             {
                 if (groupData.Properties.Count > 0)
                 {
@@ -58,7 +58,7 @@ namespace GameFramework
 
         protected virtual void CollectGroupAttributes()
         {
-            groupDataDict.Clear();
+            groupDataMap.Clear();
             InspectorGroupAttribute previousGroupAttribute = null;
             List<FieldInfo> fieldInfos = AssemblyUtils.GetFieldInfos(target.GetType());
 
@@ -76,9 +76,9 @@ namespace GameFramework
                     if (previousGroupAttribute != null && previousGroupAttribute.GroupAllFieldsUntilNextGroupAttribute)
                     {
                         showDefaultInspector = false;
-                        if (!groupDataDict.TryGetValue(previousGroupAttribute.GroupName, out groupData))
+                        if (!groupDataMap.TryGetValue(previousGroupAttribute.GroupName, out groupData))
                         {
-                            groupDataDict.Add(previousGroupAttribute.GroupName, new GroupData
+                            groupDataMap.Add(previousGroupAttribute.GroupName, new GroupData
                             {
                                 GroupAttribute = previousGroupAttribute,
                                 FieldNames = new HashSet<string> {fieldInfo.Name},
@@ -97,10 +97,10 @@ namespace GameFramework
                 {
                     previousGroupAttribute = groupAttribute;
 
-                    if (!groupDataDict.TryGetValue(groupAttribute.GroupName, out groupData))
+                    if (!groupDataMap.TryGetValue(groupAttribute.GroupName, out groupData))
                     {
                         bool groupIsOpen = EditorPrefs.GetBool($"{groupAttribute.GroupName}{fieldInfo.Name}{target.GetInstanceID()}", false);
-                        groupDataDict.Add(groupAttribute.GroupName, new GroupData
+                        groupDataMap.Add(groupAttribute.GroupName, new GroupData
                             {
                                 GroupAttribute = groupAttribute,
                                 GroupColor = ColorUtils.GetColorAt(previousGroupAttribute.GroupColorIndex),
@@ -155,7 +155,7 @@ namespace GameFramework
                 return;
             }
 
-            foreach (GroupData groupData in groupDataDict.Values)
+            foreach (GroupData groupData in groupDataMap.Values)
             {
                 EditorGUILayout.BeginVertical(InspectorStyle.BehaviourContainerStyle);
                 DrawGroup(groupData);
@@ -213,7 +213,7 @@ namespace GameFramework
         {
             bool shouldClose = false;
 
-            foreach (GroupData groupData in groupDataDict.Values)
+            foreach (GroupData groupData in groupDataMap.Values)
             {
                 if (groupData.FieldNames.Contains(serializedProperty.name))
                 {

@@ -23,19 +23,8 @@ namespace GameFramework
             base.Init("PersistentData", parent);
             settingEditor = Editor.CreateEditor(PersistentSetting.Instance);
             storageName = PersistentSetting.Instance.DefaultStorageName;
-            if (Application.isPlaying)
-            {
-                manager = PersistentManager.Instance;
-            }
-
-            if (!manager)
-            {
-                manager = new GameObject().AddComponent<PersistentManager>();
-                manager.gameObject.hideFlags = HideFlags.HideAndDontSave;
-                storage = manager.GetStorage(storageName);
-            }
-
-            RefreshData();
+            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+            OnPlayModeStateChanged(EditorApplication.isPlaying ? PlayModeStateChange.EnteredPlayMode : PlayModeStateChange.EnteredEditMode);
         }
 
         public override void OnGUI()
@@ -88,10 +77,34 @@ namespace GameFramework
 
         public override void OnDestroy()
         {
+            EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
             Object.DestroyImmediate(settingEditor);
             if (manager != null)
             {
                 Object.DestroyImmediate(manager);
+            }
+        }
+
+        private void OnPlayModeStateChanged(PlayModeStateChange stateChange)
+        {
+            switch (stateChange)
+            {
+                case PlayModeStateChange.EnteredPlayMode:
+                    if (manager != null)
+                    {
+                        Object.DestroyImmediate(manager.gameObject);
+                    }
+
+                    manager = PersistentManager.Instance;
+                    storage = manager.GetStorage(storageName);
+                    RefreshData();
+                    break;
+                case PlayModeStateChange.EnteredEditMode:
+                    manager = new GameObject().AddComponent<PersistentManager>();
+                    manager.gameObject.hideFlags = HideFlags.HideAndDontSave;
+                    storage = manager.GetStorage(storageName);
+                    RefreshData();
+                    break;
             }
         }
 

@@ -5,12 +5,12 @@ namespace GameFramework
 {
     public class HashList<TKey, TValue> : IEnumerable<TKey>
     {
-        private Dictionary<TKey, TValue> dict;
+        private Dictionary<TKey, TValue> map;
         private List<TKey> list;
 
         public HashList(int capacity = 4)
         {
-            dict = new Dictionary<TKey, TValue>(capacity);
+            map = new Dictionary<TKey, TValue>(capacity);
             list = new List<TKey>(capacity);
         }
 
@@ -18,7 +18,7 @@ namespace GameFramework
         {
             get
             {
-                return dict.Count;
+                return map.Count;
             }
         }
 
@@ -34,7 +34,7 @@ namespace GameFramework
                         return default;
                     }
 
-                    return dict[list[index]];
+                    return map[list[index]];
                 }
             }
         }
@@ -43,7 +43,7 @@ namespace GameFramework
         {
             get
             {
-                if (!dict.TryGetValue(key, out TValue value))
+                if (!map.TryGetValue(key, out TValue value))
                 {
                     GameLogger.LogError($"Hash list is get fail, because {value} is not exist");
                     return default;
@@ -55,7 +55,7 @@ namespace GameFramework
             {
                 lock (this)
                 {
-                    dict[key] = value;
+                    map[key] = value;
                     int index = list.IndexOf(key);
                     if (index > -1)
                     {
@@ -69,7 +69,7 @@ namespace GameFramework
 
         public bool TryGetValue(TKey key, out TValue value)
         {
-            return dict.TryGetValue(key, out value);
+            return map.TryGetValue(key, out value);
         }
 
         public void Add(TKey key, TValue value)
@@ -82,13 +82,13 @@ namespace GameFramework
                     return;
                 }
 
-                if (dict.ContainsKey(key))
+                if (map.ContainsKey(key))
                 {
                     GameLogger.LogError($"Hash list is add fail, because {value} is already exist");
                     return;
                 }
 
-                dict.Add(key, value);
+                map.Add(key, value);
                 list.Add(key);
             }
         }
@@ -97,7 +97,7 @@ namespace GameFramework
         {
             lock (this)
             {
-                if (!dict.Remove(key))
+                if (!map.Remove(key))
                 {
                     return false;
                 }
@@ -110,7 +110,7 @@ namespace GameFramework
         {
             lock (this)
             {
-                dict.Clear();
+                map.Clear();
                 list.Clear();
             }
         }
