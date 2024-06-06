@@ -35,7 +35,6 @@ namespace GameFramework.Samples.PersistentData
     }
 
     [Serializable]
-    [StructLayout(LayoutKind.Sequential)]
     public struct TransformData
     {
         public CustomVector3 position;
@@ -44,7 +43,6 @@ namespace GameFramework.Samples.PersistentData
     }
 
     [Serializable]
-    [StructLayout(LayoutKind.Sequential)]
     public struct CustomVector3
     {
         public float x;
