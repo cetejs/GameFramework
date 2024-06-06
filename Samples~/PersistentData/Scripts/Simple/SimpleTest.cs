@@ -1,8 +1,8 @@
 using UnityEngine;
 
-namespace GameFramework.Samples.PersistentData
+namespace GameFramework.Samples.Simple
 {
-    public class PersistentTest : MonoBehaviour
+    public class SimpleTest : MonoBehaviour
     {
         [SerializeField]
         private string storageName;

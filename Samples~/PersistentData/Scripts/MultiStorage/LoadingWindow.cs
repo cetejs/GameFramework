@@ -1,4 +1,4 @@
-﻿namespace GameFramework.MultiStorage
+﻿namespace GameFramework.Samples.PersistentData
 {
     public class LoadingWindow : UIWindow
     {

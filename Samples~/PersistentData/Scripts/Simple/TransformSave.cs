@@ -2,7 +2,7 @@ using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
 
-namespace GameFramework
+namespace GameFramework.Samples.PersistentData
 {
     public class TransformSave : PersistentSave<TransformData>
     {

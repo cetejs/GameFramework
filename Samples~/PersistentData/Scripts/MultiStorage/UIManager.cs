@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace GameFramework.MultiStorage
+namespace GameFramework.Samples.PersistentData
 {
     public class UIManager : Singleton<UIManager>
     {

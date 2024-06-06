@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace GameFramework.MultiStorage
+namespace GameFramework.Samples.PersistentData
 {
     public class MainWindow : UIWindow
     {
@@ -45,7 +44,7 @@ namespace GameFramework.MultiStorage
         {
             string currentStorageName = PersistentManager.Instance.GetData<string>(MultiStorageData.SelectStorageName, MultiStorageData.CurrentStorageKey);
             UIManager.Instance.HideWindow(WindowName.Main);
-            UIManager.Instance.ShowWindow(WindowName.Game, currentStorageName);
+            UIManager.Instance.ShowWindow(WindowName.Loading, currentStorageName);
         }
 
         private void LoadGame()

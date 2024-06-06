@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace GameFramework.MultiStorage
+namespace GameFramework.Samples.PersistentData
 {
     public class StorageSelectWindow : UIWindow
     {
@@ -67,14 +67,21 @@ namespace GameFramework.MultiStorage
             items.Remove(item);
             itemPool.Release(item);
             dataList.RemoveAll(data => data.storageName == item.StorageName);
-            PersistentManager.Instance.DeleteAll(item.StorageName);
+            PersistentManager.Instance.Delete(item.StorageName);
             PersistentManager.Instance.SetData(MultiStorageData.SelectStorageName, MultiStorageData.StorageItemsKey, dataList);
             PersistentManager.Instance.Save(MultiStorageData.SelectStorageName);
-            string currentStorage = PersistentManager.Instance.GetData<string>(MultiStorageData.SelectStorageName, MultiStorageData.CurrentStorageKey);
-            if (currentStorage == item.StorageName)
+            if (items.Count == 0)
             {
-                PersistentManager.Instance.DeleteKey(MultiStorageData.SelectStorageName, MultiStorageData.CurrentStorageKey);
-                PersistentManager.Instance.Save(MultiStorageData.SelectStorageName);
+                PersistentManager.Instance.Delete(MultiStorageData.SelectStorageName);
+            }
+            else
+            {
+                string currentStorage = PersistentManager.Instance.GetData<string>(MultiStorageData.SelectStorageName, MultiStorageData.CurrentStorageKey);
+                if (currentStorage == item.StorageName)
+                {
+                    PersistentManager.Instance.DeleteKey(MultiStorageData.SelectStorageName, MultiStorageData.CurrentStorageKey);
+                    PersistentManager.Instance.Save(MultiStorageData.SelectStorageName);
+                }
             }
 
             emptyText.gameObject.SetActive(items.Count == 0);

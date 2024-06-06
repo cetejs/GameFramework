@@ -171,9 +171,6 @@ namespace GameFramework
             byte[] bytes = WriteToBinary();
             FileUtils.WriteAllBytes(savePath, bytes);
             State = PersistentState.Completed;
-#if UNITY_EDITOR
-            UnityEditor.AssetDatabase.Refresh();
-#endif
         }
 
         public StorageAsyncOperation SaveAsync()
@@ -194,9 +191,6 @@ namespace GameFramework
             {
                 State = PersistentState.Completed;
                 operation.Completed();
-#if UNITY_EDITOR
-                UnityEditor.AssetDatabase.Refresh();
-#endif
             });
 
             return operation;
@@ -317,21 +311,6 @@ namespace GameFramework
                     DeleteKey(tempKeys[i]);
                 }
             }
-        }
-
-        public void DeleteAll()
-        {
-            if (State != PersistentState.Completed)
-            {
-                return;
-            }
-
-            data.Clear();
-            FileUtils.DeleteFile(savePath);
-#if UNITY_EDITOR
-            FileUtils.DeleteFile(StringUtils.Concat(savePath, ".meta"));
-            UnityEditor.AssetDatabase.Refresh();
-#endif
         }
     }
 }

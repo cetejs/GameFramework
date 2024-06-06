@@ -35,7 +35,7 @@ namespace GameFramework
 
             if (!storages.TryGetValue(storageName, out IPersistentStorage storage))
             {
-                switch (PersistentSetting.Instance.storageMode)
+                switch (PersistentSetting.Instance.StorageMode)
                 {
                     case StorageMode.Json:
                         storage = new PersistentJsonStorage();
@@ -66,7 +66,7 @@ namespace GameFramework
 
             if (!storages.TryGetValue(storageName, out IPersistentStorage storage))
             {
-                switch (PersistentSetting.Instance.storageMode)
+                switch (PersistentSetting.Instance.StorageMode)
                 {
                     case StorageMode.Json:
                         storage = new PersistentJsonStorage();
@@ -181,9 +181,26 @@ namespace GameFramework
             GetStorage(storageName).DeleteNode(key);
         }
 
-        public void DeleteAll(string storageName)
+        public void Delete(string storageName)
         {
-            GetStorage(storageName).DeleteAll();
+            if (string.IsNullOrEmpty(storageName))
+            {
+                GameLogger.LogError("Storage is load fail, because storage name is invalid");
+                return;
+            }
+
+            if (storages.TryGetValue(storageName, out IPersistentStorage storage))
+            {
+                storage.Unload();
+                storages.Remove(storageName);
+            }
+
+            string savePath = PersistentSetting.Instance.GetSavePath(storageName);
+            FileUtils.DeleteFile(savePath);
+#if UNITY_EDITOR
+            FileUtils.DeleteFile(StringUtils.Concat(savePath, ".meta"));
+            UnityEditor.AssetDatabase.Refresh();
+#endif
         }
     }
 }

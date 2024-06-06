@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,7 +7,7 @@ namespace GameFramework
     internal class PersistentJsonStorage : IPersistentStorage
     {
         private string savePath;
-        private Dictionary<string, string> data;
+        private Dictionary<string, string> data = new Dictionary<string, string>();
         private List<string> tempKeys = new List<string>();
         private StorageAsyncOperation operation;
 
@@ -32,13 +33,13 @@ namespace GameFramework
             if (PersistentSetting.Instance.CryptoType == CryptoType.AES)
             {
                 byte[] bytes = FileUtils.ReadAllBytes(savePath);
-                string json = CryptoUtils.Aes.DecryptStringFromBytes(bytes, PersistentSetting.Instance.Password);
-                ReadToData(json);
+                string text = CryptoUtils.Aes.DecryptStringFromBytes(bytes, PersistentSetting.Instance.Password);
+                ReadToData(text);
             }
             else
             {
-                string json = FileUtils.ReadAllText(savePath);
-                ReadToData(json);
+                string text = FileUtils.ReadAllText(savePath);
+                ReadToData(text);
             }
 
             State = PersistentState.Completed;
@@ -63,17 +64,17 @@ namespace GameFramework
             {
                 FileUtils.ReadAllBytesAsync(savePath, bytes =>
                 {
-                    string json = CryptoUtils.Aes.DecryptStringFromBytes(bytes, PersistentSetting.Instance.Password);
-                    ReadToData(json);
+                    string text = CryptoUtils.Aes.DecryptStringFromBytes(bytes, PersistentSetting.Instance.Password);
+                    ReadToData(text);
                     State = PersistentState.Completed;
                     operation.Completed();
                 });
             }
             else
             {
-                FileUtils.ReadAllTextAsync(savePath, json =>
+                FileUtils.ReadAllTextAsync(savePath, text =>
                 {
-                    ReadToData(json);
+                    ReadToData(text);
                     State = PersistentState.Completed;
                     operation.Completed();
                 });
@@ -93,17 +94,41 @@ namespace GameFramework
             State = PersistentState.None;
         }
 
-        private void ReadToData(string json)
+        private void ReadToData(string text)
         {
-            if (!string.IsNullOrEmpty(json))
+            data.Clear();
+            if (!string.IsNullOrEmpty(text))
             {
-                data = JsonUtils.ToObject<Dictionary<string, string>>(json);
+                string[] lines = text.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+                foreach (string line in lines)
+                {
+                    string[] map = line.Split(';');
+                    data.Add(map[0], map[1]);
+                }
+            }
+        }
+
+        private string WriteToText()
+        {
+            StringBuilder builder = new StringBuilder();
+            bool first = true;
+            foreach (KeyValuePair<string, string> kvPair in data)
+            {
+                if (first)
+                {
+                    first = false;
+                }
+                else
+                {
+                    builder.Append("\n");
+                }
+
+                builder.Append(kvPair.Key);
+                builder.Append(";");
+                builder.Append(kvPair.Value);
             }
 
-            if (data == null)
-            {
-                data = new Dictionary<string, string>();
-            }
+            return builder.ToString();
         }
 
         public void Save()
@@ -114,23 +139,18 @@ namespace GameFramework
             }
 
             State = PersistentState.Saving;
-            string json = JsonUtils.ToJson(data);
-            byte[] bytes;
+            string text = WriteToText();
             if (PersistentSetting.Instance.CryptoType == CryptoType.AES)
             {
-                bytes = CryptoUtils.Aes.EncryptStringToBytes(json, PersistentSetting.Instance.Password);
+                byte[] bytes = CryptoUtils.Aes.EncryptStringToBytes(text, PersistentSetting.Instance.Password);
+                FileUtils.WriteAllBytes(savePath, bytes);
             }
             else
             {
-                bytes = Encoding.UTF8.GetBytes(json);
+                FileUtils.WriteAllText(savePath, text);
             }
 
-            FileUtils.WriteAllBytes(savePath, bytes);
             State = PersistentState.Completed;
-
-#if UNITY_EDITOR
-            UnityEditor.AssetDatabase.Refresh();
-#endif
         }
 
         public StorageAsyncOperation SaveAsync()
@@ -146,10 +166,10 @@ namespace GameFramework
             }
 
             State = PersistentState.Saving;
-            string json = JsonUtils.ToJson(data);
+            string text = WriteToText();
             if (PersistentSetting.Instance.CryptoType == CryptoType.AES)
             {
-                byte[] bytes = CryptoUtils.Aes.EncryptStringToBytes(json, PersistentSetting.Instance.Password);
+                byte[] bytes = CryptoUtils.Aes.EncryptStringToBytes(text, PersistentSetting.Instance.Password);
                 FileUtils.WriteAllBytesAsync(savePath, bytes, () =>
                 {
                     State = PersistentState.Completed;
@@ -158,13 +178,10 @@ namespace GameFramework
             }
             else
             {
-                FileUtils.WriteAllTextAsync(savePath, json, () =>
+                FileUtils.WriteAllTextAsync(savePath, text, () =>
                 {
                     State = PersistentState.Completed;
                     operation.Completed();
-#if UNITY_EDITOR
-                    UnityEditor.AssetDatabase.Refresh();
-#endif
                 });
             }
 
@@ -288,21 +305,6 @@ namespace GameFramework
                     DeleteKey(tempKeys[i]);
                 }
             }
-        }
-
-        public void DeleteAll()
-        {
-            if (State != PersistentState.Completed)
-            {
-                return;
-            }
-
-            data.Clear();
-            FileUtils.DeleteFile(savePath);
-#if UNITY_EDITOR
-            FileUtils.DeleteFile(StringUtils.Concat(savePath, ".meta"));
-            UnityEditor.AssetDatabase.Refresh();
-#endif
         }
     }
 }

@@ -67,9 +67,9 @@ namespace GameFramework
                 AssetDatabase.Refresh();
             }
 
-            if (GUILayout.Button("Delete All"))
+            if (GUILayout.Button("Delete"))
             {
-                DeleteAll();
+                Delete();
             }
 
             GUILayout.EndHorizontal();
@@ -210,11 +210,12 @@ namespace GameFramework
             EditorGUILayout.EndHorizontal();
         }
 
-        private void DeleteAll()
+        private void Delete()
         {
-            storage.DeleteAll();
-            dataList.Clear();
+            manager.Delete(storage.Name);
+            storage = manager.Load(storageName);
             showNewDataBox = false;
+            RefreshData();
         }
 
         private class PersistentData

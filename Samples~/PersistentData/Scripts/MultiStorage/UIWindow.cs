@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace GameFramework.MultiStorage
+namespace GameFramework.Samples.PersistentData
 {
     public abstract class UIWindow : MonoBehaviour
     {

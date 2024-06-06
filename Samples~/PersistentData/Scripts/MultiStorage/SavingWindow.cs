@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace GameFramework.MultiStorage
+namespace GameFramework.Samples.PersistentData
 {
     public class SavingWindow : UIWindow
     {

@@ -24,7 +24,8 @@ namespace GameFramework
         {
             CheckStringBuilder();
             stringBuilder.Clear();
-            stringBuilder.AppendFormat("{0}{1}", arg0, arg1);
+            stringBuilder.Append(arg0);
+            stringBuilder.Append(arg1);
             return stringBuilder.ToString();
         }
 
@@ -32,7 +33,9 @@ namespace GameFramework
         {
             CheckStringBuilder();
             stringBuilder.Clear();
-            stringBuilder.AppendFormat("{0}{1}{2}", arg0, arg1, arg2);
+            stringBuilder.Append(arg0);
+            stringBuilder.Append(arg1);
+            stringBuilder.Append(arg2);
             return stringBuilder.ToString();
         }
 
@@ -40,7 +43,10 @@ namespace GameFramework
         {
             CheckStringBuilder();
             stringBuilder.Clear();
-            stringBuilder.AppendFormat("{0}{1}{2}{3}", arg0, arg1, arg2, arg3);
+            stringBuilder.Append(arg0);
+            stringBuilder.Append(arg1);
+            stringBuilder.Append(arg2);
+            stringBuilder.Append(arg3);
             return stringBuilder.ToString();
         }
 

@@ -171,7 +171,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb95a42caf457ff468c90d41c68e9cc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  storageName: DefaultSaveData
+  storageName: DefaultStorage
   persistentKey: c795af7b-c15e-40aa-ae0d-2faeb39fa5d9
 --- !u!65 &171973487
 BoxCollider:
@@ -308,7 +308,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb95a42caf457ff468c90d41c68e9cc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  storageName: DefaultSaveData
+  storageName: DefaultStorage
   persistentKey: 2daffd95-1ad7-43b1-a360-a485e292bf22
 --- !u!65 &310571028
 BoxCollider:
@@ -539,7 +539,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb95a42caf457ff468c90d41c68e9cc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  storageName: DefaultSaveData
+  storageName: DefaultStorage
   persistentKey: 2bf6bd9e-0f80-4a45-843a-22641cfe3d34
 --- !u!65 &445237953
 BoxCollider:
@@ -676,7 +676,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb95a42caf457ff468c90d41c68e9cc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  storageName: DefaultSaveData
+  storageName: DefaultStorage
   persistentKey: dc180b41-c42e-437b-9f52-d6c1ffd08b21
 --- !u!65 &529445673
 BoxCollider:
@@ -813,7 +813,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb95a42caf457ff468c90d41c68e9cc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  storageName: DefaultSaveData
+  storageName: DefaultStorage
   persistentKey: 217cc253-e811-4d76-a383-251be6d33274
 --- !u!65 &884302853
 BoxCollider:
@@ -1036,7 +1036,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb95a42caf457ff468c90d41c68e9cc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  storageName: DefaultSaveData
+  storageName: DefaultStorage
   persistentKey: 4084c6e0-b18d-4da8-8e45-93fd3cd3dba1
 --- !u!1 &1027448804
 GameObject:
@@ -1087,7 +1087,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb95a42caf457ff468c90d41c68e9cc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  storageName: DefaultSaveData
+  storageName: DefaultStorage
   persistentKey: 848d9ae8-c6a8-466f-9325-4c9ee5dff205
 --- !u!65 &1027448807
 BoxCollider:
@@ -1278,7 +1278,7 @@ GameObject:
   - component: {fileID: 1143415257}
   - component: {fileID: 1143415256}
   m_Layer: 0
-  m_Name: PersistentTest
+  m_Name: SimpleTest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1296,7 +1296,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01fada2cfbefdf4448cc664d111ca2cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  storageName: DefaultSaveData
+  storageName: DefaultStorage
 --- !u!4 &1143415257
 Transform:
   m_ObjectHideFlags: 0
@@ -1361,7 +1361,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb95a42caf457ff468c90d41c68e9cc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  storageName: DefaultSaveData
+  storageName: DefaultStorage
   persistentKey: 5cedc227-40e9-4987-8521-70746cb2c876
 --- !u!65 &1537431328
 BoxCollider:
@@ -1498,7 +1498,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb95a42caf457ff468c90d41c68e9cc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  storageName: DefaultSaveData
+  storageName: DefaultStorage
   persistentKey: 47f13a6c-cca6-4e2f-ba00-c6ee44fc85b2
 --- !u!65 &1540582736
 BoxCollider:
@@ -1635,7 +1635,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb95a42caf457ff468c90d41c68e9cc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  storageName: DefaultSaveData
+  storageName: DefaultStorage
   persistentKey: 739dea4d-4a7c-44d3-89b5-cfe011679c0f
 --- !u!65 &1614646916
 BoxCollider:

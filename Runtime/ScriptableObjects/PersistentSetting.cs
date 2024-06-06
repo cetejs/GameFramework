@@ -1,11 +1,13 @@
-﻿namespace GameFramework
+﻿using UnityEngine.Serialization;
+
+namespace GameFramework
 {
     public class PersistentSetting : ScriptableObjectSingleton<PersistentSetting>
     {
         public string SaveDirectory = "SaveData";
         public string DefaultStorageName = "DefaultStorage";
         public string SaveDataExtension = "dat";
-        public StorageMode storageMode;
+        public StorageMode StorageMode;
         public CryptoType CryptoType;
         [EnumCondition("CryptoType", (int) CryptoType.AES)]
         public string Password = "password";

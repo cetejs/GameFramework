@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace GameFramework
+namespace GameFramework.Samples.PersistentData
 {
     public class RandomMove : MonoBehaviour
     {

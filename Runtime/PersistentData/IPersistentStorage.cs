@@ -33,8 +33,6 @@ namespace GameFramework
         void DeleteKey(string key);
 
         void DeleteNode(string key);
-
-        void DeleteAll();
     }
 
     public enum PersistentState
