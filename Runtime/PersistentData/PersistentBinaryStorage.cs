@@ -53,9 +53,12 @@ namespace GameFramework
             savePath = PersistentSetting.Instance.GetSavePath(storageName);
             FileUtils.ReadAllBytesAsync(savePath, bytes =>
             {
-                ReadToData(bytes);
-                State = PersistentState.Completed;
-                operation.Completed();
+                if (State == PersistentState.Loading)
+                {
+                    ReadToData(bytes);
+                    State = PersistentState.Completed;
+                    operation.Completed();
+                }
             });
 
             return operation;
@@ -189,8 +192,11 @@ namespace GameFramework
             byte[] bytes = WriteToBinary();
             FileUtils.WriteAllBytesAsync(savePath, bytes, () =>
             {
-                State = PersistentState.Completed;
-                operation.Completed();
+                if (State == PersistentState.Saving)
+                {
+                    State = PersistentState.Completed;
+                    operation.Completed();
+                }
             });
 
             return operation;

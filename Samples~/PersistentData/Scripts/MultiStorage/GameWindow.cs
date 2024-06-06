@@ -137,6 +137,11 @@ namespace GameFramework.Samples.PersistentData
 
         private void ReturnMenu()
         {
+            if (PersistentManager.Instance.GetStorage(storageName).State == PersistentState.Saving)
+            {
+                return;
+            }
+
             PersistentManager.Instance.Unload(storageName);
             UIManager.Instance.HideWindow(WindowName.Game);
             UIManager.Instance.ShowWindow(WindowName.Main);

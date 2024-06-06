@@ -64,19 +64,25 @@ namespace GameFramework
             {
                 FileUtils.ReadAllBytesAsync(savePath, bytes =>
                 {
-                    string text = CryptoUtils.Aes.DecryptStringFromBytes(bytes, PersistentSetting.Instance.Password);
-                    ReadToData(text);
-                    State = PersistentState.Completed;
-                    operation.Completed();
+                    if (State == PersistentState.Loading)
+                    {
+                        string text = CryptoUtils.Aes.DecryptStringFromBytes(bytes, PersistentSetting.Instance.Password);
+                        ReadToData(text);
+                        State = PersistentState.Completed;
+                        operation.Completed();
+                    }
                 });
             }
             else
             {
                 FileUtils.ReadAllTextAsync(savePath, text =>
                 {
-                    ReadToData(text);
-                    State = PersistentState.Completed;
-                    operation.Completed();
+                    if (State == PersistentState.Loading)
+                    {
+                        ReadToData(text);
+                        State = PersistentState.Completed;
+                        operation.Completed();
+                    }
                 });
             }
 
@@ -172,16 +178,22 @@ namespace GameFramework
                 byte[] bytes = CryptoUtils.Aes.EncryptStringToBytes(text, PersistentSetting.Instance.Password);
                 FileUtils.WriteAllBytesAsync(savePath, bytes, () =>
                 {
-                    State = PersistentState.Completed;
-                    operation.Completed();
+                    if (State == PersistentState.Saving)
+                    {
+                        State = PersistentState.Completed;
+                        operation.Completed();
+                    }
                 });
             }
             else
             {
                 FileUtils.WriteAllTextAsync(savePath, text, () =>
                 {
-                    State = PersistentState.Completed;
-                    operation.Completed();
+                    if (State == PersistentState.Saving)
+                    {
+                        State = PersistentState.Completed;
+                        operation.Completed();
+                    }
                 });
             }
 
