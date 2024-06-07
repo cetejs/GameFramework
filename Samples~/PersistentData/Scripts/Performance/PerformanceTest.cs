@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Text;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 using Random = UnityEngine.Random;
@@ -9,344 +11,198 @@ namespace GameFramework.Samples.PersistentData
 {
     public class PerformanceTest : MonoBehaviour
     {
-        public int testCount = 1000;
+        public List<int> testTimes = new List<int>() {100, 10000, 1000000};
+        private StringBuilder builder = new StringBuilder();
+        private List<PerformanceInfo> infos = new List<PerformanceInfo>();
 
         private void OnEnable()
         {
-            TestData1();
-            TestData2();
-            TestData3();
-            TestData4();
+            infos.Clear();
+            foreach (int times in testTimes)
+            {
+                infos.Add(TestData1(times));
+                infos.Add(TestData2(times));
+            }
+
+            builder.Clear();
+            builder.AppendFormat("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\n", "TestDataName", "StorageMode", "TestTimes", "SetDataTime", "SaveTime", "LoadTime", "GetDataTime", "StorageSize");
+            builder.AppendFormat("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\n", "type", "type", "int", "milliseconds", "milliseconds", "milliseconds", "milliseconds", "byte");
+
+            foreach (PerformanceInfo info in infos)
+            {
+                PerformanceItem jsonItem = info.items[0];
+                PerformanceItem binaryItem = info.items[1];
+                builder.AppendFormat("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\n", info.name, "Json", info.times, jsonItem.SetDataTime, jsonItem.SaveTime, jsonItem.LoadTime, jsonItem.GetDataTime, jsonItem.StorageSize);
+                builder.AppendFormat("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\n", info.name, "Binary", info.times, binaryItem.SetDataTime, binaryItem.SaveTime, binaryItem.LoadTime, binaryItem.GetDataTime, binaryItem.StorageSize);
+            }
+
+            FileUtils.WriteAllText(PersistentSetting.Instance.GetSavePath($"PerformanceTest_{string.Join('-', testTimes)}.txt"), builder.ToString());
         }
 
-        private void TestData1()
+        private PerformanceInfo TestData1(int times)
         {
-            string jsonStorageName1 = $"PerformanceJsonStorage1_{testCount}";
-            string binaryStorageName1 = $"PerformanceBinaryStorage1_{testCount}";
-            string dataKey = "data";
-            PersistentManager.Instance.Delete(jsonStorageName1);
-            PersistentManager.Instance.Delete(binaryStorageName1);
-
-            List<PerformanceData1> data1 = new List<PerformanceData1>();
-            for (int i = 0; i < testCount; i++)
+            List<PerformanceData1> list = new List<PerformanceData1>();
+            for (int i = 0; i < times; i++)
             {
-                data1.Add(new PerformanceData1()
+                list.Add(new PerformanceData1()
                 {
-                    t1 = new TransformData()
+                    t = new TransformData()
                     {
                         position = new CustomVector3(Random.insideUnitSphere * 1000f),
                         eulerAngles = new CustomVector3(Random.insideUnitSphere * 360f),
-                        localScale = new CustomVector3(Random.insideUnitSphere * 100)
+                        localScale = new CustomVector3(Random.insideUnitSphere * 100f)
                     },
-                    t2 = new TransformData()
-                    {
-                        position = new CustomVector3(Random.insideUnitSphere * 1000f),
-                        eulerAngles = new CustomVector3(Random.insideUnitSphere * 360f),
-                        localScale = new CustomVector3(Random.insideUnitSphere * 100)
-                    },
-                    t3 = new TransformData()
-                    {
-                        position = new CustomVector3(Random.insideUnitSphere * 1000f),
-                        eulerAngles = new CustomVector3(Random.insideUnitSphere * 360f),
-                        localScale = new CustomVector3(Random.insideUnitSphere * 100)
-                    },
-                    t4 = new TransformData()
-                    {
-                        position = new CustomVector3(Random.insideUnitSphere * 1000f),
-                        eulerAngles = new CustomVector3(Random.insideUnitSphere * 360f),
-                        localScale = new CustomVector3(Random.insideUnitSphere * 100)
-                    },
-                    t5 = new TransformData()
-                    {
-                        position = new CustomVector3(Random.insideUnitSphere * 1000f),
-                        eulerAngles = new CustomVector3(Random.insideUnitSphere * 360f),
-                        localScale = new CustomVector3(Random.insideUnitSphere * 100)
-                    }
                 });
             }
 
-            PersistentSetting.Instance.StorageMode = StorageMode.Json;
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-            PersistentManager.Instance.SetData(jsonStorageName1, dataKey, data1);
-            stopwatch.Stop();
-            Debug.Log($"[Json TestData1] => SetData : {testCount} Milliseconds : {stopwatch.ElapsedMilliseconds}");
-
-            stopwatch.Restart();
-            PersistentManager.Instance.Save(jsonStorageName1);
-            stopwatch.Stop();
-            Debug.Log($"[Json TestData1] => Save : {testCount} Milliseconds : {stopwatch.ElapsedMilliseconds}");
-
-            stopwatch.Restart();
-            PersistentManager.Instance.Load(jsonStorageName1);
-            stopwatch.Stop();
-            Debug.Log($"[Json TestData1] => Load : {testCount} Milliseconds : {stopwatch.ElapsedMilliseconds}");
-
-            stopwatch.Restart();
-            List<PerformanceData1> jsonGetData1 = PersistentManager.Instance.GetData<List<PerformanceData1>>(jsonStorageName1, dataKey);
-            stopwatch.Stop();
-            Debug.Log($"[Json TestData1] => GetData : {testCount} Milliseconds : {stopwatch.ElapsedMilliseconds}");
-
-            PersistentSetting.Instance.StorageMode = StorageMode.Binary;
-            stopwatch.Restart();
-            PersistentManager.Instance.SetData(binaryStorageName1, dataKey, data1);
-            stopwatch.Stop();
-            Debug.Log($"[Binary TestData1] => SetData : {testCount} Milliseconds : {stopwatch.ElapsedMilliseconds}");
-
-            stopwatch.Restart();
-            PersistentManager.Instance.Save(binaryStorageName1);
-            stopwatch.Stop();
-            Debug.Log($"[Binary TestData1] => Save : {testCount} Milliseconds : {stopwatch.ElapsedMilliseconds}");
-
-            stopwatch.Restart();
-            PersistentManager.Instance.Load(binaryStorageName1);
-            stopwatch.Stop();
-            Debug.Log($"[Binary TestData1] => Load : {testCount} Milliseconds : {stopwatch.ElapsedMilliseconds}");
-
-            stopwatch.Restart();
-            List<PerformanceData1> binaryGetData1 = PersistentManager.Instance.GetData<List<PerformanceData1>>(binaryStorageName1, dataKey);
-            stopwatch.Stop();
-            Debug.Log($"[Binary TestData1] => GetData : {testCount} Milliseconds : {stopwatch.ElapsedMilliseconds}");
-
-            Debug.Log("------------------------------------------------------------------------------");
+            return TestData(list);
         }
 
-        private void TestData2()
+        private PerformanceInfo TestData2(int times)
         {
-            string jsonStorageName2 = $"PerformanceJsonStorage2_{testCount}";
-            string binaryStorageName2 = $"PerformanceBinaryStorage2_{testCount}";
-            string dataKey = "data";
-            PersistentManager.Instance.Delete(jsonStorageName2);
-            PersistentManager.Instance.Delete(binaryStorageName2);
-
-            List<PerformanceData2> data2 = new List<PerformanceData2>();
-            for (int i = 0; i < testCount; i++)
+            List<PerformanceData2> list = new List<PerformanceData2>();
+            for (int i = 0; i < times; i++)
             {
                 PerformanceData2 data = new PerformanceData2();
-                data.list = new List<TransformData>();
-                for (int j = 0; j < 5; j++)
+                data = new PerformanceData2()
                 {
-                    data.list.Add(new TransformData()
-                    {
-                        position = new CustomVector3(Random.insideUnitSphere * 1000f),
-                        eulerAngles = new CustomVector3(Random.insideUnitSphere * 360f),
-                        localScale = new CustomVector3(Random.insideUnitSphere * 100)
-                    });
+                    nickName = "DefaultNickName",
+                    sxe = 1,
+                    age = 18,
+                    properties = new Dictionary<int, int>()
+                };
+
+                for (int j = 0; j < 10; j++)
+                {
+                    data.properties.Add(j, 10);
                 }
 
-                data2.Add(data);
+                list.Add(data);
             }
 
-            PersistentSetting.Instance.StorageMode = StorageMode.Json;
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-            PersistentManager.Instance.SetData(jsonStorageName2, dataKey, data2);
-            stopwatch.Stop();
-            Debug.Log($"[Json TestData2] => SetData : {testCount} Milliseconds : {stopwatch.ElapsedMilliseconds}");
-
-            stopwatch.Restart();
-            PersistentManager.Instance.Save(jsonStorageName2);
-            stopwatch.Stop();
-            Debug.Log($"[Json TestData2] => Save : {testCount} Milliseconds : {stopwatch.ElapsedMilliseconds}");
-
-            stopwatch.Restart();
-            PersistentManager.Instance.Load(jsonStorageName2);
-            stopwatch.Stop();
-            Debug.Log($"[Json TestData2] => Load : {testCount} Milliseconds : {stopwatch.ElapsedMilliseconds}");
-
-            stopwatch.Restart();
-            List<PerformanceData2> jsonGetData2 = PersistentManager.Instance.GetData<List<PerformanceData2>>(jsonStorageName2, dataKey);
-            stopwatch.Stop();
-            Debug.Log($"[Json TestData2] => GetData : {testCount} Milliseconds : {stopwatch.ElapsedMilliseconds}");
-
-            PersistentSetting.Instance.StorageMode = StorageMode.Binary;
-            stopwatch.Restart();
-            PersistentManager.Instance.SetData(binaryStorageName2, dataKey, data2);
-            stopwatch.Stop();
-            Debug.Log($"[Binary TestData2] => SetData : {testCount} Milliseconds : {stopwatch.ElapsedMilliseconds}");
-
-            stopwatch.Restart();
-            PersistentManager.Instance.Save(binaryStorageName2);
-            stopwatch.Stop();
-            Debug.Log($"[Binary TestData2] => Save : {testCount} Milliseconds : {stopwatch.ElapsedMilliseconds}");
-
-            stopwatch.Restart();
-            PersistentManager.Instance.Load(binaryStorageName2);
-            stopwatch.Stop();
-            Debug.Log($"[Binary TestData2] => Load : {testCount} Milliseconds : {stopwatch.ElapsedMilliseconds}");
-
-            stopwatch.Restart();
-            List<PerformanceData2> binaryGetData2 = PersistentManager.Instance.GetData<List<PerformanceData2>>(binaryStorageName2, dataKey);
-            stopwatch.Stop();
-            Debug.Log($"[Binary TestData2] => GetData : {testCount} Milliseconds : {stopwatch.ElapsedMilliseconds}");
-
-            Debug.Log("------------------------------------------------------------------------------");
+            return TestData(list);
         }
 
-        private void TestData3()
+        private PerformanceInfo TestData<T>(List<T> list)
         {
-            string jsonStorageName3 = $"PerformanceJsonStorage3_{testCount}";
-            string binaryStorageName3 = $"PerformanceBinaryStorage3_{testCount}";
+            int count = list.Count;
+            string typeName = typeof(T).Name;
+            string jsonStorageName = $"JsonStorage{typeName}_{count}";
+            string binaryStorageName = $"BinaryStorage{typeName}_{count}";
             string dataKey = "data";
-            PersistentManager.Instance.Delete(jsonStorageName3);
-            PersistentManager.Instance.Delete(binaryStorageName3);
 
-            List<PerformanceData3> data3 = new List<PerformanceData3>();
-            for (int i = 0; i < testCount; i++)
-            {
-                data3.Add(new PerformanceData3()
-                {
-                    i1 = 1,
-                    i2 = 2,
-                    i3 = 3,
-                    i4 = 4,
-                    i5 = 5,
-                });
-            }
+            PersistentManager.Instance.Delete(jsonStorageName);
+            PersistentManager.Instance.Delete(binaryStorageName);
 
             PersistentSetting.Instance.StorageMode = StorageMode.Json;
+            PerformanceInfo info = new PerformanceInfo()
+            {
+                name = typeName,
+                times = count,
+                items = new PerformanceItem[] {new PerformanceItem(), new PerformanceItem()}
+            };
             Stopwatch stopwatch = new Stopwatch();
+
             stopwatch.Start();
-            PersistentManager.Instance.SetData(jsonStorageName3, dataKey, data3);
+            for (int i = 0; i < count; i++)
+            {
+                PersistentManager.Instance.SetData(jsonStorageName, dataKey + i, list[i]);
+            }
+
             stopwatch.Stop();
-            Debug.Log($"[Json TestData3] => SetData : {testCount} Milliseconds : {stopwatch.ElapsedMilliseconds}");
+            info.items[0].SetDataTime = stopwatch.ElapsedMilliseconds;
+            Debug.Log($"[Json {typeName}] => SetData : {count} Milliseconds : {stopwatch.ElapsedMilliseconds}");
 
             stopwatch.Restart();
-            PersistentManager.Instance.Save(jsonStorageName3);
+            PersistentManager.Instance.Save(jsonStorageName);
             stopwatch.Stop();
-            Debug.Log($"[Json TestData3] => Save : {testCount} Milliseconds : {stopwatch.ElapsedMilliseconds}");
+            info.items[0].SaveTime = stopwatch.ElapsedMilliseconds;
+            Debug.Log($"[Json {typeName}] => Save : {count} Milliseconds : {stopwatch.ElapsedMilliseconds}");
 
             stopwatch.Restart();
-            PersistentManager.Instance.Load(jsonStorageName3);
+            PersistentManager.Instance.Load(jsonStorageName);
             stopwatch.Stop();
-            Debug.Log($"[Json TestData3] => Load : {testCount} Milliseconds : {stopwatch.ElapsedMilliseconds}");
+            info.items[0].LoadTime = stopwatch.ElapsedMilliseconds;
+            Debug.Log($"[Json {typeName}] => Load : {count} Milliseconds : {stopwatch.ElapsedMilliseconds}");
 
             stopwatch.Restart();
-            List<PerformanceData3> jsonGetData3 = PersistentManager.Instance.GetData<List<PerformanceData3>>(jsonStorageName3, dataKey);
+            for (int i = 0; i < count; i++)
+            {
+                T data = PersistentManager.Instance.GetData<T>(jsonStorageName, dataKey + i);
+            }
+
             stopwatch.Stop();
-            Debug.Log($"[Json TestData3] => GetData : {testCount} Milliseconds : {stopwatch.ElapsedMilliseconds}");
+            info.items[0].GetDataTime = stopwatch.ElapsedMilliseconds;
+            Debug.Log($"[Json {typeName}] => GetData : {count} Milliseconds : {stopwatch.ElapsedMilliseconds}");
+            info.items[0].StorageSize = new FileInfo(PersistentSetting.Instance.GetSavePath(jsonStorageName)).Length;
 
             PersistentSetting.Instance.StorageMode = StorageMode.Binary;
             stopwatch.Restart();
-            PersistentManager.Instance.SetData(binaryStorageName3, dataKey, data3);
-            stopwatch.Stop();
-            Debug.Log($"[Binary TestData3] => SetData : {testCount} Milliseconds : {stopwatch.ElapsedMilliseconds}");
-
-            stopwatch.Restart();
-            PersistentManager.Instance.Save(binaryStorageName3);
-            stopwatch.Stop();
-            Debug.Log($"[Binary TestData3] => Save : {testCount} Milliseconds : {stopwatch.ElapsedMilliseconds}");
-
-            stopwatch.Restart();
-            PersistentManager.Instance.Load(binaryStorageName3);
-            stopwatch.Stop();
-            Debug.Log($"[Binary TestData3] => Load : {testCount} Milliseconds : {stopwatch.ElapsedMilliseconds}");
-
-            stopwatch.Restart();
-            List<PerformanceData3> binaryGetData3 = PersistentManager.Instance.GetData<List<PerformanceData3>>(binaryStorageName3, dataKey);
-            stopwatch.Stop();
-            Debug.Log($"[Binary TestData3] => GetData : {testCount} Milliseconds : {stopwatch.ElapsedMilliseconds}");
-
-            Debug.Log("------------------------------------------------------------------------------");
-        }
-
-        private void TestData4()
-        {
-            string jsonStorageName4 = $"PerformanceJsonStorage4_{testCount}";
-            string binaryStorageName4 = $"PerformanceBinaryStorage4_{testCount}";
-            string dataKey = "data";
-            PersistentManager.Instance.Delete(jsonStorageName4);
-            PersistentManager.Instance.Delete(binaryStorageName4);
-
-            List<PerformanceData4> data4 = new List<PerformanceData4>();
-            for (int i = 0; i < testCount; i++)
+            for (int i = 0; i < count; i++)
             {
-                PerformanceData4 data = new PerformanceData4();
-                data.list = new List<int>();
-                for (int j = 0; j < 5; j++)
-                {
-                    data.list.Add(j);
-                }
-
-                data4.Add(data);
+                PersistentManager.Instance.SetData(binaryStorageName, dataKey + i, list[i]);
             }
 
-            PersistentSetting.Instance.StorageMode = StorageMode.Json;
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-            PersistentManager.Instance.SetData(jsonStorageName4, dataKey, data4);
             stopwatch.Stop();
-            Debug.Log($"[Json TestData4] => SetData : {testCount} Milliseconds : {stopwatch.ElapsedMilliseconds}");
+            info.items[1].SetDataTime = stopwatch.ElapsedMilliseconds;
+            Debug.Log($"[Binary {typeName}] => SetData : {count} Milliseconds : {stopwatch.ElapsedMilliseconds}");
 
             stopwatch.Restart();
-            PersistentManager.Instance.Save(jsonStorageName4);
+            PersistentManager.Instance.Save(binaryStorageName);
             stopwatch.Stop();
-            Debug.Log($"[Json TestData4] => Save : {testCount} Milliseconds : {stopwatch.ElapsedMilliseconds}");
+            info.items[1].SaveTime = stopwatch.ElapsedMilliseconds;
+            Debug.Log($"[Binary {typeName}] => Save : {count} Milliseconds : {stopwatch.ElapsedMilliseconds}");
 
             stopwatch.Restart();
-            PersistentManager.Instance.Load(jsonStorageName4);
+            PersistentManager.Instance.Load(binaryStorageName);
             stopwatch.Stop();
-            Debug.Log($"[Json TestData4] => Load : {testCount} Milliseconds : {stopwatch.ElapsedMilliseconds}");
+            info.items[1].LoadTime = stopwatch.ElapsedMilliseconds;
+            Debug.Log($"[Binary {typeName}] => Load : {count} Milliseconds : {stopwatch.ElapsedMilliseconds}");
 
             stopwatch.Restart();
-            List<PerformanceData4> jsonGetData4 = PersistentManager.Instance.GetData<List<PerformanceData4>>(jsonStorageName4, dataKey);
-            stopwatch.Stop();
-            Debug.Log($"[Json TestData4] => GetData : {testCount} Milliseconds : {stopwatch.ElapsedMilliseconds}");
+            for (int i = 0; i < count; i++)
+            {
+                T data = PersistentManager.Instance.GetData<T>(binaryStorageName, dataKey + i);
+            }
 
-            PersistentSetting.Instance.StorageMode = StorageMode.Binary;
-            stopwatch.Restart();
-            PersistentManager.Instance.SetData(binaryStorageName4, dataKey, data4);
             stopwatch.Stop();
-            Debug.Log($"[Binary TestData4] => SetData : {testCount} Milliseconds : {stopwatch.ElapsedMilliseconds}");
-
-            stopwatch.Restart();
-            PersistentManager.Instance.Save(binaryStorageName4);
-            stopwatch.Stop();
-            Debug.Log($"[Binary TestData4] => Save : {testCount} Milliseconds : {stopwatch.ElapsedMilliseconds}");
-
-            stopwatch.Restart();
-            PersistentManager.Instance.Load(binaryStorageName4);
-            stopwatch.Stop();
-            Debug.Log($"[Binary TestData4] => Load : {testCount} Milliseconds : {stopwatch.ElapsedMilliseconds}");
-
-            stopwatch.Restart();
-            List<PerformanceData4> binaryGetData4 = PersistentManager.Instance.GetData<List<PerformanceData4>>(binaryStorageName4, dataKey);
-            stopwatch.Stop();
-            Debug.Log($"[Binary TestData4] => GetData : {testCount} Milliseconds : {stopwatch.ElapsedMilliseconds}");
+            info.items[1].GetDataTime = stopwatch.ElapsedMilliseconds;
+            Debug.Log($"[Binary {typeName}] => GetData : {count} Milliseconds : {stopwatch.ElapsedMilliseconds}");
+            info.items[1].StorageSize = new FileInfo(PersistentSetting.Instance.GetSavePath(binaryStorageName)).Length;
 
             Debug.Log("------------------------------------------------------------------------------");
+            return info;
         }
+    }
+
+    public class PerformanceInfo
+    {
+        public string name;
+        public int times;
+        public PerformanceItem[] items;
+    }
+
+    public class PerformanceItem
+    {
+        public long SetDataTime;
+        public long SaveTime;
+        public long LoadTime;
+        public long GetDataTime;
+        public long StorageSize;
     }
 
     [Serializable]
     public struct PerformanceData1
     {
-        public TransformData t1;
-        public TransformData t2;
-        public TransformData t3;
-        public TransformData t4;
-        public TransformData t5;
+        public TransformData t;
     }
 
     [Serializable]
     public class PerformanceData2
     {
-        public List<TransformData> list;
-    }
-
-    [Serializable]
-    public struct PerformanceData3
-    {
-        public int i1;
-        public int i2;
-        public int i3;
-        public int i4;
-        public int i5;
-    }
-
-    [Serializable]
-    public class PerformanceData4
-    {
-        public List<int> list;
+        public string nickName;
+        public byte sxe;
+        public int age;
+        public Dictionary<int, int> properties;
     }
 }
