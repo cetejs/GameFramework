@@ -217,11 +217,7 @@ namespace GameFramework
 
             if (data.TryGetValue(key, out byte[] bytes))
             {
-                using (MemoryStream stream = new MemoryStream(bytes))
-                {
-                    BinaryFormatter formatter = new BinaryFormatter();
-                    defaultValue = (T) formatter.Deserialize(stream);
-                }
+                defaultValue = BinaryUtils.ConvertToObject<T>(bytes);
             }
 
             return defaultValue;
@@ -241,12 +237,7 @@ namespace GameFramework
                 return;
             }
 
-            using (MemoryStream stream = new MemoryStream())
-            {
-                BinaryFormatter formatter = new BinaryFormatter();
-                formatter.Serialize(stream, value);
-                data[key] = stream.ToArray();
-            }
+            data[key] = BinaryUtils.ConvertToBinary(value);
         }
 
         public string[] GetAllKeys()

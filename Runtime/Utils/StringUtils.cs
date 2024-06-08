@@ -10,7 +10,7 @@ namespace GameFramework
         private static StringBuilder stringBuilder;
         private const int StringBuilderCapacity = 1024;
 
-        private static void CheckStringBuilder()
+        private static void EnsureInstance()
         {
             if (stringBuilder == null)
             {
@@ -22,7 +22,7 @@ namespace GameFramework
 
         public static string Concat(object arg0, object arg1)
         {
-            CheckStringBuilder();
+            EnsureInstance();
             stringBuilder.Clear();
             stringBuilder.Append(arg0);
             stringBuilder.Append(arg1);
@@ -31,7 +31,7 @@ namespace GameFramework
 
         public static string Concat(object arg0, object arg1, object arg2)
         {
-            CheckStringBuilder();
+            EnsureInstance();
             stringBuilder.Clear();
             stringBuilder.Append(arg0);
             stringBuilder.Append(arg1);
@@ -41,7 +41,7 @@ namespace GameFramework
 
         public static string Concat(object arg0, object arg1, object arg2, object arg3)
         {
-            CheckStringBuilder();
+            EnsureInstance();
             stringBuilder.Clear();
             stringBuilder.Append(arg0);
             stringBuilder.Append(arg1);
@@ -52,7 +52,7 @@ namespace GameFramework
 
         public static string Concat(params object[] args)
         {
-            CheckStringBuilder();
+            EnsureInstance();
             stringBuilder.Clear();
             foreach (object arg in args)
             {
@@ -68,7 +68,7 @@ namespace GameFramework
 
         public static string Format(string format, object arg0)
         {
-            CheckStringBuilder();
+            EnsureInstance();
             stringBuilder.Clear();
             stringBuilder.AppendFormat(format, arg0);
             return stringBuilder.ToString();
@@ -76,7 +76,7 @@ namespace GameFramework
 
         public static string Format(string format, object arg0, object arg1)
         {
-            CheckStringBuilder();
+            EnsureInstance();
             stringBuilder.Clear();
             stringBuilder.AppendFormat(format, arg0, arg1);
             return stringBuilder.ToString();
@@ -84,7 +84,7 @@ namespace GameFramework
 
         public static string Format(string format, object arg0, object arg1, object arg2)
         {
-            CheckStringBuilder();
+            EnsureInstance();
             stringBuilder.Clear();
             stringBuilder.AppendFormat(format, arg0, arg1, arg2);
             return stringBuilder.ToString();
@@ -92,7 +92,7 @@ namespace GameFramework
 
         public static string Format(string format, params object[] args)
         {
-            CheckStringBuilder();
+            EnsureInstance();
             stringBuilder.Clear();
             stringBuilder.AppendFormat(format, args);
             return stringBuilder.ToString();
@@ -104,7 +104,7 @@ namespace GameFramework
 
         public static string Join(string separator, params string[] values)
         {
-            CheckStringBuilder();
+            EnsureInstance();
             stringBuilder.Clear();
             bool firstAppend = true;
             foreach (string value in values)
@@ -126,7 +126,7 @@ namespace GameFramework
 
         public static string Join(string separator, params object[] values)
         {
-            CheckStringBuilder();
+            EnsureInstance();
             stringBuilder.Clear();
             bool firstAppend = true;
             foreach (object value in values)
@@ -153,7 +153,7 @@ namespace GameFramework
 
         public static string Join<T>(string separator, IEnumerable<T> values)
         {
-            CheckStringBuilder();
+            EnsureInstance();
             stringBuilder.Clear();
             bool firstAppend = true;
             foreach (T value in values)

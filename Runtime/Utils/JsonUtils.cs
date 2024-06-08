@@ -19,6 +19,20 @@ namespace GameFramework
             return null;
         }
 
+        public static object ToObject(string json, Type type)
+        {
+            try
+            {
+                return JsonMapper.ToObject(json, type);
+            }
+            catch (Exception ex)
+            {
+                GameLogger.LogException(ex);
+            }
+
+            return default;
+        }
+
         public static T ToObject<T>(string json)
         {
             try
@@ -85,17 +99,13 @@ namespace GameFramework
 
             if (IsComplexObject(type))
             {
-                return JsonMapper.ToObject(text, type);
+                return ToObject(text, type);
             }
 
             object value;
             if (type == typeof(bool))
             {
                 value = byte.Parse(text) > 0;
-            }
-            else if (type == typeof(char))
-            {
-                value = char.Parse(text);
             }
             else if (type == typeof(byte))
             {
@@ -104,6 +114,18 @@ namespace GameFramework
             else if (type == typeof(sbyte))
             {
                 value = sbyte.Parse(text);
+            }
+            else if (type == typeof(char))
+            {
+                value = char.Parse(text);
+            }
+            else if (type == typeof(double))
+            {
+                value = double.Parse(text);
+            }
+            else if (type == typeof(decimal))
+            {
+                value = decimal.Parse(text);
             }
             else if (type == typeof(short))
             {
@@ -132,10 +154,6 @@ namespace GameFramework
             else if (type == typeof(float))
             {
                 value = float.Parse(text);
-            }
-            else if (type == typeof(double))
-            {
-                value = double.Parse(text);
             }
             else
             {
