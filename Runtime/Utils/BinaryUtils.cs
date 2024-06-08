@@ -6,30 +6,15 @@ namespace GameFramework
 {
     public static class BinaryUtils
     {
-        private static byte[] buffer;
-        private const int BufferCapacity = 1024;
-
-        private static void EnsureInstance()
-        {
-            if (buffer == null)
-            {
-                buffer = new byte[BufferCapacity];
-            }
-        }
-
         public static byte[] ToBinary(object obj)
         {
-            EnsureInstance();
-
             try
             {
-                using (MemoryStream stream = new MemoryStream(buffer))
+                using (MemoryStream stream = new MemoryStream())
                 {
                     BinaryFormatter formatter = new BinaryFormatter();
                     formatter.Serialize(stream, obj);
-                    byte[] bytes = new byte[stream.Position];
-                    Array.Copy(buffer, bytes, bytes.Length);
-                    return bytes;
+                    return stream.ToArray();
                 }
             }
             catch (Exception ex)
@@ -81,8 +66,7 @@ namespace GameFramework
                 return ToBinary(obj);
             }
 
-            EnsureInstance();
-            using (MemoryStream stream = new MemoryStream(buffer))
+            using (MemoryStream stream = new MemoryStream())
             {
                 using (BinaryWriter writer = new BinaryWriter(stream))
                 {
@@ -143,9 +127,7 @@ namespace GameFramework
                         writer.Write(obj.ToString());
                     }
 
-                    byte[] bytes = new byte[stream.Position];
-                    Array.Copy(buffer, bytes, bytes.Length);
-                    return bytes;
+                    return stream.ToArray();
                 }
             }
         }
