@@ -27,11 +27,6 @@ namespace GameFramework
 
         private string BundleAssetName = "AssetBundles";
 
-        public string BundleAssetPath
-        {
-            get { return PathUtils.Combine(PathUtils.AssetPath, BundleAssetName); }
-        }
-
         public string BundleSavePath
         {
             get { return PathUtils.Combine(PathUtils.AssetPath, BundleBuildPath, BundleAssetName); }

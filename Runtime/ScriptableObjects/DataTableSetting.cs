@@ -19,7 +19,7 @@
 
         public string OutputTablePath
         {
-            get { return PathUtils.Combine(AssetSetting.Instance.BundleAssetPath, TableBuildPath); }
+            get { return PathUtils.Combine(PathUtils.AssetPath, TableBuildPath); }
         }
 
         public string OutputScriptPath
