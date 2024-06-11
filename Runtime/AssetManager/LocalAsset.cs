@@ -10,7 +10,7 @@ namespace GameFramework
 
         public LocalAsset(string path)
         {
-            path = PathUtils.Combine("Assets", AssetSetting.Instance.BundleAssetName, path);
+            path = PathUtils.Combine("Assets", path);
             this.path = StringUtils.Concat(path, FileUtils.GetExtension(path));
         }
 

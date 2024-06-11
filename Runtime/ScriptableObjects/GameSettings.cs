@@ -19,11 +19,9 @@ namespace GameFramework
         private static void BuildProjectDirectories()
         {
 #if UNITY_EDITOR
-            string bundleAssetPath = PathUtils.Combine(PathUtils.AssetPath, AssetSetting.Instance.BundleAssetName);
             string excelRootPath = PathUtils.Combine(PathUtils.ProjectPath, DataTableSetting.Instance.ExcelRootPath);
-            string poolAssetPath = PathUtils.Combine(bundleAssetPath, Instance.PoolAssetName);
-            string windowAssetPath = PathUtils.Combine(bundleAssetPath, Instance.WindowAssetName);
-            DirectoryUtils.CreateDirectory(bundleAssetPath);
+            string poolAssetPath = PathUtils.Combine("Assets", Instance.PoolAssetName);
+            string windowAssetPath = PathUtils.Combine("Assets", Instance.WindowAssetName);
             DirectoryUtils.CreateDirectory(excelRootPath);
             DirectoryUtils.CreateDirectory(poolAssetPath);
             DirectoryUtils.CreateDirectory(windowAssetPath);

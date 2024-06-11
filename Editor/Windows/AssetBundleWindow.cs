@@ -39,11 +39,6 @@ namespace GameFramework
         private readonly string ShaderVariantExtension = ".shadervariants";
         private readonly string SpriteAtlaslExtension = ".spriteatlas";
 
-        private string BundleRoot
-        {
-            get { return PathUtils.Combine("Assets", AssetSetting.Instance.BundleAssetName); }
-        }
-
         private string BuiltinResourcesRoot
         {
             get { return PathUtils.Combine(PathUtils.GetPackagePath(), "BuiltinResources"); }
@@ -75,6 +70,20 @@ namespace GameFramework
 
             buildOptions = (BuildAssetBundleOptions) EditorGUILayout.EnumFlagsField("Build Options", buildOptions);
             buildTarget = (BuildTarget) EditorGUILayout.EnumPopup("Build Target", buildTarget);
+
+            EditorGUILayout.LabelField("AssetBundlePaths");
+            EditorGUI.indentLevel++;
+            if (AssetSetting.Instance.BundleAssetGuids.Count == 0)
+            {
+                EditorGUILayout.LabelField("There is no asset bundle path here");
+            }
+
+            foreach (string guid in AssetSetting.Instance.BundleAssetGuids)
+            {
+                EditorGUILayout.LabelField(AssetDatabase.GUIDToAssetPath(guid));
+            }
+            
+            EditorGUI.indentLevel--;
 
             EditorGUILayout.BeginHorizontal();
 
@@ -193,7 +202,8 @@ namespace GameFramework
                                 EditorUtility.ClearProgressBar();
                                 return;
                             }
-                        } while (!uploadRequest.isDone);
+                        }
+                        while (!uploadRequest.isDone);
                     }
 
                     if (!string.IsNullOrEmpty(uploadRequest.error))
@@ -222,31 +232,40 @@ namespace GameFramework
                 dependencies.Clear();
                 materials.Clear();
                 builtinResources.Clear();
-                string bundlePath = AssetSetting.Instance.BundleAssetPath;
                 string outputPath = AssetSetting.Instance.BundleSavePath;
-                List<FileInfo> filesInfos = new List<FileInfo>();
-                FileUtils.GetFiles(bundlePath, filesInfos, BundleFilter);
-                for (int i = 0; i < filesInfos.Count; i++)
+
+                List<string> bundleAssetGuids = AssetSetting.Instance.BundleAssetGuids;
+                string[] bundlePaths = new string[bundleAssetGuids.Count];
+                for (int i = 0; i < bundlePaths.Length; i++)
                 {
-                    FileInfo fileInfo = filesInfos[i];
-                    string fullName = fileInfo.FullName.ReplaceSeparator();
-                    string relativePath = fullName.Substring(bundlePath.Length + 1);
-                    string bundleName = StringUtils.Concat(relativePath.RemoveLastOf("/"));
-                    string assetName = fullName.Substring(PathUtils.ProjectPath.Length + 1);
-                    if (assetName.EndsWith(SceneExtension))
-                    {
-                        scenes.Add(assetName);
-                        continue;
-                    }
+                    bundlePaths[i] = AssetDatabase.GUIDToAssetPath(bundleAssetGuids[i]);
+                }
 
-                    if (assetName.EndsWith(TextureExtensions))
+                foreach (string bundlePath in bundlePaths)
+                {
+                    List<FileInfo> filesInfos = new List<FileInfo>();
+                    FileUtils.GetFiles(bundlePath, filesInfos, BundleFilter);
+                    foreach (FileInfo fileInfo in filesInfos)
                     {
-                        AddTexture(bundleName, assetName);
-                        continue;
-                    }
+                        string fullName = fileInfo.FullName.ReplaceSeparator();
+                        string relativePath = fullName.RemoveFirstOf("Assets/");
+                        string bundleName = StringUtils.Concat(relativePath.RemoveLastOf("/"));
+                        string assetName = fullName.Substring(PathUtils.ProjectPath.Length + 1);
+                        if (assetName.EndsWith(SceneExtension))
+                        {
+                            scenes.Add(assetName);
+                            continue;
+                        }
 
-                    AddBundleBuild(bundleName, assetName);
-                    AddDependencies(bundleName, assetName);
+                        if (assetName.EndsWith(TextureExtensions))
+                        {
+                            AddTexture(bundleName, assetName);
+                            continue;
+                        }
+
+                        AddBundleBuild(bundleName, assetName);
+                        AddDependencies(bundleName, assetName, bundlePaths);
+                    }
                 }
 
                 AddScenes();
@@ -320,7 +339,7 @@ namespace GameFramework
             list.Add(assetName);
         }
 
-        private void AddDependencies(string bundleName, string assetName)
+        private void AddDependencies(string bundleName, string assetName, string[] bundlePaths)
         {
             bundleName = StringUtils.Concat(bundleName, "_dp");
             string[] dps = AssetDatabase.GetDependencies(assetName, true);
@@ -336,7 +355,7 @@ namespace GameFramework
                     continue;
                 }
 
-                if (dp.StartsWith(BundleRoot))
+                if (dp.StartsWith(bundlePaths))
                 {
                     continue;
                 }
@@ -358,12 +377,11 @@ namespace GameFramework
                     continue;
                 }
 
-                if (dependencies.Contains(dp))
+                if (!dependencies.Add(dp))
                 {
                     continue;
                 }
 
-                dependencies.Add(dp);
                 AddBundleBuild(bundleName, dp);
             }
         }

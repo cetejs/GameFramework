@@ -57,7 +57,7 @@ namespace GameFramework
 
         private void Start()
         {
-            if (pool == null && string.IsNullOrEmpty(poolName))
+            if (pool == null && !string.IsNullOrEmpty(poolName))
             {
                 ObjectPool objPool = ObjectPoolManager.Instance.GetObjectPool(poolName);
                 pool = new ObjectPool<UICell>(objPool);

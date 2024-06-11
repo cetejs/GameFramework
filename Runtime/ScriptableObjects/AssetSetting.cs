@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 namespace GameFramework
@@ -6,13 +7,14 @@ namespace GameFramework
     public class AssetSetting : ScriptableObjectSingleton<AssetSetting>
     {
         [InspectorGroup("BundleSetting", 1)]
-        public string BundleAssetName = "ToBundle";
         public string BundleExtension = "ab";
         public string BundleBuildPath = "StreamingAssets";
         public string BundleHashName = "BundleHash";
         public string BuiltinResourcesBundleName = "builtin_extra";
         public string DownloadUri = "http://127.0.0.1:3000/AssetBundle";
         public AssetLoadOption AssetLoadOption;
+        [HideInInspector]
+        public List<string> BundleAssetGuids = new List<string>();
         [InspectorGroup("ShaderSetting", 3)]
         public string ShaderBundleName = "shaders";
         public string ShaderVariantsAssetPath = "Shaders/ShaderVariants";
@@ -22,6 +24,8 @@ namespace GameFramework
         public int SpriteAtlasPackingPadding = 0;
         public string SpriteAtlasAssetPath = "SpriteAtlas";
         public bool DeleteSpriteAtlasWhenBuild = false;
+
+        private string BundleAssetName = "AssetBundles";
 
         public string BundleAssetPath
         {
@@ -54,12 +58,6 @@ namespace GameFramework
         {
             get
             {
-                string bundlePath = BundleAssetName.GetLastOf("/");
-                if (!string.IsNullOrEmpty(bundlePath))
-                {
-                    return bundlePath;
-                }
-
                 return BundleAssetName;
             }
         }

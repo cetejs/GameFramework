@@ -123,7 +123,7 @@ namespace GameFramework
                 {
                     localData.Value = storage.GetData<string>(key, default);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     localData.Value = null;
                 }

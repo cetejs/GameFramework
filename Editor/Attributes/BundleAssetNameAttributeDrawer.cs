@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
@@ -12,7 +11,7 @@ namespace GameFramework
         public override void OnPropertyGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             BundleAssetNameAttribute bundleAssetName = (BundleAssetNameAttribute) attribute;
-            string assetPath = PathUtils.Combine(AssetSetting.Instance.BundleAssetPath, bundleAssetName.AssetName);
+            string assetPath = PathUtils.Combine(PathUtils.AssetPath, bundleAssetName.AssetName);
             List<string> assets = new List<string>();
             if (Directory.Exists(assetPath))
             {
@@ -29,7 +28,7 @@ namespace GameFramework
             {
                 GUIStyle style = new GUIStyle(GUI.skin.label);
                 style.normal.textColor = Color.red;
-                string assetName = PathUtils.Combine("Assets", AssetSetting.Instance.BundleAssetName, bundleAssetName.AssetName);
+                string assetName = PathUtils.Combine("Assets", bundleAssetName.AssetName);
                 EditorGUI.LabelField(position, label.text, $"There are no {bundleAssetName.Extension} in {assetName}", style);
                 return;
             }
