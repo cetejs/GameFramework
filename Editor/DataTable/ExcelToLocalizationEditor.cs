@@ -21,7 +21,7 @@ namespace GameFramework
                 using (BinaryWriter writer = new BinaryWriter(stream, Encoding.UTF8))
                 {
                     writer.Write(dataTable.Rows.Count - 2);
-                    for (int i = 1; i < dataTable.Rows.Count; i++)
+                    for (int i = 2; i < dataTable.Rows.Count; i++)
                     {
                         writer.Write(dataTable.Rows[i][0].ToString());
                     }
@@ -45,7 +45,7 @@ namespace GameFramework
                     using (BinaryWriter writer = new BinaryWriter(stream, Encoding.UTF8))
                     {
                         writer.Write(dataTable.Rows.Count - 2);
-                        for (int i = 1; i < dataTable.Rows.Count; i++)
+                        for (int i = 2; i < dataTable.Rows.Count; i++)
                         {
                             writer.Write(dataTable.Rows[i][j].ToString());
                         }
@@ -63,6 +63,7 @@ namespace GameFramework
                 }
             }
 
+            LocalizationTextInspector.ResetLocalization();
             AssetDatabase.Refresh();
         }
     }

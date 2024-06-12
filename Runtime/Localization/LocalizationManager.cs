@@ -7,7 +7,7 @@ namespace GameFramework
 {
     public class LocalizationManager : Singleton<LocalizationManager>
     {
-        private Dictionary<string, int> languageMap = new Dictionary<string, int>();
+        private Dictionary<string, int> languageKeyMap = new Dictionary<string, int>();
         private List<string> languages = new List<string>();
         private string languageType;
 
@@ -25,7 +25,7 @@ namespace GameFramework
                 return string.Empty;
             }
 
-            if (languageMap.TryGetValue(key, out int index))
+            if (languageKeyMap.TryGetValue(key, out int index))
             {
                 if (index >= 0 && index <= languages.Count)
                 {
@@ -50,7 +50,7 @@ namespace GameFramework
             }
 
             languageType = type;
-            ReadLanguage(LoadText(StringUtils.Concat(languageType, "/Language")));
+            ReadLanguage(LoadText(StringUtils.Concat(type, "/Language")));
             OnLanguageChanged?.Invoke(type);
         }
 
@@ -78,7 +78,7 @@ namespace GameFramework
         public void UnloadLanguage()
         {
             languageType = null;
-            languageMap.Clear();
+            languageKeyMap.Clear();
             languages.Clear();
         }
 
@@ -132,12 +132,12 @@ namespace GameFramework
             {
                 using (BinaryReader reader = new BinaryReader(stream))
                 {
-                    languageMap.Clear();
+                    languageKeyMap.Clear();
                     int count = reader.ReadInt32();
                     for (int i = 0; i < count; i++)
                     {
                         string key = reader.ReadString();
-                        languageMap.Add(key, i);
+                        languageKeyMap.Add(key, i);
                     }
                 }
             }

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 
@@ -7,7 +8,18 @@ namespace GameFramework
     [CustomEditor(typeof(LocalizationText))]
     internal class LocalizationTextInspector : Editor
     {
-        private int selectIndex;
+        private static int selectIndex;
+        private static string languageType;
+        private static Dictionary<string, int> languageKeyMap = new Dictionary<string, int>();
+        private static Dictionary<string, List<string>> languageMap = new Dictionary<string, List<string>>();
+
+        public static void ResetLocalization()
+        {
+            selectIndex = 0;
+            languageType = string.Empty;
+            languageKeyMap.Clear();
+            languageMap.Clear();
+        }
 
         public override void OnInspectorGUI()
         {
@@ -24,7 +36,10 @@ namespace GameFramework
             bool hasLanguageType = languageTypes.Length > 0;
             if (!hasLanguageType)
             {
-                languageTypes = new[] {"None"};
+                languageTypes = new[]
+                {
+                    "None"
+                };
             }
 
             selectIndex = Mathf.Clamp(selectIndex, 0, languageTypes.Length - 1);
@@ -39,7 +54,8 @@ namespace GameFramework
             {
                 if (hasLanguageType)
                 {
-                    string language = GetLanguage(languageTypes[selectIndex], serializedLanguageKey.stringValue);
+                    ChangeLanguage(languageTypes[selectIndex]);
+                    string language = GetLanguage(serializedLanguageKey.stringValue);
                     ((LocalizationText) target).SetLanguage(language);
                 }
                 else
@@ -52,59 +68,85 @@ namespace GameFramework
             serializedObject.ApplyModifiedProperties();
         }
 
-        private string GetLanguage(string type, string key)
+        private void ChangeLanguage(string type)
         {
-            int index = -1;
-            string languageKeyPath = PathUtils.Combine("Assets", DataTableSetting.Instance.LoadLocalizationPath, "LanguageKey.bytes");
-            string languagePath = PathUtils.Combine("Assets", DataTableSetting.Instance.LoadLocalizationPath, type, "Language.bytes");
-            string language = string.Empty;
-            if (!FileUtils.Exists(languageKeyPath))
+            if (languageType == type)
             {
-                GameLogger.LogError($"Load localization {languageKeyPath} is fail");
-                return string.Empty;
+                return;
             }
 
-            if (!FileUtils.Exists(languagePath))
+            if (string.IsNullOrEmpty(languageType))
             {
-                GameLogger.LogError($"Load localization {languagePath} is fail");
-                return language;
-            }
-
-            using (FileStream stream = new FileStream(languageKeyPath, FileMode.Open))
-            {
-                using (BinaryReader reader = new BinaryReader(stream))
+                string languageKeyPath = PathUtils.Combine("Assets", DataTableSetting.Instance.LoadLocalizationPath, "LanguageKey.bytes");
+                if (!FileUtils.Exists(languageKeyPath))
                 {
-                    int count = reader.ReadInt32();
-                    for (int i = 0; i < count; i++)
+                    GameLogger.LogError($"Load localization {languageKeyPath} is fail");
+                    return;
+                }
+
+                using (FileStream stream = new FileStream(languageKeyPath, FileMode.Open))
+                {
+                    using (BinaryReader reader = new BinaryReader(stream))
                     {
-                        if (key == reader.ReadString())
+                        languageKeyMap.Clear();
+                        int count = reader.ReadInt32();
+                        for (int i = 0; i < count; i++)
                         {
-                            index = i;
-                            break;
+                            languageKeyMap.Add(reader.ReadString(), i);
                         }
                     }
                 }
             }
 
-            if (index == -1)
+            languageType = type;
+            if (!languageMap.TryGetValue(type, out List<string> languages))
             {
-                GameLogger.LogError($"Language not found {key}");
-                return language;
-            }
-
-            using (FileStream stream = new FileStream(languagePath, FileMode.Open))
-            {
-                using (BinaryReader reader = new BinaryReader(stream))
+                string languagePath = PathUtils.Combine("Assets", DataTableSetting.Instance.LoadLocalizationPath, type, "Language.bytes");
+                if (!FileUtils.Exists(languagePath))
                 {
-                    reader.ReadInt32();
-                    for (int i = 0; i <= index; i++)
+                    GameLogger.LogError($"Load localization {languagePath} is fail");
+                    return;
+                }
+
+                using (FileStream stream = new FileStream(languagePath, FileMode.Open))
+                {
+                    using (BinaryReader reader = new BinaryReader(stream))
                     {
-                        language = reader.ReadString();
+                        languages = new List<string>();
+                        int count = reader.ReadInt32();
+                        for (int i = 0; i < count; i++)
+                        {
+                            languages.Add(reader.ReadString());
+                        }
+
+                        languageMap.Add(type, languages);
                     }
                 }
             }
+        }
 
-            return language;
+        private string GetLanguage(string key)
+        {
+            if (string.IsNullOrEmpty(languageType))
+            {
+                return string.Empty;
+            }
+
+            if (!languageMap.TryGetValue(languageType, out List<string> languages))
+            {
+                return string.Empty;
+            }
+
+            if (languageKeyMap.TryGetValue(key, out int index))
+            {
+                if (index >= 0 && index <= languages.Count)
+                {
+                    return languages[index];
+                }
+            }
+
+            GameLogger.LogError($"Language not found {key}");
+            return string.Empty;
         }
     }
 }
