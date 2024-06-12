@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace GameFramework
@@ -10,7 +11,7 @@ namespace GameFramework
         [SerializeField]
         private LogType logType;
         [SerializeField]
-        private Text text;
+        private TextMeshProUGUI text;
         private Toggle toggle;
         private string typeColor;
 

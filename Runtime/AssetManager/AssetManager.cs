@@ -3,7 +3,7 @@ using UnityEngine.SceneManagement;
 
 namespace GameFramework
 {
-    public class AssetManager : PersistentSingleton<AssetManager>
+    public class AssetManager : MonoSingleton<AssetManager>
     {
         private AssetBundleLoader bundleLoader = new AssetBundleLoader();
         private AssetDatabaseLoader databaseLoader = new AssetDatabaseLoader();

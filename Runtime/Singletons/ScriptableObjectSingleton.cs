@@ -29,5 +29,14 @@ namespace GameFramework
                 return instance;
             }
         }
+
+        public static void Dispose()
+        {
+            if (instance != null)
+            {
+                Resources.UnloadAsset(instance);
+                instance = null;
+            }
+        }
     }
 }

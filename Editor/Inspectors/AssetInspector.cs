@@ -24,7 +24,6 @@ namespace GameFramework
             foreach (Object target in editor.targets)
             {
                 string path = AssetDatabase.GetAssetPath(target).ReplaceSeparator();
-                ;
                 if (!AssetDatabase.IsValidFolder(path) || IsAssets(path) || IsInResources(path) || IsInEditor(path) || IsInPackage(path))
                 {
                     return;

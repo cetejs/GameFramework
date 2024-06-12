@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -9,7 +10,7 @@ namespace GameFramework
     internal class DevCmdItem : PoolObject, IPointerEnterHandler
     {
         [SerializeField]
-        private Text cmdText;
+        private TextMeshProUGUI cmdText;
         [SerializeField]
         private GameObject array;
         private DevCmdHub hub;

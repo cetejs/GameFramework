@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace GameFramework
 {
-    public class DelayedActionManager : PersistentSingleton<DelayedActionManager>
+    public class DelayedActionManager : MonoSingleton<DelayedActionManager>
     {
         private SortedList<DelegateInfo> delegateInfos = new SortedList<DelegateInfo>();
         private Queue<DelegateInfo>[] actions = { new Queue<DelegateInfo>(), new Queue<DelegateInfo>() };

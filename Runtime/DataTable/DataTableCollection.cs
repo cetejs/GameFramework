@@ -167,7 +167,7 @@ namespace GameFramework
                 TextAsset asset = AssetManager.Instance.LoadAsset<TextAsset>(loadPath);
                 if (asset == null)
                 {
-                    GameLogger.LogError($"LoadText {loadPath} is fail");
+                    GameLogger.LogError($"Load text {loadPath} is fail");
                     return null;
                 }
 
@@ -188,7 +188,7 @@ namespace GameFramework
                     TextAsset asset = operation.GetResult<TextAsset>();
                     if (asset == null)
                     {
-                        GameLogger.LogError($"LoadText {loadPath} is fail");
+                        GameLogger.LogError($"Load text {loadPath} is fail");
                         return;
                     }
 

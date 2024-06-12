@@ -8,16 +8,16 @@ namespace GameFramework
     {
         public static void CheckDirectory(string path)
         {
-            FileInfo fileInfo = new FileInfo(path);
-            if (!Directory.Exists(fileInfo.DirectoryName))
+            path = path.ReplaceSeparator().RemoveLastOf("/");
+            if (!Directory.Exists(path))
             {
-                Directory.CreateDirectory(fileInfo.DirectoryName);
+                Directory.CreateDirectory(path);
             }
         }
 
         public static bool Exists(string path)
         {
-            return new FileInfo(path).Exists;
+            return File.Exists(path);
         }
 
         public static void ExistOrCreate(string path)

@@ -4,11 +4,9 @@ using Excel;
 
 namespace GameFramework
 {
-    internal class ExcelReadEditor
+    internal static  class ExcelReadEditor
     {
-        public static readonly ExcelReadEditor Default = new ExcelReadEditor();
-
-        public DataTableCollection ReadExcel(string path)
+        public static DataTableCollection ReadExcel(string path)
         {
             using (FileStream stream = File.OpenRead(path))
             {

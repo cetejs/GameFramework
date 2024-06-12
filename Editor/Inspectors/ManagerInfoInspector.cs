@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace GameFramework
 {
-    public abstract class ManagerInfoInspector : Editor
+    internal abstract class ManagerInfoInspector : Editor
     {
         public override bool RequiresConstantRepaint()
         {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace GameFramework
 {
-    public partial class DataTableManager : PersistentSingleton<DataTableManager>
+    public partial class DataTableManager : MonoSingleton<DataTableManager>
     {
         private Dictionary<Type, DataTableCollection> tableCollections = new Dictionary<Type, DataTableCollection>();
 

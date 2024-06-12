@@ -40,7 +40,7 @@ namespace GameFramework
             for (int i = 0; i < excelDataList.Count; i++)
             {
                 ExcelData excelData = excelDataList[i];
-                
+
                 EditorGUILayout.BeginHorizontal();
                 excelData.Selected = EditorGUILayout.Toggle(excelData.Name, excelData.Selected);
                 EditorGUILayout.EndHorizontal();
@@ -73,6 +73,7 @@ namespace GameFramework
                     default:
                         ExcelToTable(true);
                         ExcelToScript();
+                        ExcelToLocalization();
                         break;
                 }
             }
@@ -145,13 +146,18 @@ namespace GameFramework
                         continue;
                     }
 
+                    if (excelData.Name.RemoveLastOf(".") == DataTableSetting.Instance.LocalizationName)
+                    {
+                        continue;
+                    }
+
                     FileInfo fileInfo = new FileInfo(excelData.FullName);
                     if (fileInfo.Name.StartsWith("~"))
                     {
                         continue;
                     }
 
-                    DataTableCollection dataTables = ExcelReadEditor.Default.ReadExcel(fileInfo.FullName);
+                    DataTableCollection dataTables = ExcelReadEditor.ReadExcel(fileInfo.FullName);
                     if (dataTables.Count <= 0)
                     {
                         GameLogger.LogError($"Excel to table is fail, because table {fileInfo.FullName} count is zero");
@@ -160,23 +166,23 @@ namespace GameFramework
 
                     if (dataTables.Count == 1)
                     {
-                        if (check && !ExcelCheckEditor.Default.CheckExcel(dataTables[0], fileInfo.Name))
+                        if (check && !ExcelCheckEditor.Check(dataTables[0], fileInfo.Name))
                         {
                             return;
                         }
 
-                        ExcelToTableEditor.Default.ExcelToBinary(dataTables[0], fileInfo.Name.Replace(fileInfo.Extension, ".bytes"));
+                        ExcelToTableEditor.Build(dataTables[0], fileInfo.Name.Replace(fileInfo.Extension, ".bytes"));
                     }
                     else if (dataTables.Count > 1)
                     {
                         for (int j = 0; j < dataTables.Count; ++j)
                         {
-                            if (check && !ExcelCheckEditor.Default.CheckExcel(dataTables[j], fileInfo.Name))
+                            if (check && !ExcelCheckEditor.Check(dataTables[j], fileInfo.Name))
                             {
                                 return;
                             }
 
-                            ExcelToTableEditor.Default.ExcelToBinary(dataTables[j], string.Concat(dataTables[j].TableName, ".bytes"));
+                            ExcelToTableEditor.Build(dataTables[j], string.Concat(dataTables[j].TableName, ".bytes"));
                         }
                     }
 
@@ -204,13 +210,18 @@ namespace GameFramework
                         continue;
                     }
 
+                    if (excelData.Name.RemoveLastOf(".") == DataTableSetting.Instance.LocalizationName)
+                    {
+                        continue;
+                    }
+
                     FileInfo fileInfo = new FileInfo(excelData.FullName);
                     if (fileInfo.Name.StartsWith("~"))
                     {
                         continue;
                     }
 
-                    DataTableCollection dataTables = ExcelReadEditor.Default.ReadExcel(fileInfo.FullName);
+                    DataTableCollection dataTables = ExcelReadEditor.ReadExcel(fileInfo.FullName);
                     if (dataTables.Count <= 0)
                     {
                         GameLogger.LogError($"Excel to script is fail, because table {fileInfo.FullName} count is zero");
@@ -219,13 +230,13 @@ namespace GameFramework
 
                     if (dataTables.Count == 1)
                     {
-                        ExcelToScriptEditor.Default.ExcelToCs(dataTables[0], fileInfo.Name.Replace(fileInfo.Extension, ".cs"));
+                        ExcelToScriptEditor.Build(dataTables[0], fileInfo.Name.Replace(fileInfo.Extension, ".cs"));
                     }
                     else if (dataTables.Count > 1)
                     {
                         for (int j = 0; j < dataTables.Count; ++j)
                         {
-                            ExcelToScriptEditor.Default.ExcelToCs(dataTables[j], string.Concat(dataTables[j].TableName, ".cs"));
+                            ExcelToScriptEditor.Build(dataTables[j], string.Concat(dataTables[j].TableName, ".cs"));
                         }
                     }
 
@@ -240,7 +251,39 @@ namespace GameFramework
             EditorUtility.ClearProgressBar();
             AssetDatabase.Refresh();
         }
-        
+
+        private void ExcelToLocalization()
+        {
+            for (int i = 0; i < excelDataList.Count; i++)
+            {
+                ExcelData excelData = excelDataList[i];
+                if (!excelData.Selected)
+                {
+                    continue;
+                }
+
+                if (excelData.Name.RemoveLastOf(".") != DataTableSetting.Instance.LocalizationName)
+                {
+                    continue;
+                }
+
+                FileInfo fileInfo = new FileInfo(excelData.FullName);
+                if (fileInfo.Name.StartsWith("~"))
+                {
+                    continue;
+                }
+                
+                DataTableCollection dataTables = ExcelReadEditor.ReadExcel(fileInfo.FullName);
+                if (dataTables.Count <= 0)
+                {
+                    GameLogger.LogError($"Excel to localization is fail, because table {fileInfo.FullName} count is zero");
+                    continue;
+                }
+                
+                ExcelToLocalizationEditor.Build(dataTables[0]);
+            }
+        }
+
         private enum ExportOperation
         {
             All,

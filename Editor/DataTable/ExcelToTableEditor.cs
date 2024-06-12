@@ -5,11 +5,9 @@ using System.Text;
 
 namespace GameFramework
 {
-    internal sealed class ExcelToTableEditor
+    internal static class ExcelToTableEditor
     {
-        public static readonly ExcelToTableEditor Default = new ExcelToTableEditor();
-
-        public void ExcelToBinary(DataTable dataTable, string fileName)
+        public static void Build(DataTable dataTable, string fileName)
         {
             if (dataTable.Rows.Count < 4)
             {
@@ -45,16 +43,16 @@ namespace GameFramework
 
                 if (setting.CryptoType == CryptoType.AES)
                 {
-                    FileUtils.WriteAllBytes(fullPath, CryptoUtils.Aes.EncryptBytesToBytes(stream.GetBuffer(), setting.Password));
+                    FileUtils.WriteAllBytes(fullPath, CryptoUtils.Aes.EncryptBytesToBytes(stream.ToArray(), setting.Password));
                 }
                 else
                 {
-                    FileUtils.WriteAllBytes(fullPath, stream.GetBuffer());
+                    FileUtils.WriteAllBytes(fullPath, stream.ToArray());
                 }
             }
         }
 
-        private void Write(BinaryWriter writer, string type, string value)
+        private static void Write(BinaryWriter writer, string type, string value)
         {
             if (type.EndsWith("[]"))
             {

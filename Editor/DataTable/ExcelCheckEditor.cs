@@ -6,9 +6,7 @@ namespace GameFramework
 {
     internal sealed class ExcelCheckEditor
     {
-        public static readonly ExcelCheckEditor Default = new ExcelCheckEditor();
-
-        public bool CheckExcel(DataTable dataTable, string fileName)
+        public static bool Check(DataTable dataTable, string fileName)
         {
             List<int> uniqueList = new List<int>();
             List<int> linkList = new List<int>();
@@ -28,7 +26,7 @@ namespace GameFramework
             return CheckUnique(dataTable, uniqueList, fileName) && CheckLink(dataTable, linkList, fileName);
         }
 
-        private bool CheckUnique(DataTable dataTable, List<int> columns, string fileName)
+        private static bool CheckUnique(DataTable dataTable, List<int> columns, string fileName)
         {
             HashSet<string> uniqueDataSet = new HashSet<string>();
             for (int i = 0; i < columns.Count; i++)
@@ -50,14 +48,14 @@ namespace GameFramework
             return true;
         }
 
-        private bool CheckLink(DataTable dataTable, List<int> columns, string fileName)
+        private static bool CheckLink(DataTable dataTable, List<int> columns, string fileName)
         {
             HashSet<string> lineTableColumns = new HashSet<string>();
             for (int i = 0; i < columns.Count; i++)
             {
                 string linkName = dataTable.Rows[3][columns[i]].ToString();
                 string[] linkNameChip = linkName.Split('&', '.');
-                DataTableCollection dataTables = ExcelReadEditor.Default.ReadExcel($"{Path.GetFullPath(DataTableSetting.Instance.ExcelRootPath)}/{linkNameChip[1]}.xlsx");
+                DataTableCollection dataTables = ExcelReadEditor.ReadExcel($"{Path.GetFullPath(DataTableSetting.Instance.ExcelRootPath)}/{linkNameChip[1]}.xlsx");
                 DataTable linkTable = null;
                 string field;
                 if (linkNameChip.Length < 4)
@@ -103,7 +101,7 @@ namespace GameFramework
             return true;
         }
 
-        private void GetDataColumns(DataTable dataTable, string field, HashSet<string> dataColumns)
+        private static void GetDataColumns(DataTable dataTable, string field, HashSet<string> dataColumns)
         {
             dataColumns.Clear();
             for (int i = 0; i < dataTable.Columns.Count; i++)

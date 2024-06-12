@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,9 +11,9 @@ namespace GameFramework
         [SerializeField]
         private UIList logList;
         [SerializeField]
-        private Text logDetails;
+        private TextMeshProUGUI logDetails;
         [SerializeField]
-        private InputField logSearch;
+        private TMP_InputField logSearch;
         [SerializeField]
         private int maxLogCount;
         private string lastSearch = "";

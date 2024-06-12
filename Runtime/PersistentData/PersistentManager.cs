@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace GameFramework
 {
-    public class PersistentManager : PersistentSingleton<PersistentManager>
+    public class PersistentManager : Singleton<PersistentManager>
     {
         private Dictionary<string, IPersistentStorage> storages = new Dictionary<string, IPersistentStorage>();
         public event Action<string> OnStorageLoading;

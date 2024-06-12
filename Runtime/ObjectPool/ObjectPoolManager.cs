@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace GameFramework
 {
-    public class ObjectPoolManager : Singleton<ObjectPoolManager>
+    public class ObjectPoolManager : MonoSingleton<ObjectPoolManager>
     {
         private readonly Dictionary<string, ObjectPool> objectPools = new Dictionary<string, ObjectPool>();
 

@@ -5,11 +5,9 @@ using System.Text;
 
 namespace GameFramework
 {
-    internal sealed class ExcelToScriptEditor
+    internal static class ExcelToScriptEditor
     {
-        public static readonly ExcelToScriptEditor Default = new ExcelToScriptEditor();
-
-        public void ExcelToCs(DataTable dataTable, string fileName)
+        public static void Build(DataTable dataTable, string fileName)
         {
             StringBuilder stringBuilder = new StringBuilder();
             StringBuilder propertyBuilder = new StringBuilder();
@@ -70,7 +68,7 @@ namespace GameFramework
             FileUtils.WriteAllText(fullPath, stringBuilder.ToString());
         }
 
-        private string GetReadType(string type)
+        private static string GetReadType(string type)
         {
             switch (type)
             {

@@ -1,12 +1,12 @@
+using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace GameFramework
 {
     internal class FpsDrawer : MonoBehaviour
     {
         [SerializeField]
-        private Text text;
+        private TextMeshProUGUI text;
         [SerializeField]
         private float refreshTime = 0.5f;
 

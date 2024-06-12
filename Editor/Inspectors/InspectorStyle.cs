@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace GameFramework
 {
-    public static class InspectorStyle
+    internal static class InspectorStyle
     {
         public static GUIStyle BehaviourContainerStyle;
         public static GUIStyle BehaviourBoxChildStyle;

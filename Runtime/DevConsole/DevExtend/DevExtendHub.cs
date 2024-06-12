@@ -1,25 +1,25 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+﻿using TMPro;
+using UnityEngine;
 
 namespace GameFramework
 {
     internal class DevExtendHub : MonoBehaviour
     {
         [SerializeField]
-        private InputField rateInput;
+        private TMP_InputField rateInput;
         [SerializeField]
-        private InputField scaleInput;
-        private Text rateHolder;
-        private Text scaleHolder;
+        private TMP_InputField scaleInput;
+        private TextMeshProUGUI rateHolder;
+        private TextMeshProUGUI scaleHolder;
 
 #if ENABLE_CONSOLE
         private void Awake()
         {
             rateInput.onSubmit.AddListener(ChangeFrameRate);
-            rateHolder = rateInput.placeholder.GetComponent<Text>();
+            rateHolder = rateInput.placeholder.GetComponent<TextMeshProUGUI>();
 
             scaleInput.onSubmit.AddListener(ChangeTimeScale);
-            scaleHolder = scaleInput.placeholder.GetComponent<Text>();
+            scaleHolder = scaleInput.placeholder.GetComponent<TextMeshProUGUI>();
         }
 
         private void Start()

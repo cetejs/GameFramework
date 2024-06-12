@@ -2,14 +2,12 @@ using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace GameFramework
 {
     internal class PersistentWindow : SubWindow
     {
         private Editor settingEditor;
-        private PersistentManager manager;
         private PersistentData newData = new PersistentData();
         private bool showNewDataBox;
         private string storageName;
@@ -23,8 +21,8 @@ namespace GameFramework
             base.Init("PersistentData", parent);
             settingEditor = Editor.CreateEditor(PersistentSetting.Instance);
             storageName = PersistentSetting.Instance.DefaultStorageName;
-            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
-            OnPlayModeStateChanged(EditorApplication.isPlaying ? PlayModeStateChange.EnteredPlayMode : PlayModeStateChange.EnteredEditMode);
+            storage = PersistentManager.Instance.GetStorage(storageName);
+            RefreshData();
         }
 
         public override void OnGUI()
@@ -38,8 +36,8 @@ namespace GameFramework
             storageName = EditorGUILayout.TextField("Storage Name", storageName);
             if (GUILayout.Button("Load", GUILayout.Width(100)))
             {
-                manager.Unload(storageName);
-                storage = manager.GetStorage(storageName);
+                PersistentManager.Instance.Unload(storageName);
+                storage = PersistentManager.Instance.GetStorage(storageName);
                 RefreshData();
             }
 
@@ -73,39 +71,6 @@ namespace GameFramework
             }
 
             GUILayout.EndHorizontal();
-        }
-
-        public override void OnDestroy()
-        {
-            EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
-            Object.DestroyImmediate(settingEditor);
-            if (manager != null)
-            {
-                Object.DestroyImmediate(manager);
-            }
-        }
-
-        private void OnPlayModeStateChanged(PlayModeStateChange stateChange)
-        {
-            switch (stateChange)
-            {
-                case PlayModeStateChange.EnteredPlayMode:
-                    if (manager != null)
-                    {
-                        Object.DestroyImmediate(manager.gameObject);
-                    }
-
-                    manager = PersistentManager.Instance;
-                    storage = manager.GetStorage(storageName);
-                    RefreshData();
-                    break;
-                case PlayModeStateChange.EnteredEditMode:
-                    manager = new GameObject().AddComponent<PersistentManager>();
-                    manager.gameObject.hideFlags = HideFlags.HideAndDontSave;
-                    storage = manager.GetStorage(storageName);
-                    RefreshData();
-                    break;
-            }
         }
 
         private void RefreshData()
@@ -212,8 +177,8 @@ namespace GameFramework
 
         private void Delete()
         {
-            manager.Delete(storage.Name);
-            storage = manager.Load(storageName);
+            PersistentManager.Instance.Delete(storage.Name);
+            storage = PersistentManager.Instance.Load(storageName);
             showNewDataBox = false;
             RefreshData();
         }

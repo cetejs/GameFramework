@@ -16,11 +16,6 @@ namespace GameFramework
         public event Action<bool> OnApplicationPauseEvent;
         public event Action OnApplicationQuitEvent;
 
-        public static bool Instance
-        {
-            get { return instance; }
-        }
-
         public static bool IsApplicationQuit { get; private set; }
 
         [RuntimeInitializeOnLoadMethod]

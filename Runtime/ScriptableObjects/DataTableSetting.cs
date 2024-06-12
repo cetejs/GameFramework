@@ -8,6 +8,7 @@
         public string TableBuildPath = "Configs/Tables";
         public string ScriptBuildPath = "Scripts/Tables";
         public string ScriptNamespace = "GameFramework";
+        public string LocalizationName = "Localization";
         public CryptoType CryptoType;
         [EnumCondition("CryptoType", (int) CryptoType.AES)]
         public string Password = "password";
@@ -30,6 +31,11 @@
         public string LoadTablePath
         {
             get { return TableBuildPath; }
+        }
+
+        public string LoadLocalizationPath
+        {
+            get { return PathUtils.Combine(TableBuildPath, LocalizationName); }
         }
     }
 }

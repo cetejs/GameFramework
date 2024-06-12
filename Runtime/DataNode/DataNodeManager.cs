@@ -10,8 +10,9 @@ namespace GameFramework
         private const string RootName = "<Root>";
         private IDataNode root;
 
-        public DataNodeManager()
+        protected override void Awake()
         {
+            base.Awake();
             root = DataNode.Create(RootName, null);
         }
 

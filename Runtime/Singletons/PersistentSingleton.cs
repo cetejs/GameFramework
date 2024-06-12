@@ -1,8 +1,6 @@
-﻿using UnityEngine;
-
-namespace GameFramework
+﻿namespace GameFramework
 {
-    public abstract class PersistentSingleton<T> : GameBehaviour where T : PersistentSingleton<T>
+    public abstract class PersistentSingleton<T> : GameBehaviour, ISingleton where T : PersistentSingleton<T>
     {
         private static T instance;
 
@@ -12,30 +10,31 @@ namespace GameFramework
             {
                 if (instance == null)
                 {
-                    instance = FindObjectOfType<T>();
-                    if (instance == null)
-                    {
-                        instance = new GameObject(typeof(T).Name).AddComponent<T>();
-                    }
+                    instance = SingletonCreator.CreateMonoSingleton<T>();
                 }
 
                 return instance;
             }
         }
 
+        public static void Dispose()
+        {
+            if (instance != null)
+            {
+                SingletonCreator.DisposeSingleton(instance);
+            }
+        }
+
         protected virtual void Awake()
         {
-            if (!Application.isPlaying)
-            {
-                return;
-            }
-
             if (instance == null)
             {
                 instance = this as T;
+                SingletonCreator.AddMonoSingleton(instance);
                 DontDestroyOnLoad(gameObject);
             }
-            else if (instance != this)
+
+            if (instance != this)
             {
                 Destroy(gameObject);
             }
@@ -45,6 +44,16 @@ namespace GameFramework
         {
             if (instance == this)
             {
+                SingletonCreator.RemoveMonoSingleton(instance);
+                instance = null;
+            }
+        }
+
+        void ISingleton.OnDispose()
+        {
+            if (instance != null)
+            {
+                Destroy(instance.gameObject);
                 instance = null;
             }
         }

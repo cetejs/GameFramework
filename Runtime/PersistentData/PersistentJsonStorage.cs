@@ -103,14 +103,21 @@ namespace GameFramework
         private void ReadToData(string text)
         {
             data.Clear();
-            if (!string.IsNullOrEmpty(text))
+            try
             {
-                string[] lines = text.Split('\n', StringSplitOptions.RemoveEmptyEntries);
-                foreach (string line in lines)
+                if (!string.IsNullOrEmpty(text))
                 {
-                    string[] map = line.Split(';');
-                    data.Add(map[0], map[1]);
+                    string[] lines = text.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+                    foreach (string line in lines)
+                    {
+                        string[] map = line.Split(';');
+                        data.Add(map[0], map[1]);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                GameLogger.LogException(ex);
             }
         }
 

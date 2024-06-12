@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 
 namespace GameFramework
 {
@@ -131,27 +130,20 @@ namespace GameFramework
             {
                 using (BinaryWriter writer = new BinaryWriter(stream))
                 {
-                    try
+                    writer.Write(data.Count);
+
+                    foreach (KeyValuePair<string, byte[]> kvPair in data)
                     {
-                        writer.Write(data.Count);
-
-                        foreach (KeyValuePair<string, byte[]> kvPair in data)
-                        {
-                            writer.Write(kvPair.Value.Length);
-                        }
-
-                        foreach (KeyValuePair<string, byte[]> kvPair in data)
-                        {
-                            writer.Write(kvPair.Key);
-                            writer.Write(kvPair.Value);
-                        }
-
-                        bytes = stream.ToArray();
+                        writer.Write(kvPair.Value.Length);
                     }
-                    catch (Exception ex)
+
+                    foreach (KeyValuePair<string, byte[]> kvPair in data)
                     {
-                        GameLogger.LogException(ex);
+                        writer.Write(kvPair.Key);
+                        writer.Write(kvPair.Value);
                     }
+
+                    bytes = stream.ToArray();
                 }
             }
 

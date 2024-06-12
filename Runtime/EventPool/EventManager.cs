@@ -1,6 +1,6 @@
 namespace GameFramework
 {
-    public class EventManager : PersistentSingleton<EventManager>
+    public class EventManager : MonoSingleton<EventManager>
     {
         private EventPool eventPool = new EventPool();
 

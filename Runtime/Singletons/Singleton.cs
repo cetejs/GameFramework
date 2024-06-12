@@ -1,9 +1,9 @@
-﻿using UnityEngine;
-
-namespace GameFramework
+﻿namespace GameFramework
 {
-    public abstract class Singleton<T> : GameBehaviour where T : Singleton<T>
+    public abstract class Singleton<T> : ISingleton where T : Singleton<T>, new()
     {
+        private static object syncObject = new object();
+
         private static T instance;
 
         public static T Instance
@@ -12,10 +12,12 @@ namespace GameFramework
             {
                 if (instance == null)
                 {
-                    instance = FindObjectOfType<T>();
-                    if (instance == null)
+                    lock (syncObject)
                     {
-                        instance = new GameObject(typeof(T).Name).AddComponent<T>();
+                        if (instance == null)
+                        {
+                            instance = SingletonCreator.CreateSingleton<T>();
+                        }
                     }
                 }
 
@@ -23,29 +25,17 @@ namespace GameFramework
             }
         }
 
-        protected virtual void Awake()
+        public static void Dispose()
         {
-            if (!Application.isPlaying)
+            if (instance != null)
             {
-                return;
-            }
-
-            if (instance == null)
-            {
-                instance = this as T;
-            }
-            else if (instance != this)
-            {
-                Destroy(gameObject);
+                SingletonCreator.DisposeSingleton(instance);
             }
         }
 
-        protected virtual void OnDestroy()
+        void ISingleton.OnDispose()
         {
-            if (instance == this)
-            {
-                instance = null;
-            }
+            instance = null;
         }
     }
 }

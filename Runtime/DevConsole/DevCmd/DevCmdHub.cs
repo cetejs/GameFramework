@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace GameFramework
 {
@@ -11,7 +11,7 @@ namespace GameFramework
         [SerializeField]
         private DevCmdItem rootItem;
         [SerializeField]
-        private InputField cmdInput;
+        private TMP_InputField cmdInput;
         private DevCmdNode root;
         private ObjectPool<DevCmdGroup> cmdGroupPool;
         private ObjectPool<DevCmdItem> cmdItemPool;
