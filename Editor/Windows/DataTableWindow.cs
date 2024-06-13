@@ -15,6 +15,7 @@ namespace GameFramework
         private ExportOperation operation;
         private bool allSelected;
         private bool showSettings;
+        private int selectIndex;
         private Editor settingEditor;
 
         private const string ShowSettingsKey = "DataTableWindow.ShowSettings";
@@ -35,6 +36,7 @@ namespace GameFramework
                 settingEditor.OnInspectorGUI();
             }
 
+            DrawChangeLanguage();
             operation = (ExportOperation) EditorGUILayout.EnumPopup("Export Operation", operation);
 
             for (int i = 0; i < excelDataList.Count; i++)
@@ -272,16 +274,58 @@ namespace GameFramework
                 {
                     continue;
                 }
-                
+
                 DataTableCollection dataTables = ExcelReadEditor.ReadExcel(fileInfo.FullName);
                 if (dataTables.Count <= 0)
                 {
                     GameLogger.LogError($"Excel to localization is fail, because table {fileInfo.FullName} count is zero");
                     continue;
                 }
-                
-                ExcelToLocalizationEditor.Build(dataTables[0]);
+
+                LocalizationWriteEditor.Build(dataTables[0]);
             }
+        }
+
+        private void DrawChangeLanguage()
+        {
+            EditorGUILayout.BeginHorizontal();
+            string[] languageTypes = AssetDatabase.GetSubFolders(StringUtils.Concat("Assets/", DataTableSetting.Instance.LoadLocalizationPath));
+            bool hasLanguageType = languageTypes.Length > 0;
+            if (!hasLanguageType)
+            {
+                languageTypes = new[]
+                {
+                    "None"
+                };
+            }
+
+            selectIndex = Mathf.Clamp(selectIndex, 0, languageTypes.Length - 1);
+            for (int i = 0; i < languageTypes.Length; i++)
+            {
+                languageTypes[i] = languageTypes[i].GetLastOf("/");
+            }
+
+            selectIndex = EditorGUILayout.Popup("Change Language", selectIndex, languageTypes);
+            if (GUILayout.Button("Load", GUILayout.Width(50f)))
+            {
+                if (hasLanguageType)
+                {
+                    LocalizationReadEditor.ChangeLanguage(languageTypes[selectIndex]);
+                    LocalizationText[] texts = Object.FindObjectsOfType<LocalizationText>();
+                    foreach (LocalizationText text in texts)
+                    {
+                        string language = LocalizationReadEditor.GetLanguage(text.LanguageKey);
+                        text.SetLanguage(language);
+                        EditorUtility.SetDirty(text);
+                    }
+                }
+                else
+                {
+                    GameLogger.LogError("Not selecting the correct language type");
+                }
+            }
+
+            EditorGUILayout.EndHorizontal();
         }
 
         private enum ExportOperation

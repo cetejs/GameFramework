@@ -627,7 +627,7 @@ namespace GameFramework
                 string path = PathUtils.Combine(outputPath, "/", bundleName);
                 byte[] data = File.ReadAllBytes(path);
                 Hash128 hash = Hash128.Compute(data);
-                sb.AppendJoin(",", bundleName, hash.ToString());
+                sb.AppendJoin("\t", bundleName, hash.ToString());
             }
 
             if (sb.Length > 0)

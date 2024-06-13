@@ -70,7 +70,7 @@ namespace GameFramework
             operation.TotalLength = hashLines.Length;
             foreach (string hashLine in hashLines)
             {
-                string[] hashRow = hashLine.Split(",");
+                string[] hashRow = hashLine.Split("\t");
                 string bundleName = hashRow[0];
                 string hash = hashRow[1];
                 string bundlePath = AssetSetting.Instance.GetBundlePath(bundleName);

@@ -11,6 +11,11 @@ namespace GameFramework
         private string languageKey;
         private TextMeshProUGUI text;
 
+        public string LanguageKey
+        {
+            get { return languageKey; }
+        }
+
         public TextMeshProUGUI Text
         {
             get

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace GameFramework.Samples.PersistentData
 {
-    public class UIManager : Singleton<UIManager>
+    public class UIManager : MonoSingleton<UIManager>
     {
         [SerializeField]
         private List<UIWindow> windows = new List<UIWindow>();

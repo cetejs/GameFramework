@@ -5,7 +5,7 @@ using UnityEditor;
 
 namespace GameFramework
 {
-    internal static class ExcelToLocalizationEditor
+    internal static class LocalizationWriteEditor
     {
         public static void Build(DataTable dataTable)
         {
@@ -63,7 +63,7 @@ namespace GameFramework
                 }
             }
 
-            LocalizationTextInspector.ResetLocalization();
+            LocalizationReadEditor.Reset();
             AssetDatabase.Refresh();
         }
     }

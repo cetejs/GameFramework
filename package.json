@@ -25,6 +25,11 @@
 			"displayName": "PersistentData",
 			"description": "PersistentData Sample",
 			"path": "Samples~/PersistentData"
+		},
+		{
+			"displayName": "Localization",
+			"description": "Localization Sample",
+			"path": "Samples~/Localization"
 		}
 	]
 }
