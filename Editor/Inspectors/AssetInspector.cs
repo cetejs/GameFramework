@@ -12,6 +12,7 @@ namespace GameFramework
         static AssetInspector()
         {
             Editor.finishedDefaultHeaderGUI += OnPostHeaderGUI;
+            EditorApplication.projectWindowItemOnGUI += ProjectWindowItemOnGUI;
         }
 
         private static void OnPostHeaderGUI(Editor editor)
@@ -30,10 +31,9 @@ namespace GameFramework
                 }
 
                 string guid = AssetDatabase.AssetPathToGUID(path);
-                List<string> bundleAssetGuids = AssetSetting.Instance.BundleAssetGuids;
-                bool isBundleAsset = bundleAssetGuids.Contains(guid);
+                bool isMainBundleAsset = IsMainBundleAsset(guid);
                 bool isSubBundleAsset = false;
-                if (!isBundleAsset)
+                if (!isMainBundleAsset)
                 {
                     isSubBundleAsset = IsSubBundleAsset(path);
                 }
@@ -47,9 +47,10 @@ namespace GameFramework
                 }
                 else
                 {
-                    if (isBundleAsset != GUILayout.Toggle(isBundleAsset, "BundleAsset"))
+                    if (isMainBundleAsset != GUILayout.Toggle(isMainBundleAsset, "BundleAsset"))
                     {
-                        if (isBundleAsset)
+                        List<string> bundleAssetGuids = AssetSetting.Instance.BundleAssetGuids;
+                        if (isMainBundleAsset)
                         {
                             bundleAssetGuids.Remove(guid);
                         }
@@ -63,10 +64,12 @@ namespace GameFramework
 
                             bundleAssetGuids.Add(guid);
                         }
+                        
+                        EditorApplication.RepaintProjectWindow();
                     }
                 }
 
-                if (isBundleAsset || isSubBundleAsset)
+                if (isMainBundleAsset || isSubBundleAsset)
                 {
                     GUILayout.Label(path.Substring(7, path.Length - 7));
                 }
@@ -74,6 +77,29 @@ namespace GameFramework
                 GUI.enabled = prevEnabledState;
                 GUILayout.EndHorizontal();
             }
+        }
+
+        private static void ProjectWindowItemOnGUI(string guid, Rect selectionRect)
+        {
+            bool isMainBundleAsset = IsMainBundleAsset(guid);
+            bool isSubBundleAsset = false;
+            if (!isMainBundleAsset)
+            {
+                isSubBundleAsset = IsSubBundleAsset(AssetDatabase.GUIDToAssetPath(guid));
+            }
+
+            if (isMainBundleAsset || isSubBundleAsset)
+            {
+                GUIContent content = new GUIContent("ab");
+                Vector2 labelSize = EditorStyles.label.CalcSize(content);
+                Rect textRect = new Rect(selectionRect.x + (selectionRect.width - labelSize.x), selectionRect.y, labelSize.x, labelSize.y);
+                EditorGUI.LabelField(textRect, content);
+            }
+        }
+
+        private static bool IsMainBundleAsset(string guid)
+        {
+            return AssetSetting.Instance.BundleAssetGuids.Contains(guid);
         }
 
         private static bool IsSubBundleAsset(string path)
